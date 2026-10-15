@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ISHURI ONLINE · Knowledge Tree</title>
+  <style>
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      background-color: #0b1a1f;
+      font-family: system-ui, sans-serif;
+    }
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    #scroll-space {
+      position: relative;
+      width: 100%;
+      height: 700vh;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .webgl-fallback {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      background: #1a2e2a; color: #d4c9a8;
+      font-size: 1.2rem; text-align: center; padding: 2rem;
+      z-index: 10; pointer-events: none;
+    }
+    .webgl-fallback span { max-width: 80%; }
+  </style>
+</head>
+<body>
+  <div id="canvas-container"></div>
+  <div id="scroll-space"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+
+    // ============================================================
+    // CONFIGURATION
+    // ============================================================
+    const CONFIG = {
+      leafCount: 2200,
+      grassCount: 3500,
+      particleCount: 200,
+      shadowMapSize: 1024,
+      bloomStrength: 0.4,
+      bloomRadius: 0.35,
+      bloomThreshold: 0.85,
+      maxPixelRatio: 2,
+      reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    };
+
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile) {
+      CONFIG.leafCount = 1100;
+      CONFIG.grassCount = 1500;
+      CONFIG.particleCount = 90;
+      CONFIG.shadowMapSize = 512;
+      CONFIG.maxPixelRatio = 1.5;
+    }
+    if (CONFIG.reducedMotion) {
+      CONFIG.leafCount = Math.floor(CONFIG.leafCount * 0.6);
+      CONFIG.grassCount = Math.floor(CONFIG.grassCount * 0.5);
+      CONFIG.particleCount = Math.floor(CONFIG.particleCount * 0.4);
+    }
+
+    // ============================================================
+    // STATE
+    // ============================================================
+    let scene, camera, renderer, composer;
+    const clock = new THREE.Clock();
+    let scrollProgress = 0;
+    let smoothScroll = 0;
+    let isPaused = false;
+
+    let treeGroup, trunkMesh, leafInstancedMesh, grassInstancedMesh, particleSystem;
+    let branchLightPoints = [];
+    let directionalLight, ambientLight, fillLight, canopyLight;
+    let groundMesh, hillsMesh;
+    let cameraPath, lookAtPath;
+    let leafMaterial, branchMaterial;
+    let time = 0;
+
+    const dummy = new THREE.Object3D();
+    const tmpVec = new THREE.Vector3();
+    const tmpVec2 = new THREE.Vector3();
+
+    // ============================================================
+    // WEBGL CHECK
+    // ============================================================
+    function webglAvailable() {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && 
+          (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      } catch (e) { return false; }
+    }
+
+    function showFallback() {
+      const container = document.getElementById('canvas-container');
+      container.innerHTML = '';
+      const fb = document.createElement('div');
+      fb.className = 'webgl-fallback';
+      fb.innerHTML = '<span>🌳 ISHURI ONLINE · Knowledge Tree<br><small>Your browser does not support WebGL. Please enable it or update your browser.</small></span>';
+      document.body.appendChild(fb);
+    }
+
+    // ============================================================
+    // SCENE INIT
+    // ============================================================
+    function initScene() {
+      if (!webglAvailable()) { showFallback(); return false; }
+
+      scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x1a2e2e);
+      scene.fog = new THREE.FogExp2(0x1a2e2e, 0.011);
+
+      camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 250);
+      camera.position.set(0, 2.5, 11);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, CONFIG.maxPixelRatio));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.05;
+      renderer.outputEncoding = THREE.sRGBEncoding;
+
+      document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+      // post-processing
+      composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      const bloom = new UnrealBloomPass(
+        new THREE.Vector2(window.innerWidth, window.innerHeight),
+        CONFIG.bloomStrength, CONFIG.bloomRadius, CONFIG.bloomThreshold
+      );
+      composer.addPass(bloom);
+
+      setupLights();
+      buildGround();
+      buildTree();
+      buildAtmosphere();
+      setupCameraPath();
+
+      return true;
+    }
+
+    // ============================================================
+    // LIGHTING
+    // ============================================================
+    function setupLights() {
+      // Sun
+      directionalLight = new THREE.DirectionalLight(0xfff2d8, 2.4);
+      directionalLight.position.set(8, 16, 6);
+      directionalLight.castShadow = true;
+      directionalLight.shadow.mapSize.width = CONFIG.shadowMapSize;
+      directionalLight.shadow.mapSize.height = CONFIG.shadowMapSize;
+      const d = 18;
+      directionalLight.shadow.camera.left = -d;
+      directionalLight.shadow.camera.right = d;
+      directionalLight.shadow.camera.top = d;
+      directionalLight.shadow.camera.bottom = -d;
+      directionalLight.shadow.camera.near = 0.5;
+      directionalLight.shadow.camera.far = 45;
+      directionalLight.shadow.bias = -0.0006;
+      directionalLight.shadow.normalBias = 0.02;
+      scene.add(directionalLight);
+
+      // Ambient
+      ambientLight = new THREE.AmbientLight(0x3a4a5a, 0.85);
+      scene.add(ambientLight);
+
+      // Cool fill from below (roots)
+      fillLight = new THREE.PointLight(0x3355aa, 0.7, 22);
+      fillLight.position.set(0, -1.5, 2);
+      scene.add(fillLight);
+
+      // Warm canopy accent
+      canopyLight = new THREE.PointLight(0xffbb66, 1.0, 28);
+      canopyLight.position.set(3, 9, 4);
+      scene.add(canopyLight);
+
+      // Hemisphere for natural sky bounce
+      const hemi = new THREE.HemisphereLight(0x8fb8d8, 0x2a3a20, 0.55);
+      scene.add(hemi);
+    }
+
+    // ============================================================
+    // GROUND & TERRAIN
+    // ============================================================
+    function buildGround() {
+      // Main ground plane with organic undulation
+      const groundGeo = new THREE.CircleGeometry(30, 72);
+      const pos = groundGeo.attributes.position.array;
+      for (let i = 0; i < pos.length; i += 3) {
+        const x = pos[i], z = pos[i+2];
+        const dist = Math.sqrt(x*x + z*z);
+        let y = Math.sin(x * 0.7) * 0.07 + Math.cos(z * 0.55) * 0.07;
+        y += Math.sin(x * 2.3) * 0.025 + Math.cos(z * 1.9) * 0.025;
+        y -= Math.exp(-dist * 0.9) * 0.14; // dip near tree
+        pos[i+1] = y;
+      }
+      groundGeo.computeVertexNormals();
+
+      const groundMat = new THREE.MeshStandardMaterial({
+        color: 0x2a3d2a,
+        roughness: 0.94,
+        metalness: 0.03,
+        emissive: new THREE.Color(0x0a1a0a),
+        emissiveIntensity: 0.12
+      });
+      groundMesh = new THREE.Mesh(groundGeo, groundMat);
+      groundMesh.rotation.x = -Math.PI / 2;
+      groundMesh.position.y = -0.15;
+      groundMesh.receiveShadow = true;
+      scene.add(groundMesh);
+
+      // Mossy patches (small flattened spheres)
+      const mossMat = new THREE.MeshStandardMaterial({ color: 0x3a5a2a, roughness: 0.95, emissive: new THREE.Color(0x0a1808), emissiveIntensity: 0.15 });
+      for (let i = 0; i < 30; i++) {
+        const moss = new THREE.Mesh(new THREE.SphereGeometry(0.15 + Math.random() * 0.25, 6, 4), mossMat);
+        const angle = Math.random() * Math.PI * 2;
+        const r = 0.8 + Math.random() * 9;
+        moss.position.set(Math.cos(angle) * r, -0.08, Math.sin(angle) * r);
+        moss.scale.y = 0.25;
+        moss.receiveShadow = true;
+        scene.add(moss);
+      }
+
+      // Scattered rocks
+      const rockMat = new THREE.MeshStandardMaterial({ color: 0x4a4a45, roughness: 0.96 });
+      for (let i = 0; i < 45; i++) {
+        const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.07 + Math.random() * 0.14), rockMat);
+        const angle = Math.random() * Math.PI * 2;
+        const r = 2 + Math.random() * 9;
+        rock.position.set(Math.cos(angle) * r, -0.05 + Math.random() * 0.1, Math.sin(angle) * r);
+        rock.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+        rock.scale.set(0.7 + Math.random() * 0.6, 0.5 + Math.random() * 0.5, 0.7 + Math.random() * 0.6);
+        rock.castShadow = true;
+        rock.receiveShadow = true;
+        scene.add(rock);
+      }
+
+      // Distant hills ring
+      const hillGeo = new THREE.RingGeometry(14, 28, 64);
+      const hp = hillGeo.attributes.position.array;
+      for (let i = 0; i < hp.length; i += 3) {
+        const x = hp[i], z = hp[i+2];
+        const r = Math.sqrt(x*x + z*z);
+        const h = Math.sin(x * 0.35) * 1.0 + Math.cos(z * 0.35) * 1.0;
+        hp[i+1] = h * (r - 14) / 14;
+      }
+      hillGeo.computeVertexNormals();
+      const hillMat = new THREE.MeshStandardMaterial({ color: 0x1e2f22, roughness: 0.96, emissive: new THREE.Color(0x0a120e), emissiveIntensity: 0.2 });
+      hillsMesh = new THREE.Mesh(hillGeo, hillMat);
+      hillsMesh.rotation.x = -Math.PI / 2;
+      hillsMesh.position.y = -0.2;
+      hillsMesh.receiveShadow = true;
+      scene.add(hillsMesh);
+
+      buildGrass();
+    }
+
+    function buildGrass() {
+      const bladeGeo = new THREE.ConeGeometry(0.02, 0.26, 3);
+      bladeGeo.translate(0, 0.13, 0);
+      const bladeMat = new THREE.MeshStandardMaterial({
+        color: 0x4a6b32,
+        roughness: 0.85,
+        emissive: new THREE.Color(0x1a2a0a),
+        emissiveIntensity: 0.15,
+        side: THREE.DoubleSide
+      });
+
+      grassInstancedMesh = new THREE.InstancedMesh(bladeGeo, bladeMat, CONFIG.grassCount);
+      grassInstancedMesh.castShadow = true;
+      grassInstancedMesh.receiveShadow = true;
+
+      for (let i = 0; i < CONFIG.grassCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 1.6 + Math.random() * 11;
+        const x = Math.cos(angle) * radius;
+        const z = Math.sin(angle) * radius;
+        const y = -0.08 + Math.sin(x * 0.9) * 0.05 + Math.cos(z * 0.7) * 0.05;
+        dummy.position.set(x, y, z);
+        dummy.rotation.y = Math.random() * Math.PI * 2;
+        dummy.rotation.x = (Math.random() - 0.5) * 0.3;
+        dummy.rotation.z = (Math.random() - 0.5) * 0.3;
+        const s = 0.7 + Math.random() * 0.9;
+        dummy.scale.set(s, s * (0.8 + Math.random() * 0.6), s);
+        dummy.updateMatrix();
+        grassInstancedMesh.setMatrixAt(i, dummy.matrix);
+      }
+      grassInstancedMesh.instanceMatrix.needsUpdate = true;
+      scene.add(grassInstancedMesh);
+    }
+
+    // ============================================================
+    // TREE
+    // ============================================================
+    function buildTree() {
+      treeGroup = new THREE.Group();
+
+      // --- Bark material with subtle color variation ---
+      const barkMat = new THREE.MeshStandardMaterial({
+        color: 0x5e4530,
+        roughness: 0.9,
+        metalness: 0.04,
+        emissive: new THREE.Color(0x1e1408),
+        emissiveIntensity: 0.15
+      });
+
+      // --- TRUNK: Lathe with irregular profile ---
+      const trunkPoints = [];
+      const trunkSegs = 16;
+      for (let i = 0; i <= trunkSegs; i++) {
+        const t = i / trunkSegs;
+        const y = t * 4.8;
+        let radius = 0.7 * (1 - t * 0.68);
+        radius += Math.sin(t * 14) * 0.06 + Math.cos(t * 9) * 0.05;
+        radius = Math.max(0.08, radius);
+        trunkPoints.push(new THREE.Vector2(radius, y));
+      }
+      const trunkGeo = new THREE.LatheGeometry(trunkPoints, 20);
+      // Organic deformation
+      const tp = trunkGeo.attributes.position.array;
+      for (let i = 0; i < tp.length; i += 3) {
+        const x = tp[i], y = tp[i+1], z = tp[i+2];
+        const angle = Math.atan2(z, x);
+        const noise = Math.sin(angle * 6 + y * 3) * 0.045 + Math.cos(angle * 4 + y * 2) * 0.035;
+        tp[i] = x * (1 + noise);
+        tp[i+2] = z * (1 + noise);
+      }
+      trunkGeo.computeVertexNormals();
+
+      trunkMesh = new THREE.Mesh(trunkGeo, barkMat);
+      trunkMesh.castShadow = true;
+      trunkMesh.receiveShadow = true;
+      treeGroup.add(trunkMesh);
+
+      // --- ROOTS: Tapered, curving outward ---
+      const rootCount = 12;
+      for (let i = 0; i < rootCount; i++) {
+        const angle = (i / rootCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.3;
+        const rootLength = 1.4 + Math.random() * 1.2;
+        const thickness = 0.22 + Math.random() * 0.12;
+
+        // Root curve: bend downward then outward
+        const rootCurve = new THREE.CatmullRomCurve3([
+          new THREE.Vector3(0, 0, 0),
+          new THREE.Vector3(Math.cos(angle) * 0.3, -0.15, Math.sin(angle) * 0.3),
+          new THREE.Vector3(Math.cos(angle) * 0.9, -0.25, Math.sin(angle) * 0.9),
+          new THREE.Vector3(Math.cos(angle) * rootLength, -0.15, Math.sin(angle) * rootLength)
+        ]);
+        const rootGeo = new THREE.TubeGeometry(rootCurve, 8, thickness, 6, false);
+        // Taper: scale vertices toward tip
+        const rp = rootGeo.attributes.position.array;
+        for (let j = 0; j < rp.length; j += 3) {
+          const x = rp[j], y = rp[j+1], z = rp[j+2];
+          const distFromBase = Math.sqrt(x*x + z*z);
+          const taper = Math.max(0.3, 1 - distFromBase / (rootLength * 1.2));
+          rp[j] = x;
+          rp[j+1] = y * taper;
+          rp[j+2] = z;
+        }
+        rootGeo.computeVertexNormals();
+
+        const root = new THREE.Mesh(rootGeo, barkMat);
+        root.castShadow = true;
+        root.receiveShadow = true;
+        // Position around base of trunk
+        root.position.set(Math.cos(angle) * 0.5, 0.1, Math.sin(angle) * 0.5);
+        root.rotation.y = angle;
+        treeGroup.add(root);
+      }
+
+      // --- BRANCHES: Recursive structure ---
+      branchMaterial = new THREE.MeshStandardMaterial({
+        color: 0x6b5040,
+        roughness: 0.92,
+        emissive: new THREE.Color(0x1e1408),
+        emissiveIntensity: 0.12
+      });
+
+      function createBranch(startPos, direction, length, thickness, depth) {
+        if (depth > 3 || length < 0.15) return;
+
+        // Branch curve with natural bend
+        const endPos = startPos.clone().add(direction.clone().multiplyScalar(length));
+        const midPos = startPos.clone().lerp(endPos, 0.5);
+        midPos.y += 0.1 + Math.random() * 0.15;
+        midPos.x += (Math.random() - 0.5) * 0.2;
+        midPos.z += (Math.random() - 0.5) * 0.2;
+
+        const curve = new THREE.CatmullRomCurve3([startPos, midPos, endPos]);
+        const branchGeo = new THREE.TubeGeometry(curve, 6, thickness, 5, false);
+        // Taper
+        const bp = branchGeo.attributes.position.array;
+        for (let i = 0; i < bp.length; i += 3) {
+          const x = bp[i], y = bp[i+1], z = bp[i+2];
+          // Approximate distance along branch by projecting onto curve
+          const dist = startPos.distanceTo(new THREE.Vector3(x, y, z));
+          const t = Math.min(1, dist / length);
+          const taperFactor = 1 - t * 0.65;
+          const cx = midPos.x + (x - midPos.x) * taperFactor;
+          const cz = midPos.z + (z - midPos.z) * taperFactor;
+          bp[i] = cx;
+          bp[i+2] = cz;
+        }
+        branchGeo.computeVertexNormals();
+
+        const branch = new THREE.Mesh(branchGeo, branchMaterial);
+        branch.castShadow = true;
+        branch.receiveShadow = true;
+        treeGroup.add(branch);
+
+        // Sub-branches
+        const subCount = depth < 2 ? 3 : 2;
+        for (let i = 0; i < subCount; i++) {
+          const newDir = direction.clone();
+          newDir.x += (Math.random() - 0.5) * 0.9;
+          newDir.y += (Math.random() - 0.3) * 0.5;
+          newDir.z += (Math.random() - 0.5) * 0.9;
+          newDir.normalize();
+          // Bias upward
+          newDir.y = Math.abs(newDir.y) * 0.7 + 0.3;
+          newDir.normalize();
+
+          const newLength = length * (0.6 + Math.random() * 0.2);
+          const newThickness = thickness * (0.55 + Math.random() * 0.15);
+          const newStart = startPos.clone().lerp(endPos, 0.5 + Math.random() * 0.5);
+          createBranch(newStart, newDir, newLength, newThickness, depth + 1);
+        }
+      }
+
+      // Primary branches from upper trunk
+      const primaryCount = 7;
+      for (let i = 0; i < primaryCount; i++) {
+        const angle = (i / primaryCount) * Math.PI * 2 + (Math.random() - 0.5) * 0.4;
+        const startY = 2.4 + Math.random() * 1.2;
+        const dir = new THREE.Vector3(
+          Math.cos(angle) * 0.7,
+          0.6 + Math.random() * 0.4,
+          Math.sin(angle) * 0.7
+        ).normalize();
+        const startPos = new THREE.Vector3(
+          Math.cos(angle) * 0.3,
+          startY,
+          Math.sin(angle) * 0.3
+        );
+        createBranch(startPos, dir, 1.6 + Math.random() * 0.9, 0.16 + Math.random() * 0.08, 0);
+      }
+
+      // --- LEAVES: Instanced with wind shader ---
+      const leafGeo = new THREE.SphereGeometry(0.13, 5, 4);
+      leafGeo.scale(0.8, 0.22, 0.55);
+
+      leafMaterial = new THREE.MeshStandardMaterial({
+        color: 0x4a8a38,
+        emissive: new THREE.Color(0x2a5a1a),
+        emissiveIntensity: 0.35,
+        roughness: 0.55,
+        metalness: 0.04,
+        flatShading: true,
+        side: THREE.DoubleSide
+      });
+
+      // Wind shader injection
+      leafMaterial.onBeforeCompile = (shader) => {
+        shader.uniforms.uTime = { value: 0 };
+        shader.uniforms.uWindStrength = { value: CONFIG.reducedMotion ? 0.15 : 0.55 };
+        
+        shader.vertexShader = `
+          uniform float uTime;
+          uniform float uWindStrength;
+          varying vec3 vWorldPosition;
+          varying vec3 vNormal;
+        ` + shader.vertexShader;
+
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <begin_vertex>',
+          `
+          #include <begin_vertex>
+          // Wind displacement based on world position
+          vec4 worldPos = instanceMatrix * vec4(transformed, 1.0);
+          float windX = sin(worldPos.x * 1.5 + uTime * 1.8) * uWindStrength * 0.08;
+          float windY = sin(worldPos.z * 1.2 + uTime * 1.4) * uWindStrength * 0.06;
+          float windZ = cos(worldPos.x * 1.1 + uTime * 1.6) * uWindStrength * 0.08;
+          transformed.x += windX;
+          transformed.y += windY;
+          transformed.z += windZ;
+          `
+        );
+
+        shader.vertexShader = shader.vertexShader.replace(
+          '#include <worldpos_vertex>',
+          `
+          #include <worldpos_vertex>
+          vWorldPosition = (modelMatrix * instanceMatrix * vec4(transformed, 1.0)).xyz;
+          vNormal = normalize((modelMatrix * instanceMatrix * vec4(normal, 0.0)).xyz);
+          `
+        );
+
+        // Fragment: vary color by world position for natural variation
+        shader.fragmentShader = `
+          varying vec3 vWorldPosition;
+          varying vec3 vNormal;
+        ` + shader.fragmentShader;
+
+        shader.fragmentShader = shader.fragmentShader.replace(
+          '#include <color_fragment>',
+          `
+          #include <color_fragment>
+          // Natural leaf color variation
+          float variation = sin(vWorldPosition.x * 0.8) * 0.5 + 0.5;
+          vec3 leafBase = mix(vec3(0.25, 0.5, 0.15), vec3(0.4, 0.65, 0.2), variation);
+          // Golden highlights on top-facing leaves
+          float topFacing = max(0.0, dot(normalize(vNormal), vec3(0.0, 1.0, 0.0)));
+          leafBase += vec3(0.3, 0.25, 0.05) * pow(topFacing, 2.0);
+          diffuseColor.rgb = leafBase;
+          `
+        );
+
+        leafMaterial.userData.shader = shader;
+      };
+
+      leafInstancedMesh = new THREE.InstancedMesh(leafGeo, leafMaterial, CONFIG.leafCount);
+      leafInstancedMesh.castShadow = true;
+      leafInstancedMesh.receiveShadow = true;
+
+      // Distribute leaves in canopy volume
+      for (let i = 0; i < CONFIG.leafCount; i++) {
+        // Spherical shell distribution with bias upward and outward
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos((Math.random() * 2) - 1);
+        const r = 2.0 + Math.random() * 3.2;
+        
+        let x = Math.sin(phi) * Math.cos(theta) * r;
+        let y = Math.cos(phi) * r * 0.75 + 5.0;
+        let z = Math.sin(phi) * Math.sin(theta) * r;
+        
+        // Add clustering noise
+        x += (Math.random() - 0.5) * 0.8;
+        y += (Math.random() - 0.5) * 0.6;
+        z += (Math.random() - 0.5) * 0.8;
+        
+        dummy.position.set(x, y, z);
+        dummy.rotation.set(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          Math.random() * Math.PI
+        );
+        const s = 0.7 + Math.random() * 0.9;
+        dummy.scale.set(
+          s * (0.8 + Math.random() * 0.4),
+          s * (0.7 + Math.random() * 0.6),
+          s * (0.8 + Math.random() * 0.4)
+        );
+        dummy.updateMatrix();
+        leafInstancedMesh.setMatrixAt(i, dummy.matrix);
+      }
+      leafInstancedMesh.instanceMatrix.needsUpdate = true;
+      treeGroup.add(leafInstancedMesh);
+
+      // --- BLUE GLOWING KNOTS along branches (knowledge flow) ---
+      const glowGeo = new THREE.SphereGeometry(0.055, 6, 6);
+      const glowMat = new THREE.MeshStandardMaterial({
+        color: 0x1a4a8a,
+        emissive: new THREE.Color(0x4488ff),
+        emissiveIntensity: 1.5,
+        transparent: true,
+        opacity: 0.8
+      });
+
+      for (let k = 0; k < 24; k++) {
+        const angle = Math.random() * Math.PI * 2;
+        const height = 1.5 + Math.random() * 4.5;
+        const radius = 0.6 + Math.random() * 1.8;
+        const glow = new THREE.Mesh(glowGeo, glowMat.clone());
+        glow.position.set(
+          Math.cos(angle) * radius,
+          height,
+          Math.sin(angle) * radius
+        );
+        glow.castShadow = false;
+        glow.receiveShadow = false;
+        treeGroup.add(glow);
+        branchLightPoints.push(glow);
+      }
+
+      // --- Roots blue glow ---
+      for (let k = 0; k < 8; k++) {
+        const angle = (k / 8) * Math.PI * 2;
+        const glow = new THREE.Mesh(glowGeo, glowMat.clone());
+        glow.position.set(
+          Math.cos(angle) * 1.2,
+          0.05,
+          Math.sin(angle) * 1.2
+        );
+        glow.scale.set(0.8, 0.8, 0.8);
+        treeGroup.add(glow);
+        branchLightPoints.push(glow);
+      }
+
+      scene.add(treeGroup);
+    }
+
+    // ============================================================
+    // ATMOSPHERE
+    // ============================================================
+    function buildAtmosphere() {
+      // Floating motes
+      const pGeo = new THREE.BufferGeometry();
+      const pPos = new Float32Array(CONFIG.particleCount * 3);
+      const pCol = new Float32Array(CONFIG.particleCount * 3);
+
+      for (let i = 0; i < CONFIG.particleCount; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const radius = 3 + Math.random() * 11;
+        const height = 0.5 + Math.random() * 10;
+        pPos[i*3] = Math.cos(angle) * radius;
+        pPos[i*3+1] = height;
+        pPos[i*3+2] = Math.sin(angle) * radius;
+        
+        const warmth = 0.7 + Math.random() * 0.5;
+        pCol[i*3] = 1.0 * warmth;
+        pCol[i*3+1] = 0.92 * warmth;
+        pCol[i*3+2] = 0.75 * warmth;
+      }
+
+      pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+      pGeo.setAttribute('color', new THREE.BufferAttribute(pCol, 3));
+
+      const pMat = new THREE.PointsMaterial({
+        size: 0.1,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.45,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+        sizeAttenuation: true
+      });
+
+      particleSystem = new THREE.Points(pGeo, pMat);
+      scene.add(particleSystem);
+    }
+
+    // ============================================================
+    // CAMERA PATH (Scroll-Driven)
+    // ============================================================
+    function setupCameraPath() {
+      // Key positions from ground → roots → trunk → branches → canopy → crown
+      const positions = [
+        new THREE.Vector3(0, 1.8, 12.0),    // 0: cinematic wide view
+        new THREE.Vector3(0.3, 1.2, 7.5),   // 1: moving closer
+        new THREE.Vector3(0.6, 1.5, 4.5),   // 2: near roots
+        new THREE.Vector3(0.8, 2.5, 3.0),   // 3: alongside trunk
+        new THREE.Vector3(0.5, 4.0, 2.2),   // 4: mid trunk
+        new THREE.Vector3(0.2, 5.5, 1.8),   // 5: entering branches
+        new THREE.Vector3(-0.4, 6.8, 1.5),  // 6: within branches
+        new THREE.Vector3(-1.0, 8.0, 1.8),  // 7: canopy
+        new THREE.Vector3(-1.5, 9.2, 2.5),  // 8: upper canopy
+        new THREE.Vector3(-1.8, 10.2, 3.5), // 9: above canopy
+        new THREE.Vector3(-1.2, 11.0, 5.5)  // 10: elevated final view
+      ];
+
+      const lookAts = [
+        new THREE.Vector3(0, 1.5, 0),      // 0: base of tree
+        new THREE.Vector3(0, 1.2, 0.5),    // 1: roots
+        new THREE.Vector3(0, 1.5, 0.2),    // 2: root/trunk junction
+        new THREE.Vector3(0, 2.5, 0),      // 3: trunk
+        new THREE.Vector3(0, 3.8, 0),      // 4: trunk mid
+        new THREE.Vector3(0, 5.2, 0),      // 5: branch start
+        new THREE.Vector3(0, 6.5, 0),      // 6: branches
+        new THREE.Vector3(0, 7.8, 0.3),    // 7: canopy
+        new THREE.Vector3(0, 9.0, 0.5),    // 8: upper canopy
+        new THREE.Vector3(0, 10.0, 0.8),   // 9: crown
+        new THREE.Vector3(0, 10.5, 1.2)    // 10: above
+      ];
+
+      cameraPath = new THREE.CatmullRomCurve3(positions, false, 'catmullrom', 0.5);
+      lookAtPath = new THREE.CatmullRomCurve3(lookAts, false, 'catmullrom', 0.5);
+    }
+
+    // ============================================================
+    // SCROLL HANDLING
+    // ============================================================
+    function setupScroll() {
+      function updateScroll() {
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        if (docHeight <= 0) return;
+        scrollProgress = Math.min(1, Math.max(0, scrollTop / docHeight));
+      }
+      window.addEventListener('scroll', updateScroll, { passive: true });
+      window.addEventListener('resize', updateScroll, { passive: true });
+      updateScroll();
+    }
+
+    // ============================================================
+    // RESIZE
+    // ============================================================
+    function onWindowResize() {
+      if (!renderer || !camera) return;
+      const w = window.innerWidth, h = window.innerHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, CONFIG.maxPixelRatio));
+      if (composer) composer.setSize(w, h);
+    }
+
+    // ============================================================
+    // ANIMATION LOOP
+    // ============================================================
+    function animate() {
+      requestAnimationFrame(animate);
+      if (isPaused) return;
+
+      const delta = Math.min(clock.getDelta(), 0.05);
+      time += delta;
+
+      // Smooth scroll damping
+      smoothScroll += (scrollProgress - smoothScroll) * 0.075;
+
+      // --- Camera movement ---
+      if (cameraPath && lookAtPath) {
+        const t = Math.min(1, Math.max(0, smoothScroll));
+        const camPos = cameraPath.getPointAt(t);
+        const lookTarget = lookAtPath.getPointAt(t);
+
+        camera.position.lerp(camPos, 0.1);
+
+        if (!camera.userData.smoothLook) {
+          camera.userData.smoothLook = lookTarget.clone();
+        }
+        camera.userData.smoothLook.lerp(lookTarget, 0.08);
+        camera.lookAt(camera.userData.smoothLook);
+      }
+
+      // --- Wind animation for leaves (shader uniform) ---
+      if (leafMaterial && leafMaterial.userData.shader) {
+        leafMaterial.userData.shader.uniforms.uTime.value = time;
+      }
+
+      // --- Gentle tree sway (very subtle, whole tree) ---
+      if (treeGroup && !CONFIG.reducedMotion) {
+        treeGroup.rotation.z = Math.sin(time * 0.4) * 0.004;
+        treeGroup.rotation.x = Math.cos(time * 0.3) * 0.003;
+      }
+
+      // --- Grass sway ---
+      if (grassInstancedMesh && !CONFIG.reducedMotion) {
+        grassInstancedMesh.rotation.y = Math.sin(time * 0.15) * 0.008;
+      }
+
+      // --- Particle drift ---
+      if (particleSystem && !CONFIG.reducedMotion) {
+        const posAttr = particleSystem.geometry.attributes.position;
+        const arr = posAttr.array;
+        for (let i = 0; i < arr.length; i += 3) {
+          arr[i+1] += Math.sin(time * 0.4 + arr[i] * 1.5) * 0.0006;
+          arr[i] += Math.cos(time * 0.3 + arr[i+2] * 1.2) * 0.0004;
+        }
+        posAttr.needsUpdate = true;
+      }
+
+      // --- Blue knowledge glow pulsing ---
+      branchLightPoints.forEach((glow, idx) => {
+        if (glow.material) {
+          const pulse = 0.8 + Math.sin(time * 1.8 + idx * 1.3) * 0.4;
+          glow.material.emissiveIntensity = pulse * 1.3;
+        }
+      });
+
+      // --- Canopy light warm shift ---
+      if (canopyLight) {
+        canopyLight.intensity = 0.9 + Math.sin(time * 0.6) * 0.15;
+      }
+
+      // --- Render ---
+      if (composer) {
+        composer.render();
+      } else if (renderer) {
+        renderer.render(scene, camera);
+      }
+    }
+
+    // ============================================================
+    // MAIN INIT
+    // ============================================================
+    function init() {
+      if (!initScene()) return;
+
+      setupScroll();
+      window.addEventListener('resize', onWindowResize, { passive: true });
+
+      document.addEventListener('visibilitychange', () => {
+        isPaused = document.hidden;
+        if (!isPaused) clock.getDelta();
+      });
+
+      // Initial reveal: start camera at wide position
+      camera.position.copy(cameraPath.getPointAt(0));
+      camera.lookAt(lookAtPath.getPointAt(0));
+      camera.userData.smoothLook = lookAtPath.getPointAt(0).clone();
+
+      animate();
+
+      // Expose API for future integration
+      window.ISHURI = {
+        getScrollProgress: () => scrollProgress,
+        getSmoothScroll: () => smoothScroll,
+        setScrollProgress: (v) => { scrollProgress = Math.min(1, Math.max(0, v)); },
+        scene, camera, renderer,
+        ready: true
+      };
+
+      console.log('ISHURI ONLINE · Knowledge Tree environment ready');
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  </script>
+</body>
+</html>
