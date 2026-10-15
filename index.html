@@ -3,29 +3,1211 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ISHURI ONLINE · Atmosphere</title>
+<title>ISHURI ONLINE</title>
+<link rel="icon" type="image/png" href="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png">
+<link rel="apple-touch-icon" href="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png">
+<meta name="description" content="ISHURI ONLINE — Affordable online learning. Pay 1,000 RWF per course with MTN MoMo or Airtel Money. Free introductory lessons in every course.">
+<meta name="theme-color" content="#050a1f">
+
 <style>
-  html, body { margin:0; padding:0; background:#0a1a3a; overflow-x:hidden; font-family:system-ui,sans-serif; }
+  /* ============================================================
+     RESET & BASE
+     ============================================================ */
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  html, body {
+    background:#050a1f;
+    color:#e8f2ff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+  }
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(74,184,255,0.08) 0%, transparent 60%);
+    pointer-events:none;
+    z-index:1;
+  }
+
+  /* ============================================================
+     3D CANVAS + VIGNETTE
+     ============================================================ */
   #canvas-container { position:fixed; inset:0; z-index:0; pointer-events:none; }
-  #scroll-space { position:relative; width:100%; height:800vh; z-index:1; pointer-events:none; opacity:0; }
-  .webgl-fallback { position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    background:#020a1a; color:#a8c8e8; font-size:1rem; text-align:center; padding:2rem; z-index:10; }
+  #vignette {
+    position:fixed; inset:0; z-index:2; pointer-events:none;
+    background: radial-gradient(ellipse at 50% 55%, transparent 55%, rgba(0,5,20,0.55) 130%);
+  }
+
+  /* ============================================================
+     NAV
+     ============================================================ */
+  #nav {
+    position:fixed; top:0; left:0; right:0;
+    z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 32px;
+    transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease;
+    border-bottom: 1px solid transparent;
+  }
+  #nav.scrolled {
+    background: rgba(5,10,31,0.72);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    border-bottom-color: rgba(74,184,255,0.12);
+  }
+  .nav-brand {
+    display:flex; align-items:center; gap:12px;
+    text-decoration:none; color:#fff;
+  }
+  .nav-brand img {
+    width:40px; height:40px; object-fit:contain;
+    filter: drop-shadow(0 0 12px rgba(74,184,255,0.5));
+  }
+  .nav-brand-text { display:flex; flex-direction:column; line-height:1.05; }
+  .nav-brand-text .brand-name {
+    font-size:15px; font-weight:700; letter-spacing:0.14em; color:#fff;
+  }
+  .nav-brand-text .brand-tag {
+    font-size:9px; font-weight:400; letter-spacing:0.28em;
+    color:#6ac8ff; text-transform:uppercase;
+  }
+  .nav-links {
+    display:flex; align-items:center; gap:32px; list-style:none;
+  }
+  .nav-links a {
+    color:#a8c8e8; text-decoration:none;
+    font-size:13px; font-weight:500; letter-spacing:0.06em;
+    transition: color 0.2s ease;
+    position: relative;
+  }
+  .nav-links a:hover { color:#fff; }
+  .nav-links a::after {
+    content:''; position:absolute; left:0; right:0; bottom:-6px;
+    height:1px; background:#4ab8ff;
+    transform: scaleX(0); transform-origin:left;
+    transition: transform 0.3s ease;
+  }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-right { display:flex; align-items:center; gap:14px; }
+
+  /* Google sign-in button */
+  .btn-google {
+    display:inline-flex; align-items:center; gap:10px;
+    padding: 9px 16px 9px 12px;
+    background: rgba(255,255,255,0.95);
+    color:#1f1f1f;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
+    font-family: inherit;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  }
+  .btn-google:hover {
+    transform: translateY(-1px);
+    background: #ffffff;
+    box-shadow: 0 6px 22px rgba(74,184,255,0.4);
+  }
+  .btn-google svg { width:16px; height:16px; flex-shrink: 0; }
+  .btn-google span { white-space: nowrap; }
+
+  .nav-toggle {
+    display:none;
+    background:none; border:none; color:#e8f2ff;
+    font-size:22px; cursor:pointer; padding:6px;
+  }
+
+  /* ============================================================
+     SCROLL CONTENT
+     ============================================================ */
+  #scroll-space { position: relative; z-index: 3; pointer-events: auto; }
+  section {
+    position: relative;
+    padding: 120px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container { width: 100%; max-width: 1200px; }
+
+  /* ============================================================
+     PARALLAX LAYER
+     ============================================================ */
+  .parallax {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    will-change: transform;
+    transition: transform 0.15s linear;
+  }
+
+  /* Reveal on scroll */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 1s cubic-bezier(0.16,1,0.3,1), transform 1s cubic-bezier(0.16,1,0.3,1);
+    will-change: opacity, transform;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ============================================================
+     TYPOGRAPHY
+     ============================================================ */
+  .eyebrow {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: #4ab8ff;
+    margin-bottom: 20px;
+    padding: 6px 14px;
+    background: rgba(74,184,255,0.08);
+    border: 1px solid rgba(74,184,255,0.22);
+    border-radius: 100px;
+  }
+  h1, h2, h3, h4 { font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: #ffffff; }
+  h1 { font-size: clamp(38px, 6vw, 72px); }
+  h2 { font-size: clamp(28px, 4vw, 48px); margin-bottom: 20px; }
+  h3 { font-size: 20px; margin-bottom: 10px; }
+  h4 { font-size: 15px; margin-bottom: 8px; }
+  p { color: #a8c0d8; font-size: 16px; max-width: 640px; }
+  .lead { font-size: 18px; color: #c8d8e8; }
+  .gradient-text {
+    background: linear-gradient(135deg, #8ad8ff 0%, #4ab8ff 50%, #2a70c8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
+  /* ============================================================
+     BUTTONS
+     ============================================================ */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 30px;
+    border-radius: 100px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, #4ab8ff, #2a70c8);
+    color: #fff;
+    box-shadow: 0 8px 32px rgba(74,184,255,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(74,184,255,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+  .btn-ghost {
+    background: rgba(255,255,255,0.04);
+    color: #e8f2ff;
+    border: 1px solid rgba(74,184,255,0.3);
+    backdrop-filter: blur(10px);
+  }
+  .btn-ghost:hover {
+    background: rgba(74,184,255,0.1);
+    border-color: rgba(74,184,255,0.6);
+    transform: translateY(-2px);
+  }
+  .btn svg { width: 16px; height: 16px; }
+
+  /* ============================================================
+     HERO
+     ============================================================ */
+  #hero { min-height: 100vh; justify-content: center; padding-top: 140px; text-align: center; }
+  #hero .container { display: flex; flex-direction: column; align-items: center; gap: 28px; }
+  #hero h1 { max-width: 900px; }
+  #hero .lead { max-width: 620px; text-align: center; }
+  .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+  .hero-stats {
+    display: flex; gap: 48px; margin-top: 56px;
+    flex-wrap: wrap; justify-content: center;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    display: block;
+    font-size: 32px; font-weight: 700; color: #fff;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #fff, #8ad8ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-stat-label {
+    display: block; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: #6ac8ff; margin-top: 6px;
+  }
+  .scroll-hint {
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    color: #6ac8ff; font-size: 10px; letter-spacing: 0.4em;
+    text-transform: uppercase;
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    opacity: 0.7; animation: floaty 2.5s ease-in-out infinite;
+  }
+  .scroll-hint::after {
+    content:''; width: 1px; height: 28px;
+    background: linear-gradient(to bottom, #6ac8ff, transparent);
+  }
+  @keyframes floaty {
+    0%, 100% { transform: translate(-50%, 0); opacity: 0.7; }
+    50% { transform: translate(-50%, 8px); opacity: 1; }
+  }
+
+  /* ============================================================
+     HOW IT WORKS
+     ============================================================ */
+  #how { text-align: center; }
+  #how .container > p { margin: 0 auto 64px; text-align: center; }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px; position: relative;
+  }
+  .step {
+    padding: 36px 26px;
+    background: linear-gradient(180deg, rgba(14,42,94,0.35) 0%, rgba(5,10,31,0.4) 100%);
+    border: 1px solid rgba(74,184,255,0.14);
+    border-radius: 20px; text-align: left;
+    backdrop-filter: blur(16px);
+    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+  }
+  .step:hover {
+    transform: translateY(-4px);
+    border-color: rgba(74,184,255,0.4);
+    box-shadow: 0 20px 48px -20px rgba(74,184,255,0.4);
+  }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #4ab8ff, #2a70c8);
+    color: #fff; font-size: 14px; font-weight: 700;
+    margin-bottom: 22px;
+    box-shadow: 0 0 24px rgba(74,184,255,0.4);
+  }
+  .step h3 { font-size: 17px; margin-bottom: 10px; }
+  .step p { font-size: 14px; color: #94aec4; line-height: 1.6; }
+
+  /* ============================================================
+     COURSES
+     ============================================================ */
+  #courses { text-align: center; }
+  #courses .container > p { margin: 0 auto 48px; text-align: center; }
+  .tabs {
+    display: flex; justify-content: center; gap: 8px;
+    flex-wrap: wrap; margin-bottom: 48px;
+  }
+  .tab {
+    padding: 10px 22px; border-radius: 100px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(74,184,255,0.15);
+    color: #a8c8e8; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.25s ease;
+    font-family: inherit; letter-spacing: 0.03em;
+  }
+  .tab:hover { color:#fff; border-color: rgba(74,184,255,0.4); }
+  .tab.active {
+    background: linear-gradient(135deg, rgba(74,184,255,0.2), rgba(42,112,200,0.15));
+    border-color: #4ab8ff; color: #fff;
+    box-shadow: 0 0 20px rgba(74,184,255,0.25);
+  }
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px; text-align: left;
+  }
+  .course-card {
+    padding: 28px 24px;
+    background: linear-gradient(180deg, rgba(14,42,94,0.4) 0%, rgba(5,10,31,0.55) 100%);
+    border: 1px solid rgba(74,184,255,0.12);
+    border-radius: 18px; backdrop-filter: blur(16px);
+    position: relative; overflow: hidden;
+    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    cursor: pointer; display: flex; flex-direction: column;
+  }
+  .course-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(74,184,255,0.6), transparent);
+    opacity: 0; transition: opacity 0.4s ease;
+  }
+  .course-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(74,184,255,0.4);
+    box-shadow: 0 28px 60px -22px rgba(74,184,255,0.4);
+  }
+  .course-card:hover::before { opacity: 1; }
+  .course-cat {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6ac8ff; margin-bottom: 14px;
+  }
+  .course-card h3 {
+    font-size: 18px; margin-bottom: 12px;
+    line-height: 1.3; color: #fff;
+  }
+  .course-meta {
+    display: flex; align-items: center; gap: 14px;
+    font-size: 12px; color: #7a94ac; margin-bottom: 20px;
+  }
+  .course-meta svg { width: 13px; height: 13px; opacity: 0.7; }
+  .course-footer {
+    margin-top: auto; padding-top: 20px;
+    border-top: 1px solid rgba(74,184,255,0.1);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .course-price { font-size: 15px; font-weight: 700; color: #fff; }
+  .course-price small {
+    display: block; font-size: 10px; font-weight: 500;
+    color: #6ac8ff; letter-spacing: 0.14em;
+    text-transform: uppercase; margin-bottom: 3px;
+  }
+  .course-free {
+    font-size: 11px; color: #6ac8ff;
+    padding: 4px 10px; background: rgba(74,184,255,0.1);
+    border-radius: 100px; letter-spacing: 0.06em;
+  }
+
+  /* ============================================================
+     PRICING
+     ============================================================ */
+  #pricing { text-align: center; }
+  #pricing .container > p { margin: 0 auto 56px; text-align: center; }
+  .pricing-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px; max-width: 800px; margin: 0 auto;
+  }
+  .price-card {
+    padding: 44px 36px; border-radius: 24px;
+    text-align: left; position: relative; overflow: hidden;
+    transition: transform 0.35s ease;
+  }
+  .price-card.free {
+    background: linear-gradient(180deg, rgba(14,42,94,0.3) 0%, rgba(5,10,31,0.4) 100%);
+    border: 1px solid rgba(74,184,255,0.15);
+    backdrop-filter: blur(16px);
+  }
+  .price-card.paid {
+    background: linear-gradient(180deg, rgba(42,112,200,0.35) 0%, rgba(14,42,94,0.4) 100%);
+    border: 1px solid rgba(74,184,255,0.4);
+    box-shadow: 0 30px 80px -30px rgba(74,184,255,0.5);
+    backdrop-filter: blur(16px);
+  }
+  .price-card.paid::before {
+    content:'MOST POPULAR';
+    position: absolute; top: 18px; right: -32px;
+    background: linear-gradient(135deg, #4ab8ff, #2a70c8);
+    color: #fff; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.2em; padding: 6px 40px;
+    transform: rotate(35deg);
+    box-shadow: 0 4px 14px rgba(74,184,255,0.4);
+  }
+  .price-label {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.28em; text-transform: uppercase;
+    color: #6ac8ff; margin-bottom: 18px;
+  }
+  .price-amount {
+    font-size: 48px; font-weight: 700; color: #fff;
+    line-height: 1; letter-spacing: -0.03em; margin-bottom: 6px;
+  }
+  .price-amount small {
+    font-size: 16px; font-weight: 500; color: #8ab0d0;
+    letter-spacing: 0; margin-left: 6px;
+  }
+  .price-sub { font-size: 13px; color: #8ab0d0; margin-bottom: 28px; }
+  .price-features { list-style: none; margin-bottom: 32px; }
+  .price-features li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 8px 0; font-size: 14px; color: #c8d8e8;
+  }
+  .price-features li::before {
+    content:''; flex-shrink: 0;
+    width: 16px; height: 16px; margin-top: 3px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ab8ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
+  }
+  .price-card .btn { width: 100%; justify-content: center; }
+  .payment-methods {
+    margin-top: 48px; display: flex; justify-content: center;
+    align-items: center; gap: 24px; flex-wrap: wrap;
+    padding-top: 32px; border-top: 1px solid rgba(74,184,255,0.1);
+  }
+  .payment-methods span {
+    font-size: 12px; color: #6a8aa8;
+    letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .payment-methods .pay-badge {
+    padding: 8px 18px;
+    background: rgba(74,184,255,0.08);
+    border: 1px solid rgba(74,184,255,0.2);
+    border-radius: 10px; font-size: 13px;
+    font-weight: 600; color: #e8f2ff;
+    letter-spacing: 0.04em;
+  }
+
+  /* ============================================================
+     FEATURES
+     ============================================================ */
+  #features { text-align: center; }
+  #features .container > p { margin: 0 auto 56px; text-align: center; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px; text-align: left;
+  }
+  .feature {
+    padding: 32px 28px;
+    background: linear-gradient(180deg, rgba(14,42,94,0.28) 0%, rgba(5,10,31,0.4) 100%);
+    border: 1px solid rgba(74,184,255,0.1);
+    border-radius: 18px; backdrop-filter: blur(14px);
+    transition: transform 0.35s ease, border-color 0.35s ease;
+  }
+  .feature:hover { transform: translateY(-4px); border-color: rgba(74,184,255,0.35); }
+  .feature-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(74,184,255,0.15), rgba(42,112,200,0.1));
+    border: 1px solid rgba(74,184,255,0.28);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px; color: #6ac8ff;
+  }
+  .feature-icon svg { width: 22px; height: 22px; }
+  .feature h3 { font-size: 16px; margin-bottom: 8px; }
+  .feature p { font-size: 14px; color: #94aec4; }
+
+  /* ============================================================
+     READY TO START — premium CTA
+     ============================================================ */
+  #cta-band { padding: 140px 40px; }
+
+  .cta-band {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    padding: 88px 64px;
+    border-radius: 32px;
+    text-align: center;
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(74,184,255,0.22), transparent 55%),
+      linear-gradient(180deg, rgba(14,42,94,0.55) 0%, rgba(5,10,31,0.85) 100%);
+    border: 1px solid rgba(74,184,255,0.32);
+    box-shadow:
+      0 60px 140px -50px rgba(74,184,255,0.55),
+      inset 0 1px 0 rgba(255,255,255,0.06);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    isolation: isolate;
+  }
+
+  /* Fine hexagon grid texture */
+  .cta-band::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(74,184,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(74,184,255,0.05) 1px, transparent 1px);
+    background-size: 32px 32px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  /* Top hairline glow */
+  .cta-band::after {
+    content: '';
+    position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
+    background: linear-gradient(90deg, transparent, #4ab8ff, transparent);
+    filter: blur(0.5px);
+  }
+
+  /* Ambient orbs */
+  .cta-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    pointer-events: none;
+    opacity: 0.55;
+    z-index: -1;
+  }
+  .cta-orb-1 {
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(74,184,255,0.65), transparent 70%);
+    top: -120px; left: -100px;
+    animation: orbFloat 14s ease-in-out infinite;
+  }
+  .cta-orb-2 {
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(138,216,255,0.5), transparent 70%);
+    bottom: -100px; right: -80px;
+    animation: orbFloat 18s ease-in-out infinite reverse;
+  }
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, -20px) scale(1.08); }
+  }
+
+  .cta-band .eyebrow { position: relative; }
+  .cta-band h2 {
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto 20px;
+    line-height: 1.1;
+  }
+  .cta-band p.lead {
+    position: relative;
+    max-width: 600px;
+    margin: 0 auto 44px;
+    text-align: center;
+    color: #c8d8e8;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+
+  .cta-actions {
+    position: relative;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 52px;
+  }
+
+  /* Big Google button for CTA */
+  .cta-band .btn-google {
+    padding: 15px 26px 15px 20px;
+    font-size: 14px;
+    border-radius: 100px;
+    box-shadow: 0 10px 32px rgba(0,0,0,0.35);
+  }
+  .cta-band .btn-google svg { width: 20px; height: 20px; }
+
+  /* Perks row */
+  .cta-perks {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px 32px;
+    padding-top: 36px;
+    border-top: 1px solid rgba(74,184,255,0.14);
+    max-width: 780px;
+    margin: 0 auto;
+  }
+  .cta-perk {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #b8cfe4;
+    letter-spacing: 0.02em;
+  }
+  .cta-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(74,184,255,0.16);
+    border: 1px solid rgba(74,184,255,0.4);
+    color: #6ac8ff;
+    font-size: 10px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ============================================================
+     FOOTER
+     ============================================================ */
+  footer {
+    padding: 80px 40px 40px;
+    border-top: 1px solid rgba(74,184,255,0.1);
+    background: linear-gradient(180deg, transparent, rgba(5,10,31,0.6));
+    position: relative;
+    z-index: 3;
+  }
+  .footer-inner { max-width: 1200px; margin: 0 auto; }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px; margin-bottom: 56px;
+  }
+  .footer-brand {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 20px;
+  }
+  .footer-brand img {
+    width: 40px; height: 40px; object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(74,184,255,0.4));
+  }
+  .footer-brand-text { display: flex; flex-direction: column; line-height: 1.05; }
+  .footer-brand-text .brand-name {
+    font-size: 15px; font-weight: 700;
+    letter-spacing: 0.14em; color:#fff;
+  }
+  .footer-brand-text .brand-tag {
+    font-size: 9px; font-weight: 400;
+    letter-spacing: 0.28em; color:#6ac8ff;
+    text-transform: uppercase;
+  }
+  .footer-desc {
+    font-size: 14px; color: #8aa4bc;
+    max-width: 320px; line-height: 1.65;
+  }
+  .footer-col h4 {
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: #6ac8ff; margin-bottom: 20px;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 12px; }
+  .footer-col a {
+    color: #a8c8e8; text-decoration: none;
+    font-size: 14px; transition: color 0.2s ease;
+  }
+  .footer-col a:hover { color: #fff; }
+
+  /* Developer credit band */
+  .footer-dev {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 22px 24px;
+    margin-bottom: 28px;
+    background: linear-gradient(180deg, rgba(14,42,94,0.28) 0%, rgba(5,10,31,0.45) 100%);
+    border: 1px solid rgba(74,184,255,0.14);
+    border-radius: 16px;
+    font-size: 13px;
+    color: #8aa4bc;
+    letter-spacing: 0.04em;
+    text-align: center;
+    backdrop-filter: blur(14px);
+    flex-wrap: wrap;
+  }
+  .footer-dev-label {
+    text-transform: uppercase;
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    color: #5a7a9a;
+    font-weight: 600;
+  }
+  .footer-dev a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #8ad8ff;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    padding: 6px 14px;
+    background: rgba(74,184,255,0.08);
+    border: 1px solid rgba(74,184,255,0.28);
+    border-radius: 100px;
+    transition: all 0.25s ease;
+  }
+  .footer-dev a:hover {
+    color: #fff;
+    background: rgba(74,184,255,0.18);
+    border-color: #4ab8ff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(74,184,255,0.35);
+  }
+  .footer-dev a::after {
+    content: '↗';
+    font-size: 12px;
+    opacity: 0.75;
+    transition: transform 0.25s ease;
+  }
+  .footer-dev a:hover::after { transform: translate(2px, -2px); }
+
+  .footer-bottom {
+    padding-top: 32px;
+    border-top: 1px solid rgba(74,184,255,0.08);
+    display: flex; justify-content: space-between;
+    align-items: center; gap: 20px; flex-wrap: wrap;
+    font-size: 13px; color: #6a8aa8;
+  }
+  .footer-bottom-links { display: flex; gap: 24px; }
+  .footer-bottom-links a {
+    color: #6a8aa8; text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .footer-bottom-links a:hover { color: #6ac8ff; }
+
+  /* ============================================================
+     LOADING & FALLBACK
+     ============================================================ */
+  .webgl-fallback {
+    position:fixed; inset:0; display:none;
+    align-items:center; justify-content:center;
+    background:#020a1a; color:#a8c8e8;
+    font-size:1rem; text-align:center;
+    padding:2rem; z-index:50;
+  }
   .webgl-fallback span { max-width:80%; line-height:1.7; }
-  .loading-indicator { position:fixed; bottom:40px; left:50%; transform:translateX(-50%);
-    color:#ffffff; text-shadow:0 1px 3px rgba(0,0,0,0.4);
-    font-size:0.72rem; letter-spacing:0.4em; text-transform:uppercase;
-    z-index:5; pointer-events:none; opacity:0.9; transition:opacity 1.2s; }
-  .loading-indicator.hidden { opacity:0; }
-  #vignette { position:fixed; inset:0; z-index:2; pointer-events:none;
-    background: radial-gradient(ellipse at 50% 55%, transparent 55%, rgba(0,5,20,0.55) 130%); }
+  #loader {
+    position:fixed; inset:0; background:#050a1f;
+    z-index:100; display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:24px;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+  #loader.hidden { opacity:0; visibility:hidden; pointer-events:none; }
+  #loader img {
+    width: 72px; height: 72px; object-fit: contain;
+    filter: drop-shadow(0 0 24px rgba(74,184,255,0.6));
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.8; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.06); }
+  }
+  #loader .loading-bar {
+    width: 160px; height: 2px;
+    background: rgba(74,184,255,0.15);
+    border-radius: 100px; overflow: hidden;
+    position: relative;
+  }
+  #loader .loading-bar::after {
+    content:''; position:absolute;
+    left:0; top:0; bottom:0; width: 40%;
+    background: linear-gradient(90deg, transparent, #4ab8ff, transparent);
+    animation: barSlide 1.5s ease-in-out infinite;
+  }
+  @keyframes barSlide {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(350%); }
+  }
+  #loader .loading-text {
+    font-size: 11px; letter-spacing: 0.4em;
+    text-transform: uppercase; color: #4ab8ff;
+  }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 900px) {
+    .nav-links { display: none; }
+    .nav-toggle { display: block; }
+    .nav-right .btn-google span { display: none; }
+    .nav-right .btn-google { padding: 9px; border-radius: 50%; }
+    .nav-right .btn-google svg { width: 18px; height: 18px; }
+    .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+    .footer-brand-col { grid-column: 1 / -1; }
+    .cta-band { padding: 64px 36px; }
+    #cta-band { padding: 100px 24px; }
+  }
+  @media (max-width: 640px) {
+    section { padding: 80px 20px; }
+    #nav { padding: 14px 20px; }
+    #hero { padding-top: 120px; }
+    .hero-stats { gap: 28px; }
+    .hero-stat-num { font-size: 26px; }
+    .price-card { padding: 36px 26px; }
+    .cta-band { padding: 52px 24px; border-radius: 24px; }
+    #cta-band { padding: 80px 18px; }
+    .cta-band h2 { font-size: 28px; }
+    .cta-band p.lead { font-size: 15px; margin-bottom: 32px; }
+    .cta-actions { gap: 10px; }
+    .cta-band .btn-google,
+    .cta-band .btn { padding: 13px 20px; font-size: 13px; width: 100%; justify-content: center; }
+    .cta-perks { gap: 10px 20px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .footer-bottom { flex-direction: column; text-align: center; }
+    .course-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.001ms !important; transition-duration: 0.15s !important; }
+    .reveal { opacity: 1; transform: none; }
+    .parallax { transform: none !important; }
+  }
 </style>
 </head>
 <body>
+
+<!-- ============================================================
+     LOADER
+     ============================================================ -->
+<div id="loader">
+  <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="ISHURI ONLINE">
+  <div class="loading-bar"></div>
+  <div class="loading-text">Loading Atmosphere</div>
+</div>
+
+<!-- ============================================================
+     3D CANVAS + VIGNETTE
+     ============================================================ -->
 <div id="canvas-container"></div>
 <div id="vignette"></div>
-<div id="scroll-space"></div>
-<div class="loading-indicator" id="loading-indicator">Loading atmosphere</div>
 
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav id="nav">
+  <a href="#hero" class="nav-brand">
+    <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="ISHURI ONLINE Logo">
+    <div class="nav-brand-text">
+      <span class="brand-name">ISHURI</span>
+      <span class="brand-tag">Online</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How it Works</a></li>
+    <li><a href="#courses">Courses</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#features">Platform</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn-google" id="navGoogle">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+      </svg>
+      <span>Sign in</span>
+    </button>
+    <button class="nav-toggle" aria-label="Menu">☰</button>
+  </div>
+</nav>
+
+<!-- ============================================================
+     SCROLL CONTENT
+     ============================================================ -->
+<main id="scroll-space">
+
+  <!-- ==================== HERO ==================== -->
+  <section id="hero">
+    <div class="parallax" data-depth="14">
+      <div class="container reveal">
+        <span class="eyebrow">Learn Anything · Anytime · Anywhere</span>
+        <h1>Knowledge grows with <span class="gradient-text">every lesson.</span></h1>
+        <p class="lead">Access affordable, mobile-friendly online courses built for Rwanda and beyond. Study introductory lessons free — unlock the rest for just 1,000 RWF per course.</p>
+        <div class="hero-ctas">
+          <a href="#courses" class="btn btn-primary">
+            Browse Courses
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <a href="#how" class="btn btn-ghost">See How It Works</a>
+        </div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-num">14+</span>
+            <span class="hero-stat-label">Courses</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">4</span>
+            <span class="hero-stat-label">Categories</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">1,000</span>
+            <span class="hero-stat-label">RWF / Course</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">Free</span>
+            <span class="hero-stat-label">Intro Lessons</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint">Scroll</div>
+  </section>
+
+  <!-- ==================== HOW IT WORKS ==================== -->
+  <section id="how">
+    <div class="parallax" data-depth="10">
+      <div class="container reveal">
+        <span class="eyebrow">Simple Process</span>
+        <h2>How Ishuri Online Works</h2>
+        <p class="lead">Start learning for free. Pay only when you're ready to unlock the full course — securely, with MTN MoMo or Airtel Money.</p>
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">1</div>
+            <h3>Create Your Account</h3>
+            <p>Sign in with Google in one tap. Access your learning from any phone, tablet, or computer.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">2</div>
+            <h3>Study Free Lessons</h3>
+            <p>Every course opens with introductory lessons at no cost. Explore the content and see if it's right for you.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">3</div>
+            <h3>Pay 1,000 RWF</h3>
+            <p>Pay securely with MTN Mobile Money or Airtel Money. Your payment is verified on our server before access is granted.</p>
+          </div>
+          <div class="step">
+            <div class="step-num">4</div>
+            <h3>Unlock Forever</h3>
+            <p>Once verified, every lesson in the course is yours permanently — from any device, whenever you log in.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== COURSES ==================== -->
+  <section id="courses">
+    <div class="parallax" data-depth="8">
+      <div class="container reveal">
+        <span class="eyebrow">Course Catalog</span>
+        <h2>14 Courses. Four Paths. One Goal.</h2>
+        <p class="lead">Practical, job-ready skills across technology, business, career, and everyday life. Free intro lessons in every course.</p>
+
+        <div class="tabs" id="tabs">
+          <button class="tab active" data-cat="all">All Courses</button>
+          <button class="tab" data-cat="tech">Technology &amp; Digital</button>
+          <button class="tab" data-cat="business">Business &amp; Finance</button>
+          <button class="tab" data-cat="career">Career Skills</button>
+          <button class="tab" data-cat="life">Life Skills</button>
+        </div>
+
+        <div class="course-grid" id="courseGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PRICING ==================== -->
+  <section id="pricing">
+    <div class="parallax" data-depth="10">
+      <div class="container reveal">
+        <span class="eyebrow">Simple Pricing</span>
+        <h2>Fair, Transparent, Affordable.</h2>
+        <p class="lead">No subscriptions. No hidden fees. Just pay once per course when you're ready to continue.</p>
+
+        <div class="pricing-cards">
+          <div class="price-card free">
+            <div class="price-label">Free Access</div>
+            <div class="price-amount">0<small>RWF</small></div>
+            <div class="price-sub">Try before you buy</div>
+            <ul class="price-features">
+              <li>Sign in with Google — one tap</li>
+              <li>Introductory lessons in every course</li>
+              <li>Browse the full course catalog</li>
+              <li>Mobile-friendly learning</li>
+              <li>Progress tracking setup</li>
+            </ul>
+            <button class="btn btn-ghost" id="freeGoogle">Sign in with Google</button>
+          </div>
+
+          <div class="price-card paid">
+            <div class="price-label">Full Course Access</div>
+            <div class="price-amount">1,000<small>RWF</small></div>
+            <div class="price-sub">Per course · One-time payment</div>
+            <ul class="price-features">
+              <li>All lessons in the course</li>
+              <li>Written lessons and video content</li>
+              <li>Online quizzes with auto-grading</li>
+              <li>Progress tracking and dashboard</li>
+              <li>Permanent access — no renewal</li>
+              <li>Access from any device after login</li>
+            </ul>
+            <a href="#" class="btn btn-primary">
+              Pay with Mobile Money
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="payment-methods">
+          <span>Secure payment via</span>
+          <div class="pay-badge">MTN MoMo</div>
+          <div class="pay-badge">Airtel Money</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FEATURES ==================== -->
+  <section id="features">
+    <div class="parallax" data-depth="10">
+      <div class="container reveal">
+        <span class="eyebrow">The Platform</span>
+        <h2>Everything You Need to Learn and Grow.</h2>
+        <p class="lead">A complete learning environment — written lessons, videos, quizzes, progress tracking, and a personal dashboard.</p>
+
+        <div class="features-grid">
+          <div class="feature">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+            </div>
+            <h3>Written Lessons</h3>
+            <p>Structured educational content with examples, lists, and downloadable resources for every module.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+            </div>
+            <h3>Educational Videos</h3>
+            <p>Watch instructors explain concepts step by step. Video content is delivered securely to your account.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+            </div>
+            <h3>Online Quizzes</h3>
+            <p>Test your understanding with automatically graded quizzes. See your score instantly and track your growth.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
+            <h3>Progress Tracking</h3>
+            <p>See how far you've come in every course. Resume exactly where you stopped, on any device.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
+            <h3>Student Dashboard</h3>
+            <p>Manage your courses, purchases, quiz history, and account details all in one clean personal space.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            </div>
+            <h3>Mobile First</h3>
+            <p>Built for Rwanda's learners. Works beautifully on smartphones, tablets, and desktop computers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== READY TO START — premium CTA ==================== -->
+  <section id="cta-band">
+    <div class="parallax" data-depth="16">
+      <div class="cta-band reveal">
+        <div class="cta-orb cta-orb-1"></div>
+        <div class="cta-orb cta-orb-2"></div>
+
+        <span class="eyebrow">Ready to Begin?</span>
+        <h2>Your next lesson is <span class="gradient-text">one scroll away.</span></h2>
+        <p class="lead">Join learners across Rwanda studying practical skills at their own pace — free to start, 1,000 RWF to unlock, yours forever.</p>
+
+        <div class="cta-actions">
+          <button class="btn-google" id="ctaGoogle">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Sign in with Google
+          </button>
+          <a href="#courses" class="btn btn-primary">
+            Explore Courses
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+        </div>
+
+        <div class="cta-perks">
+          <div class="cta-perk"><span class="cta-check">✓</span> Free intro lessons</div>
+          <div class="cta-perk"><span class="cta-check">✓</span> 1,000 RWF per course</div>
+          <div class="cta-perk"><span class="cta-check">✓</span> MTN MoMo &amp; Airtel Money</div>
+          <div class="cta-perk"><span class="cta-check">✓</span> Permanent access</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer id="contact">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <div class="footer-brand">
+            <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="ISHURI ONLINE">
+            <div class="footer-brand-text">
+              <span class="brand-name">ISHURI</span>
+              <span class="brand-tag">Online</span>
+            </div>
+          </div>
+          <p class="footer-desc">Affordable, accessible online learning for Rwanda and beyond. Pay 1,000 RWF per course with mobile money — free intro lessons in every course.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Learn</h4>
+          <ul>
+            <li><a href="#courses">All Courses</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#how">How It Works</a></li>
+            <li><a href="#features">Platform</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Categories</h4>
+          <ul>
+            <li><a href="#courses">Technology</a></li>
+            <li><a href="#courses">Business</a></li>
+            <li><a href="#courses">Career</a></li>
+            <li><a href="#courses">Life Skills</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <ul>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Help Center</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Developer credit -->
+      <div class="footer-dev">
+        <span class="footer-dev-label">Organization Developer</span>
+        <a href="https://imena-lab.vercel.app" target="_blank" rel="noopener noreferrer">iMENA Lab</a>
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2025 ISHURI ONLINE. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Cookies</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+</main>
+
+<!-- ============================================================
+     WEBGL FALLBACK
+     ============================================================ -->
+<div class="webgl-fallback" id="webglFallback">
+  <span>ISHURI ONLINE<br><br><small>Your browser does not support WebGL. Some visual effects will be disabled, but you can still explore the full website.</small></span>
+</div>
+
+<!-- ============================================================
+     3D ATMOSPHERE
+     ============================================================ -->
 <script type="importmap">
 {
   "imports": {
@@ -43,9 +1225,6 @@ import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
-// ============================================================
-// CONFIG
-// ============================================================
 const CONFIG = {
   maxPixelRatio: 2,
   bloomStrength: 0.55,
@@ -68,9 +1247,6 @@ if (isMobile) {
   CONFIG.techLineCount = 4;
 }
 
-// ============================================================
-// STATE
-// ============================================================
 let scene, camera, renderer, composer;
 const clock = new THREE.Clock();
 let scrollProgress = 0, smoothScroll = 0, isPaused = false;
@@ -97,9 +1273,6 @@ const PAL = {
   dot:        new THREE.Color(0x6ac8ff)
 };
 
-// ============================================================
-// WEBGL CHECK
-// ============================================================
 function webglAvailable() {
   try {
     const c = document.createElement('canvas');
@@ -107,15 +1280,14 @@ function webglAvailable() {
   } catch(e) { return false; }
 }
 function showFallback(msg) {
-  const c = document.getElementById('canvas-container'); c.innerHTML = '';
-  const fb = document.createElement('div'); fb.className = 'webgl-fallback';
-  fb.innerHTML = `<span>ISHURI ONLINE<br><br><small>${msg}</small></span>`;
-  document.body.appendChild(fb);
+  const fb = document.getElementById('webglFallback');
+  if (fb) {
+    fb.style.display = 'flex';
+    const small = fb.querySelector('small');
+    if (small && msg) small.textContent = msg;
+  }
 }
 
-// ============================================================
-// SCENE INIT
-// ============================================================
 function initScene() {
   if (!webglAvailable()) { showFallback('WebGL not available.'); return false; }
 
@@ -156,9 +1328,6 @@ function initScene() {
   return true;
 }
 
-// ============================================================
-// SKY — deep tech atmosphere
-// ============================================================
 function buildSky() {
   const skyGeo = new THREE.SphereGeometry(900, 64, 48);
   skyMaterial = new THREE.ShaderMaterial({
@@ -230,9 +1399,6 @@ function buildSky() {
   scene.add(sky);
 }
 
-// ============================================================
-// GROUND
-// ============================================================
 function buildGround() {
   const geo = new THREE.PlaneGeometry(3000, 3000, 80, 80);
   const pos = geo.attributes.position.array;
@@ -281,9 +1447,6 @@ function buildGround() {
   scene.add(fill);
 }
 
-// ============================================================
-// HEXAGON PANELS
-// ============================================================
 function buildHexPanels() {
   const hexGeo = new THREE.RingGeometry(1.4, 1.55, 6);
   const fillGeo = new THREE.CircleGeometry(1.4, 6);
@@ -292,23 +1455,15 @@ function buildHexPanels() {
     const group = new THREE.Group();
 
     const ringMat = new THREE.MeshBasicMaterial({
-      color: PAL.hex,
-      transparent: true,
-      opacity: 0.75,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-      depthWrite: false
+      color: PAL.hex, transparent: true, opacity: 0.75,
+      blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false
     });
     const ring = new THREE.Mesh(hexGeo, ringMat);
     group.add(ring);
 
     const fillMat = new THREE.MeshBasicMaterial({
-      color: PAL.hexDim,
-      transparent: true,
-      opacity: 0.16,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
-      depthWrite: false
+      color: PAL.hexDim, transparent: true, opacity: 0.16,
+      blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false
     });
     const fill = new THREE.Mesh(fillGeo, fillMat);
     fill.position.z = -0.001;
@@ -318,7 +1473,6 @@ function buildHexPanels() {
     const r = 35 + Math.random() * 85;
     const h = 3 + Math.random() * 55;
     group.position.set(Math.cos(a) * r, h, Math.sin(a) * r);
-
     group.lookAt(0, group.position.y, 0);
     group.rotateZ(Math.random() * Math.PI * 2);
 
@@ -336,9 +1490,6 @@ function buildHexPanels() {
   }
 }
 
-// ============================================================
-// NETWORK NODES
-// ============================================================
 function buildNetwork() {
   const positions = [];
   for (let i = 0; i < CONFIG.nodeCount; i++) {
@@ -351,11 +1502,8 @@ function buildNetwork() {
   const nodeGeo = new THREE.SphereGeometry(0.18, 8, 8);
   for (let i = 0; i < positions.length; i++) {
     const mat = new THREE.MeshBasicMaterial({
-      color: PAL.node,
-      transparent: true,
-      opacity: 0.95,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
+      color: PAL.node, transparent: true, opacity: 0.95,
+      blending: THREE.AdditiveBlending, depthWrite: false
     });
     const node = new THREE.Mesh(nodeGeo, mat);
     node.position.copy(positions[i]);
@@ -367,11 +1515,8 @@ function buildNetwork() {
   }
 
   const edgeMat = new THREE.LineBasicMaterial({
-    color: PAL.hex,
-    transparent: true,
-    opacity: 0.18,
-    blending: THREE.AdditiveBlending,
-    depthWrite: false
+    color: PAL.hex, transparent: true, opacity: 0.18,
+    blending: THREE.AdditiveBlending, depthWrite: false
   });
 
   const connectionRadius = 32;
@@ -401,9 +1546,6 @@ function buildNetwork() {
   scene.userData.networkEdges = edgeMat;
 }
 
-// ============================================================
-// WAVE RIBBONS
-// ============================================================
 function buildWaveRibbons() {
   for (let w = 0; w < CONFIG.waveRibbonCount; w++) {
     const segments = 200;
@@ -438,10 +1580,8 @@ function buildWaveRibbons() {
     ribbonGeo.setIndex(indices);
 
     const mat = new THREE.ShaderMaterial({
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      side: THREE.DoubleSide,
+      transparent: true, depthWrite: false,
+      blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
       uniforms: {
         uTime:    { value: 0 },
         uColor:   { value: PAL.wave },
@@ -498,15 +1638,11 @@ function buildWaveRibbons() {
   }
 }
 
-// ============================================================
-// DOT CLUSTERS
-// ============================================================
 function buildDotClusters() {
   const dotGeo = new THREE.SphereGeometry(0.14, 6, 6);
 
   for (let c = 0; c < CONFIG.dataDotClusters; c++) {
     const clusterGeoPositions = [];
-
     const gridW = 8, gridH = 5;
     const origin = new THREE.Vector3(
       (Math.random() - 0.5) * 120,
@@ -527,11 +1663,8 @@ function buildDotClusters() {
     }
 
     const clusterMesh = new THREE.InstancedMesh(dotGeo, new THREE.MeshBasicMaterial({
-      color: PAL.dot,
-      transparent: true,
-      opacity: 0.9,
-      blending: THREE.AdditiveBlending,
-      depthWrite: false
+      color: PAL.dot, transparent: true, opacity: 0.9,
+      blending: THREE.AdditiveBlending, depthWrite: false
     }), clusterGeoPositions.length);
 
     clusterGeoPositions.forEach((p, i) => {
@@ -550,19 +1683,11 @@ function buildDotClusters() {
   }
 }
 
-// ============================================================
-// TECH ARCS
-// ============================================================
 function buildTechArcs() {
   const lineMat = new THREE.ShaderMaterial({
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    side: THREE.DoubleSide,
-    uniforms: {
-      uTime:  { value: 0 },
-      uColor: { value: PAL.hex }
-    },
+    transparent: true, depthWrite: false,
+    blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+    uniforms: { uTime: { value: 0 }, uColor: { value: PAL.hex } },
     vertexShader: `
       varying vec2 vUv;
       void main() {
@@ -598,9 +1723,7 @@ function buildTechArcs() {
       const ang = startA + span * t;
       const h = Math.sin(t * Math.PI) * altitude * 0.4 + altitude * 0.6;
       points.push(new THREE.Vector3(
-        Math.cos(ang) * radius,
-        h,
-        Math.sin(ang) * radius
+        Math.cos(ang) * radius, h, Math.sin(ang) * radius
       ));
     }
     const curve = new THREE.CatmullRomCurve3(points);
@@ -611,9 +1734,6 @@ function buildTechArcs() {
   }
 }
 
-// ============================================================
-// CAMERA PATH
-// ============================================================
 function setupCameraPath() {
   const positions = [
     new THREE.Vector3(0, 10, 70),
@@ -643,9 +1763,6 @@ function setupCameraPath() {
   lookAtPath = new THREE.CatmullRomCurve3(looks, false, 'catmullrom', 0.5);
 }
 
-// ============================================================
-// SCROLL / RESIZE
-// ============================================================
 function setupScroll() {
   const update = () => {
     const top = window.scrollY || document.documentElement.scrollTop;
@@ -670,9 +1787,6 @@ function onWindowResize() {
   }
 }
 
-// ============================================================
-// ANIMATE
-// ============================================================
 function animate() {
   requestAnimationFrame(animate);
   if (isPaused) return;
@@ -737,9 +1851,6 @@ function animate() {
   composer ? composer.render() : renderer.render(scene, camera);
 }
 
-// ============================================================
-// INIT
-// ============================================================
 function init() {
   if (!initScene()) return;
   setupScroll();
@@ -749,8 +1860,8 @@ function init() {
     if (!isPaused) clock.getDelta();
   });
 
-  const indicator = document.getElementById('loading-indicator');
-  if (indicator) setTimeout(() => indicator.classList.add('hidden'), 800);
+  const loader = document.getElementById('loader');
+  if (loader) setTimeout(() => loader.classList.add('hidden'), 500);
 
   animate();
 
@@ -761,11 +1872,176 @@ function init() {
     scene, camera, renderer,
     ready: true
   };
-  console.log('ISHURI ONLINE · Tech Atmosphere ready');
+  console.log('ISHURI ONLINE · Atmosphere + Website ready');
 }
 document.readyState === 'loading'
   ? document.addEventListener('DOMContentLoaded', init)
   : init();
 </script>
+
+<!-- ============================================================
+     WEBSITE INTERACTIONS
+     ============================================================ -->
+<script>
+(function() {
+  // ---- Course data (14 courses after removals) ----
+  const COURSES = [
+    // Technology & Digital Skills (5)
+    { title:'Advanced Microsoft Excel', cat:'tech', modules:8 },
+    { title:'Microsoft Word', cat:'tech', modules:6 },
+    { title:'Microsoft PowerPoint', cat:'tech', modules:5 },
+    { title:'Google Workspace', cat:'tech', modules:5 },
+    { title:'Power BI & Data Analysis', cat:'tech', modules:7 },
+    // Business, Finance & Entrepreneurship (5)
+    { title:'Accounting & Bookkeeping', cat:'business', modules:7 },
+    { title:'Personal Finance & Budgeting', cat:'business', modules:5 },
+    { title:'Entrepreneurship & Business Planning', cat:'business', modules:7 },
+    { title:'Digital Marketing', cat:'business', modules:7 },
+    { title:'Network Marketing & MLM', cat:'business', modules:7 },
+    // Career Development & Professional Skills (3)
+    { title:'CV Writing & Job Readiness', cat:'career', modules:6 },
+    { title:'AI for Everyday Work', cat:'career', modules:6 },
+    { title:'Computer Basics & Digital Literacy', cat:'career', modules:5 },
+    // Life Skills (1)
+    { title:'Basic First Aid & Personal Safety', cat:'life', modules:5 }
+  ];
+
+  const CAT_LABEL = {
+    tech: 'Technology',
+    business: 'Business',
+    career: 'Career',
+    life: 'Life Skills'
+  };
+
+  const ICON_MODULES = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>';
+  const ICON_DURATION = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
+
+  const grid = document.getElementById('courseGrid');
+  function renderCourses(filter) {
+    const list = filter === 'all'
+      ? COURSES
+      : COURSES.filter(c => c.cat === filter);
+
+    grid.innerHTML = list.map((c, i) => `
+      <div class="course-card" style="animation-delay:${i*30}ms">
+        <span class="course-cat">${CAT_LABEL[c.cat]}</span>
+        <h3>${c.title}</h3>
+        <div class="course-meta">
+          <span>${ICON_MODULES} ${c.modules} Modules</span>
+          <span>${ICON_DURATION} Self-paced</span>
+        </div>
+        <div class="course-footer">
+          <div class="course-price">
+            <small>Full access</small>
+            1,000 RWF
+          </div>
+          <span class="course-free">Free intro</span>
+        </div>
+      </div>
+    `).join('');
+  }
+  renderCourses('all');
+
+  // ---- Tabs ----
+  const tabs = document.querySelectorAll('#tabs .tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderCourses(tab.dataset.cat);
+    });
+  });
+
+  // ---- Reveal on scroll ----
+  const revealEls = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    revealEls.forEach(el => io.observe(el));
+  } else {
+    revealEls.forEach(el => el.classList.add('visible'));
+  }
+
+  // ---- UI PARALLAX (moves subtly with 3D background) ----
+  const parallaxLayers = document.querySelectorAll('.parallax[data-depth]');
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reducedMotion && parallaxLayers.length) {
+    let rafId = null;
+    const updateParallax = () => {
+      const vh = window.innerHeight;
+      parallaxLayers.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        // -1 (above viewport) → 0 (centered) → 1 (below viewport)
+        const center = rect.top + rect.height / 2;
+        const progress = (center - vh / 2) / vh;
+        const depth = parseFloat(el.dataset.depth) || 10;
+        // Subtle Y offset — content drifts opposite the camera for a floating-in-3D feel
+        const y = progress * depth;
+        // Fade-out hint as section moves off-center (max ±2% scale)
+        const scale = 1 - Math.min(Math.abs(progress), 1) * 0.012;
+        el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+      });
+      rafId = requestAnimationFrame(updateParallax);
+    };
+    rafId = requestAnimationFrame(updateParallax);
+    window.addEventListener('visibilitychange', () => {
+      if (document.hidden && rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      } else if (!document.hidden && !rafId) {
+        rafId = requestAnimationFrame(updateParallax);
+      }
+    });
+  }
+
+  // ---- Nav scroll state ----
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 40) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // ---- Smooth anchor scroll ----
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href');
+      if (id.length > 1) {
+        const target = document.querySelector(id);
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+  });
+
+  // ---- Google sign-in placeholder ----
+  const googleButtons = [
+    document.getElementById('navGoogle'),
+    document.getElementById('freeGoogle'),
+    document.getElementById('ctaGoogle')
+  ].filter(Boolean);
+
+  googleButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      // TODO: wire to actual Google OAuth endpoint when backend is ready.
+      // Example: window.location.href = '/api/auth/google';
+      console.log('Google sign-in clicked — awaiting backend OAuth integration.');
+      btn.style.transform = 'scale(0.97)';
+      setTimeout(() => { btn.style.transform = ''; }, 120);
+    });
+  });
+})();
+</script>
+
 </body>
 </html>
