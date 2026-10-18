@@ -2,81 +2,115 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Learning · ISHURI ONLINE</title>
 <link rel="icon" href="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png">
 <style>
-  :root { color-scheme: dark; --bg: #050a1f; --panel: #0a162e; --line: rgba(105,170,231,.15); --text: #eef6ff; --muted: #8da4c1; --cyan: #4ab8ff; }
+  :root { 
+    color-scheme: dark; 
+    --bg: #050a1f; 
+    --panel: #0a162e; 
+    --line: rgba(105,170,231,.15); 
+    --text: #eef6ff; 
+    --muted: #8da4c1; 
+    --cyan: #4ab8ff; 
+    --green: #72e2c0;
+    --gold: #ffb877;
+  }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 Inter, system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; -webkit-text-size-adjust: 100%; }
   
   /* SIDEBAR / SYLLABUS */
-  .sidebar { width: 320px; background: rgba(5,11,29,.95); border-right: 1px solid var(--line); display: flex; flex-direction: column; z-index: 10; }
-  .brand { padding: 24px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; font-weight: 800; letter-spacing: .1em; font-size: 13px; }
+  .sidebar { width: 320px; background: rgba(5,11,29,.95); border-right: 1px solid var(--line); display: flex; flex-direction: column; z-index: 10; transition: transform 0.3s ease; }
+  .sidebar-header { padding: 24px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; font-weight: 800; letter-spacing: .1em; font-size: 13px; }
   .brand img { width: 30px; }
   .syllabus { flex: 1; overflow-y: auto; padding: 20px; }
-  .module-title { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: .1em; margin: 20px 0 10px; }
-  .lesson-link { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13px; margin-bottom: 4px; transition: .2s; cursor: pointer; border: 1px solid transparent; }
-  .lesson-link:hover { background: rgba(74,184,255,.05); color: #fff; }
-  .lesson-link.active { background: rgba(74,184,255,.15); color: #fff; border-color: rgba(74,184,255,.3); font-weight: 600; }
-  .lesson-link.completed .icon { background: #72e2c0; color: #041326; }
-  .icon { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; border: 1px solid var(--line); flex-shrink: 0; }
+  .module-title { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: .1em; margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
+  .module-title::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .lesson-link { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 10px; color: var(--muted); text-decoration: none; font-size: 14px; margin-bottom: 6px; transition: .2s; cursor: pointer; border: 1px solid transparent; background: rgba(255,255,255,.02); }
+  .lesson-link:hover { background: rgba(74,184,255,.08); color: #fff; }
+  .lesson-link.active { background: rgba(74,184,255,.15); color: #fff; border-color: rgba(74,184,255,.4); font-weight: 600; box-shadow: 0 4px 15px rgba(74,184,255,.1); }
+  .lesson-link.completed .icon { background: var(--green); color: #041326; border-color: var(--green); }
+  .icon { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; border: 1px solid var(--line); flex-shrink: 0; transition: .2s; }
   .lesson-link.active .icon { border-color: var(--cyan); background: var(--cyan); color: #041326; }
 
   /* MAIN CONTENT */
   .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(ellipse at top right, rgba(40,117,198,.1), transparent 50%), var(--bg); }
   
   /* PROGRESS HEADER */
-  .topbar { height: 70px; background: rgba(5,10,31,.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; flex-shrink: 0; }
-  .progress-container { flex: 1; max-width: 500px; }
-  .progress-text { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
-  .progress-bar { height: 6px; background: #162746; border-radius: 99px; overflow: hidden; }
-  .progress-bar div { height: 100%; background: linear-gradient(90deg, #2987e7, #69d0ff); border-radius: 99px; transition: width .4s ease; }
-  .btn-quiz { background: linear-gradient(135deg, #ffb877, #ff9a5c); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(255,184,119,.3); transition: .2s; }
-  .btn-quiz:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,184,119,.4); }
+  .topbar { min-height: 70px; background: rgba(5,10,31,.85); backdrop-filter: blur(15px); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 10px 32px; flex-shrink: 0; flex-wrap: wrap; gap: 10px; z-index: 5; }
+  .progress-container { flex: 1; min-width: 200px; max-width: 500px; }
+  .progress-text { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
+  .progress-bar { height: 8px; background: #162746; border-radius: 99px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.5); }
+  .progress-bar div { height: 100%; background: linear-gradient(90deg, #2987e7, var(--cyan)); border-radius: 99px; transition: width .5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(74,184,255,.5); }
+  
+  .btn-quiz { background: linear-gradient(135deg, var(--gold), #ff9a5c); color: #000; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(255,184,119,.3); transition: .2s; display: flex; align-items: center; gap: 8px; }
+  .btn-quiz:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,184,119,.5); }
 
   /* LESSON AREA */
   .content-scroll { flex: 1; overflow-y: auto; padding: 40px; scroll-behavior: smooth; }
-  .lesson-wrapper { max-width: 800px; margin: 0 auto; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,.2); }
-  .lesson-wrapper h1 { font-size: 32px; margin: 0 0 20px; letter-spacing: -.03em; }
-  .lesson-wrapper p { color: #c8d8e8; font-size: 16px; line-height: 1.8; margin-bottom: 24px; }
-  .lesson-wrapper img { width: 100%; border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--line); }
-  .lesson-wrapper blockquote { border-left: 4px solid var(--cyan); background: rgba(74,184,255,.05); padding: 20px; border-radius: 0 12px 12px 0; margin: 24px 0; color: #fff; font-style: italic; }
+  .lesson-wrapper { max-width: 800px; margin: 0 auto; background: linear-gradient(180deg, rgba(10,22,46,1) 0%, rgba(5,10,31,1) 100%); border: 1px solid var(--line); border-radius: 24px; padding: 48px; box-shadow: 0 20px 50px rgba(0,0,0,.3); position: relative; overflow: hidden; }
+  .lesson-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--cyan), var(--green)); }
   
-  .lesson-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); }
-  .btn { padding: 12px 24px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: .2s; }
-  .btn-primary { background: var(--cyan); color: #041326; }
-  .btn-primary:hover { background: #89dcff; }
+  .lesson-tag { display: inline-block; background: rgba(74,184,255,.1); color: var(--cyan); padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 20px; }
+  .lesson-wrapper h1 { font-size: 36px; margin: 0 0 24px; letter-spacing: -.03em; line-height: 1.2; }
+  .lesson-wrapper p { color: #c8d8e8; font-size: 17px; line-height: 1.8; margin-bottom: 24px; }
+  .lesson-wrapper img { width: 100%; height: 300px; object-fit: cover; border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+  
+  /* PRACTICAL EXAMPLE BLOCK */
+  .practical-block { background: rgba(114, 226, 192, 0.05); border-left: 4px solid var(--green); padding: 24px; border-radius: 0 16px 16px 0; margin: 30px 0; }
+  .practical-block h4 { color: var(--green); margin: 0 0 10px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+  .practical-block p { margin: 0; color: #b8cfe4; font-size: 15px; }
+
+  .lesson-wrapper blockquote { background: rgba(74,184,255,.05); padding: 20px; border-radius: 12px; margin: 24px 0; color: #fff; font-style: italic; border: 1px solid rgba(74,184,255,.2); }
+  
+  .lesson-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); gap: 15px; }
+  .btn { padding: 14px 28px; border-radius: 10px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; transition: .2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: 1; }
+  .btn-primary { background: var(--cyan); color: #041326; box-shadow: 0 4px 15px rgba(74,184,255,.3); }
+  .btn-primary:hover { background: #89dcff; transform: translateY(-2px); }
   .btn-ghost { background: rgba(255,255,255,.05); color: #fff; border: 1px solid var(--line); }
   .btn-ghost:hover { background: rgba(255,255,255,.1); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
 
   /* QUIZ MODAL */
-  #quizModal { position: fixed; inset: 0; background: rgba(5,10,31,.95); backdrop-filter: blur(20px); z-index: 100; display: none; align-items: center; justify-content: center; flex-direction: column; }
+  #quizModal { position: fixed; inset: 0; background: rgba(5,10,31,.98); backdrop-filter: blur(25px); z-index: 100; display: none; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 40px 20px; }
   #quizModal.active { display: flex; }
-  .quiz-card { background: #0a162e; border: 1px solid var(--line); border-radius: 20px; width: 100%; max-width: 650px; padding: 40px; position: relative; }
-  .quiz-header { margin-bottom: 30px; text-align: center; }
-  .quiz-header h2 { font-size: 24px; margin: 0 0 10px; }
-  .quiz-header p { color: var(--muted); margin: 0; font-size: 14px; }
-  .question { margin-bottom: 24px; }
-  .question p { font-weight: 600; font-size: 16px; margin-bottom: 12px; color: #fff; }
-  .option { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: .2s; }
-  .option:hover { background: rgba(74,184,255,.05); }
-  .option input { accent-color: var(--cyan); width: 18px; height: 18px; }
-  .quiz-footer { text-align: center; margin-top: 30px; }
+  .quiz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; width: 100%; max-width: 750px; padding: 40px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
+  .quiz-header { margin-bottom: 40px; text-align: center; border-bottom: 1px solid var(--line); padding-bottom: 24px; }
+  .quiz-header h2 { font-size: 28px; margin: 0 0 10px; color: #fff; }
+  .quiz-header p { color: var(--muted); margin: 0; font-size: 15px; }
   
-  /* ANTI-CHEAT WARNING */
-  #cheatWarning { position: fixed; inset: 0; background: rgba(200,20,20,.95); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; }
-  #cheatWarning h1 { font-size: 40px; margin: 0 0 20px; }
-  #cheatWarning p { font-size: 18px; max-width: 500px; line-height: 1.6; }
+  .question { margin-bottom: 30px; background: rgba(255,255,255,.02); padding: 24px; border-radius: 16px; border: 1px solid rgba(255,255,255,.05); }
+  .question p { font-weight: 600; font-size: 17px; margin-bottom: 16px; color: #fff; }
+  .option { display: flex; align-items: center; gap: 14px; padding: 16px; border: 2px solid transparent; background: rgba(0,0,0,.3); border-radius: 12px; margin-bottom: 10px; cursor: pointer; transition: .2s; font-size: 15px; }
+  .option:hover { background: rgba(74,184,255,.08); border-color: rgba(74,184,255,.3); }
+  .option input { accent-color: var(--cyan); width: 20px; height: 20px; cursor: pointer; flex-shrink: 0; }
+  .option.selected { border-color: var(--cyan); background: rgba(74,184,255,.15); }
+  
+  .quiz-footer { text-align: center; margin-top: 40px; border-top: 1px solid var(--line); padding-top: 30px; }
+  .quiz-footer .btn { width: 100%; max-width: 300px; font-size: 16px; padding: 16px; }
 
+  /* ANTI-CHEAT WARNING */
+  #cheatWarning { position: fixed; inset: 0; background: rgba(200,20,20,.98); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 40px; }
+  #cheatWarning h1 { font-size: clamp(30px, 5vw, 50px); margin: 0 0 20px; font-weight: 800; }
+  #cheatWarning p { font-size: clamp(16px, 2vw, 20px); max-width: 600px; line-height: 1.6; opacity: .9; }
+
+  /* RESPONSIVE */
   @media (max-width: 800px) {
-    .sidebar { position: fixed; inset: 0 100% 0 0; transition: right .3s; width: 280px; }
-    .sidebar.open { right: 0; left: auto; }
+    .sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-100%); width: 280px; z-index: 50; box-shadow: 20px 0 50px rgba(0,0,0,.5); }
+    .sidebar.open { transform: translateX(0); }
     .main { margin-left: 0; }
-    .lesson-wrapper { padding: 24px; }
+    .lesson-wrapper { padding: 24px; border-radius: 16px; }
     .content-scroll { padding: 20px; }
-    .topbar { padding: 0 20px; }
-    .mobile-menu-btn { display: block; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; margin-right: 15px; }
+    .topbar { padding: 15px 20px; }
+    .mobile-menu-btn { display: block !important; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: #fff; font-size: 20px; cursor: pointer; padding: 8px 12px; border-radius: 8px; margin-right: 15px; }
+    .lesson-wrapper h1 { font-size: 28px; }
+    .lesson-wrapper img { height: 200px; }
+    .btn-quiz { width: 100%; justify-content: center; margin-top: 15px; }
+    .progress-container { width: 100%; max-width: none; flex: 100%; order: 3; margin-top: 10px; }
+    .quiz-card { padding: 24px; border-radius: 16px; }
+    .lesson-nav { flex-direction: column-reverse; }
   }
 </style>
 </head>
@@ -91,10 +125,13 @@
 
 <!-- SIDEBAR -->
 <aside class="sidebar" id="sidebar">
-  <a href="dashboard.html" class="brand">
-    <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="">
-    <span>ISHURI ONLINE</span>
-  </a>
+  <div class="sidebar-header">
+    <a href="dashboard.html" class="brand">
+      <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="">
+      <span>ISHURI</span>
+    </a>
+    <button class="mobile-menu-btn" style="display:none;" onclick="document.getElementById('sidebar').classList.remove('open')">✕</button>
+  </div>
   <div class="syllabus" id="syllabusList">
     <!-- Syllabus Injected Here -->
   </div>
@@ -103,19 +140,19 @@
 <!-- MAIN AREA -->
 <main class="main">
   <header class="topbar">
-    <div style="display:flex; align-items:center; width:100%;">
-      <button class="mobile-menu-btn" style="display:none;" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <div class="progress-container">
-        <div class="progress-text">
-          <span id="progressLabel">Course Progress</span>
-          <span id="progressPercent">0%</span>
-        </div>
-        <div class="progress-bar">
-          <div id="progressFill" style="width: 0%"></div>
-        </div>
+    <button class="mobile-menu-btn" style="display:none;" onclick="document.getElementById('sidebar').classList.add('open')">☰</button>
+    
+    <div class="progress-container">
+      <div class="progress-text">
+        <span id="progressLabel">Course Progress</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progressFill" style="width: 0%"></div>
       </div>
     </div>
-    <button class="btn-quiz" id="takeQuizBtn" style="display:none;" onclick="openQuiz()">📝 Take Quiz</button>
+    
+    <button class="btn-quiz" id="takeQuizBtn" style="display:none;" onclick="openQuiz()">📝 Take Final Quiz</button>
   </header>
 
   <div class="content-scroll">
@@ -135,64 +172,64 @@
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-  import { getFirestore, doc, getDoc, updateDoc, arrayUnion, serverTimestamp, addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+  import { getFirestore, doc, getDoc, updateDoc, serverTimestamp, addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
   const firebaseConfig = { apiKey: "AIzaSyAlecssz7iDdq_h4IhVo1HKlj-MpRa3CCs", authDomain: "ishuri-online.firebaseapp.com", projectId: "ishuri-online", storageBucket: "ishuri-online.firebasestorage.app", messagingSenderId: "910778726579", appId: "1:910778726579:web:2c49c3882dcc04a48cd8c6" };
   const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 
   // ============================================================
-  // MOCK COURSE DATABASE (This is where the real content lives)
+  // THE MASSIVE COURSE DATABASE
   // ============================================================
   const COURSE_DATA = {
     'excel-advanced': {
       title: 'Advanced Microsoft Excel',
       modules: [
         {
-          title: 'Module 1: Mastering Lookups',
+          title: 'Module 1: Lookup Functions',
           lessons: [
-            {
-              id: 'lesson-1',
-              title: 'Introduction to VLOOKUP',
-              type: 'text',
-              content: `
-                <h1>Introduction to VLOOKUP</h1>
-                <p>VLOOKUP is one of the most powerful functions in Excel. It stands for <strong>Vertical Lookup</strong>. It allows you to search for a value in the first column of a table and return a value in the same row from a specified column.</p>
-                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Data Analysis">
-                <blockquote>Imagine you have a list of Employee IDs and Names. You can use VLOOKUP to find the name of the employee with ID 105 instantly.</blockquote>
-                <p>The syntax is: <code>=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])</code></p>
-              `
-            },
-            {
-              id: 'lesson-2',
-              title: 'Moving to XLOOKUP',
-              type: 'text',
-              content: `
-                <h1>Moving to XLOOKUP</h1>
-                <p>XLOOKUP is the modern replacement for VLOOKUP. It solves many of the limitations of VLOOKUP, such as the inability to look to the left.</p>
-                <p>If you are using Microsoft 365, you should always use XLOOKUP instead of VLOOKUP.</p>
-              `
-            }
+            { id: 'excel-m1-l1', title: 'Mastering VLOOKUP', content: `
+              <div class="lesson-tag">Data Analysis</div>
+              <h1>Mastering VLOOKUP</h1>
+              <p>VLOOKUP (Vertical Lookup) is the cornerstone of data analysis in Excel. It allows you to search for a value in the first column of a table and return a corresponding value from another column.</p>
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Excel Data">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>Imagine you are an HR manager. You have an Employee ID list, and a separate master database with names, departments, and salaries. VLOOKUP lets you instantly pull a specific employee's salary based on their ID without manually searching through thousands of rows.</p>
+              </div>
+              <p>The formula: <code>=VLOOKUP(lookup_value, table_array, col_index_num, FALSE)</code></p>
+            `},
+            { id: 'excel-m1-l2', title: 'The Power of XLOOKUP', content: `
+              <div class="lesson-tag">Data Analysis</div>
+              <h1>The Power of XLOOKUP</h1>
+              <p>XLOOKUP is the modern successor to VLOOKUP. It solves the biggest limitation: VLOOKUP can only look to the right. XLOOKUP can search in any direction.</p>
+              <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Dashboard">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>If you are building a sales dashboard, you might need to look up a product's price by searching the Product Name column. If the price is to the left of the name, VLOOKUP fails, but XLOOKUP handles it perfectly.</p>
+              </div>
+            `}
           ]
         },
         {
-          title: 'Module 2: Data Summarization',
+          title: 'Module 2: Summarizing Data',
           lessons: [
-            {
-              id: 'lesson-3',
-              title: 'Introduction to PivotTables',
-              type: 'text',
-              content: `
-                <h1>Introduction to PivotTables</h1>
-                <p>PivotTables allow you to summarize, analyze, explore, and present summary data. It's like having a superpower for data.</p>
-              `
-            }
+            { id: 'excel-m2-l1', title: 'Introduction to PivotTables', content: `
+              <div class="lesson-tag">Business Intelligence</div>
+              <h1>Introduction to PivotTables</h1>
+              <p>PivotTables are the fastest way to summarize large datasets. They allow you to drag and drop fields to instantly group, count, and sum data.</p>
+              <img src="https://images.unsplash.com/photo-1543286386-713bdd548da4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Business Charts">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>A retail manager uses a PivotTable to instantly see total sales by region and by month, replacing hours of manual formula writing with a 10-second drag-and-drop.</p>
+              </div>
+            `}
           ]
         }
       ],
       quiz: [
         { q: 'What does VLOOKUP stand for?', options: ['Vertical Lookup', 'Variable Lookup', 'Visual Lookup', 'Virtual Lookup'], correct: 0 },
         { q: 'Which function is the modern replacement for VLOOKUP?', options: ['HLOOKUP', 'INDEX', 'XLOOKUP', 'MATCH'], correct: 2 },
-        { q: 'Can XLOOKUP look to the left of the lookup column?', options: ['Yes', 'No'], correct: 0 }
+        { q: 'Can XLOOKUP search for values to the left of the lookup column?', options: ['Yes', 'No'], correct: 0 }
       ]
     },
     'word': {
@@ -201,21 +238,297 @@
         {
           title: 'Module 1: Professional Formatting',
           lessons: [
-            {
-              id: 'lesson-1',
-              title: 'Using Styles',
-              type: 'text',
-              content: `
-                <h1>Using Styles in Word</h1>
-                <p>Styles are the secret to professional formatting. Instead of manually making every heading bold and size 16, you use the built-in "Heading 1" style.</p>
-                <p>This allows you to automatically generate a Table of Contents later.</p>
-              `
-            }
+            { id: 'word-m1-l1', title: 'Using Styles & Themes', content: `
+              <div class="lesson-tag">Document Design</div>
+              <h1>Using Styles & Themes</h1>
+              <p>Styles are the secret to professional formatting. Instead of manually making every heading bold and size 16, you use the built-in "Heading 1" style.</p>
+              <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Writing">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>When writing a 50-page thesis, using styles allows you to automatically generate a Table of Contents with one click, saving hours of manual formatting.</p>
+              </div>
+            `}
           ]
         }
       ],
       quiz: [
         { q: 'What is the main benefit of using Styles?', options: ['It makes text colorful', 'It allows automatic Table of Contents', 'It prints faster'], correct: 1 }
+      ]
+    },
+    'powerpoint': {
+      title: 'Microsoft PowerPoint',
+      modules: [
+        {
+          title: 'Module 1: Visual Storytelling',
+          lessons: [
+            { id: 'ppt-m1-l1', title: 'Slide Master & Layouts', content: `
+              <div class="lesson-tag">Presentation Design</div>
+              <h1>Slide Master & Layouts</h1>
+              <p>The Slide Master controls the design and layout of every slide in your presentation. Editing it saves you from repeating the same formatting on every slide.</p>
+              <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Presentation">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>If you are pitching to investors, a unified Slide Master ensures your branding (logo, colors, fonts) is consistent across all 20 slides, making you look highly professional.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What does the Slide Master do?', options: ['It adds animations', 'It controls the design of all slides', 'It spells checks'], correct: 1 }
+      ]
+    },
+    'google-workspace': {
+      title: 'Google Workspace',
+      modules: [
+        {
+          title: 'Module 1: Cloud Collaboration',
+          lessons: [
+            { id: 'gws-m1-l1', title: 'Real-time Collaboration', content: `
+              <div class="lesson-tag">Teamwork</div>
+              <h1>Real-time Collaboration</h1>
+              <p>Google Docs, Sheets, and Slides are built for the cloud. Multiple people can edit the same document at the same time.</p>
+              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Teamwork">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>A remote team working on a project proposal can use Google Docs to write, comment, and approve sections simultaneously, eliminating the need for emailing Word documents back and forth.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is the biggest advantage of Google Workspace?', options: ['It is free', 'Real-time collaboration', 'It has better fonts'], correct: 1 }
+      ]
+    },
+    'powerbi': {
+      title: 'Power BI & Data Analysis',
+      modules: [
+        {
+          title: 'Module 1: Visualizing Data',
+          lessons: [
+            { id: 'pbi-m1-l1', title: 'Building Your First Dashboard', content: `
+              <div class="lesson-tag">Data Analytics</div>
+              <h1>Building Your First Dashboard</h1>
+              <p>Power BI transforms raw data into beautiful, interactive dashboards that tell a story.</p>
+              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Dashboard">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>A logistics company uses Power BI to track delivery trucks in real-time, instantly identifying delays and optimizing routes.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is the primary purpose of Power BI?', options: ['Word processing', 'Data visualization and BI', 'Video editing'], correct: 1 }
+      ]
+    },
+    'accounting': {
+      title: 'Accounting & Bookkeeping',
+      modules: [
+        {
+          title: 'Module 1: The Accounting Equation',
+          lessons: [
+            { id: 'acc-m1-l1', title: 'Assets, Liabilities & Equity', content: `
+              <div class="lesson-tag">Finance</div>
+              <h1>Assets, Liabilities & Equity</h1>
+              <p>Everything in accounting revolves around one golden equation: <strong>Assets = Liabilities + Equity</strong>.</p>
+              <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Finance">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>If you buy a delivery van for 10,000,000 RWF using a bank loan, your assets increase by 10M, but your liabilities also increase by 10M. The equation remains balanced.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is the accounting equation?', options: ['Assets = Liabilities + Equity', 'Profit = Revenue - Expenses', 'Debits = Credits'], correct: 0 }
+      ]
+    },
+    'personal-finance': {
+      title: 'Personal Finance & Budgeting',
+      modules: [
+        {
+          title: 'Module 1: Taking Control',
+          lessons: [
+            { id: 'pf-m1-l1', title: 'The 50/30/20 Rule', content: `
+              <div class="lesson-tag">Life Skills</div>
+              <h1>The 50/30/20 Rule</h1>
+              <p>A simple budgeting framework: 50% for needs, 30% for wants, and 20% for savings and debt repayment.</p>
+              <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Budgeting">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>If you earn 100,000 RWF a month, you should aim to spend 50,000 on rent/food, 30,000 on entertainment, and save 20,000 towards an emergency fund.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'In the 50/30/20 rule, what does the 20% represent?', options: ['Rent', 'Savings', 'Food'], correct: 1 }
+      ]
+    },
+    'entrepreneurship': {
+      title: 'Entrepreneurship & Business Planning',
+      modules: [
+        {
+          title: 'Module 1: Validating Ideas',
+          lessons: [
+            { id: 'ent-m1-l1', title: 'The Business Model Canvas', content: `
+              <div class="lesson-tag">Business Strategy</div>
+              <h1>The Business Model Canvas</h1>
+              <p>A one-page document that outlines your entire business: from value proposition to customer segments.</p>
+              <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Startup">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>Before writing a 50-page business plan, use the Canvas to quickly test if your idea solves a real problem for a specific group of people.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is the Business Model Canvas?', options: ['A tool for drawing logos', 'A one-page strategy tool', 'A tax document'], correct: 1 }
+      ]
+    },
+    'digital-marketing': {
+      title: 'Digital Marketing',
+      modules: [
+        {
+          title: 'Module 1: Social Media Strategy',
+          lessons: [
+            { id: 'dm-m1-l1', title: 'Content that Converts', content: `
+              <div class="lesson-tag">Marketing</div>
+              <h1>Content that Converts</h1>
+              <p>Creating content isn't just about posting daily; it's about providing value that moves customers to action.</p>
+              <img src="https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Marketing">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>A bakery creates a behind-the-scenes video of their baking process, which builds trust and leads to a 20% increase in weekend sales.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is the goal of content marketing?', options: ['To spam followers', 'To provide value and drive action', 'To post as much as possible'], correct: 1 }
+      ]
+    },
+    'network-marketing': {
+      title: 'Network Marketing & MLM',
+      modules: [
+        {
+          title: 'Module 1: Ethical Prospecting',
+          lessons: [
+            { id: 'mlm-m1-l1', title: 'Building Trust First', content: `
+              <div class="lesson-tag">Sales</div>
+              <h1>Building Trust First</h1>
+              <p>Network marketing is about relationships. Pushing products on friends ruins relationships; sharing solutions builds them.</p>
+              <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Handshake">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>Instead of sending a mass message to buy your product, share a personal story of how it helped you, and only offer it to those who show interest.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is the foundation of ethical network marketing?', options: ['Mass messaging', 'Building relationships and trust', 'Hiding the price'], correct: 1 }
+      ]
+    },
+    'cv-writing': {
+      title: 'CV Writing & Job Readiness',
+      modules: [
+        {
+          title: 'Module 1: The Professional CV',
+          lessons: [
+            { id: 'cv-m1-l1', title: 'Action Verbs & Achievements', content: `
+              <div class="lesson-tag">Career</div>
+              <h1>Action Verbs & Achievements</h1>
+              <p>Don't just list your duties. Show your impact using action verbs and numbers.</p>
+              <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Resume">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>Instead of writing "Responsible for sales", write "Increased sales by 25% in 6 months by implementing a new CRM strategy."</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'Which is a better CV bullet point?', options: ['Managed a team', 'Increased team productivity by 30% through daily standups'], correct: 1 }
+      ]
+    },
+    'ai-work': {
+      title: 'AI for Everyday Work',
+      modules: [
+        {
+          title: 'Module 1: Prompt Engineering',
+          lessons: [
+            { id: 'ai-m1-l1', title: 'Writing Better Prompts', content: `
+              <div class="lesson-tag">Artificial Intelligence</div>
+              <h1>Writing Better Prompts</h1>
+              <p>AI is only as smart as your instructions. Context, role, and format are key.</p>
+              <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="AI">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>Instead of "Write an email to my boss," use "Act as a professional assistant. Write a polite 3-paragraph email to my manager requesting a 2-day leave next week for a family emergency."</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is Prompt Engineering?', options: ['Fixing computer hardware', 'Writing clear instructions for AI', 'Building chatbots'], correct: 1 }
+      ]
+    },
+    'computer-basics': {
+      title: 'Computer Basics & Digital Literacy',
+      modules: [
+        {
+          title: 'Module 1: OS Fundamentals',
+          lessons: [
+            { id: 'comp-m1-l1', title: 'File Management', content: `
+              <div class="lesson-tag">Digital Skills</div>
+              <h1>File Management</h1>
+              <p>Folders and files are like a digital filing cabinet. A good naming convention saves hours of searching.</p>
+              <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Computer">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>Name files with dates: "2023-10-24_ProjectProposal_v2.docx" so you always know exactly which is the latest version.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'Why is file naming important?', options: ['It makes files look nice', 'It helps you find the latest version easily', 'It speeds up the internet'], correct: 1 }
+      ]
+    },
+    'first-aid': {
+      title: 'Basic First Aid & Personal Safety',
+      modules: [
+        {
+          title: 'Module 1: Emergency Response',
+          lessons: [
+            { id: 'fa-m1-l1', title: 'The Primary Survey', content: `
+              <div class="lesson-tag">Safety</div>
+              <h1>The Primary Survey</h1>
+              <p>DRSABCD: Danger, Response, Send for help, Airway, Breathing, CPR, Defibrillator.</p>
+              <img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="First Aid">
+              <div class="practical-block">
+                <h4>💡 Real-World Application</h4>
+                <p>Before helping a victim, always check for Danger first (e.g., oncoming traffic). You cannot help if you become a victim too.</p>
+              </div>
+            `}
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is the first step in DRSABCD?', options: ['CPR', 'Danger', 'Airway'], correct: 1 }
       ]
     }
   };
@@ -241,20 +554,26 @@
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'index.html'; return; }
     state.user = user;
-    const snap = await getDoc(doc(db, 'users', user.uid));
-    state.userData = snap.exists() ? snap.data() : { progress: {}, purchasedCourses: [] };
+    
+    try {
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      state.userData = snap.exists() ? snap.data() : { progress: {}, purchasedCourses: [] };
+    } catch (e) {
+      // Fallback to localStorage if offline
+      const local = localStorage.getItem(`progress_${user.uid}`);
+      state.userData = local ? JSON.parse(local) : { progress: {}, purchasedCourses: [] };
+    }
     
     initCourse();
-    state.currentLessonIndex = startLesson;
+    state.currentLessonIndex = Math.min(startLesson, state.flatLessons.length - 1);
     renderSidebar();
     renderLesson();
     setupAntiCheat();
   });
 
-  // Flatten the course modules into a single array for easy navigation
   function initCourse() {
     const course = COURSE_DATA[state.currentCourseId];
-    if (!course) return;
+    if (!course) { alert('Course not found'); window.location.href='dashboard.html'; return; }
     state.flatLessons = [];
     course.modules.forEach(m => {
       m.lessons.forEach(l => {
@@ -264,11 +583,10 @@
     document.title = `${course.title} · Learning`;
   }
 
-  // Calculate user progress
   function getProgress() {
     const p = state.userData.progress?.[state.currentCourseId] || { completedLessons: [] };
     const total = state.flatLessons.length;
-    const done = p.completedLessons.length;
+    const done = p.completedLessons?.length || 0;
     const pct = Math.round((done / total) * 100) || 0;
     return { p, total, done, pct };
   }
@@ -281,11 +599,11 @@
     const { p } = getProgress();
     let html = '';
     
-    course.modules.forEach((mod, mIdx) => {
+    course.modules.forEach((mod) => {
       html += `<div class="module-title">${mod.title}</div>`;
       mod.lessons.forEach((lesson) => {
         const globalIdx = state.flatLessons.findIndex(l => l.id === lesson.id);
-        const isCompleted = p.completedLessons.includes(lesson.id);
+        const isCompleted = p.completedLessons?.includes(lesson.id);
         const isActive = globalIdx === state.currentLessonIndex;
         
         html += `
@@ -304,27 +622,24 @@
     const lesson = state.flatLessons[state.currentLessonIndex];
     if (!lesson) return;
 
-    // Update progress bar
     const { done, total, pct } = getProgress();
     document.getElementById('progressPercent').textContent = `${pct}%`;
     document.getElementById('progressFill').style.width = `${pct}%`;
-    document.getElementById('progressLabel').textContent = `${done} of ${total} lessons completed`;
+    document.getElementById('progressLabel').textContent = `${done} of ${total} lessons done`;
 
-    // Render content
     const container = document.getElementById('lessonContent');
     let contentHtml = lesson.content;
     
-    // Add Navigation
     const isFirst = state.currentLessonIndex === 0;
     const isLast = state.currentLessonIndex === state.flatLessons.length - 1;
     const p = state.userData.progress?.[state.currentCourseId] || { completedLessons: [] };
-    const isCompleted = p.completedLessons.includes(lesson.id);
+    const isCompleted = p.completedLessons?.includes(lesson.id);
 
     contentHtml += `
       <div class="lesson-nav">
         <button class="btn btn-ghost" onclick="prevLesson()" ${isFirst ? 'disabled' : ''}>← Previous</button>
         ${!isCompleted 
-          ? `<button class="btn btn-primary" onclick="markComplete()">Mark as Complete</button>`
+          ? `<button class="btn btn-primary" onclick="markComplete()">Complete & Continue →</button>`
           : `<button class="btn btn-primary" onclick="nextLesson()" ${isLast ? 'disabled' : ''}>Next Lesson →</button>`
         }
       </div>
@@ -332,10 +647,9 @@
     
     container.innerHTML = contentHtml;
 
-    // Show Quiz button if course is finished
     const course = COURSE_DATA[state.currentCourseId];
     if (done === total && course.quiz) {
-      document.getElementById('takeQuizBtn').style.display = 'block';
+      document.getElementById('takeQuizBtn').style.display = 'flex';
     } else {
       document.getElementById('takeQuizBtn').style.display = 'none';
     }
@@ -364,25 +678,23 @@
     const lesson = state.flatLessons[state.currentLessonIndex];
     if (!lesson) return;
 
-    const userRef = doc(db, 'users', state.user.uid);
-    // Use dot notation to update nested object in Firestore
-    const progressKey = `progress.${state.currentCourseId}`;
-    
-    // Ensure structure exists
     if (!state.userData.progress) state.userData.progress = {};
     if (!state.userData.progress[state.currentCourseId]) state.userData.progress[state.currentCourseId] = { completedLessons: [] };
     
     const p = state.userData.progress[state.currentCourseId];
-    if (!p.completedLessons.includes(lesson.id)) {
-      p.completedLessons.push(lesson.id);
-    }
+    if (!p.completedLessons.includes(lesson.id)) p.completedLessons.push(lesson.id);
     p.lastAccessedAt = new Date().toISOString();
     p.lastLessonIndex = state.currentLessonIndex;
 
+    // Save locally instantly (so it doesn't feel slow)
+    localStorage.setItem(`progress_${state.user.uid}`, JSON.stringify(state.userData));
+
+    renderSidebar();
+    renderLesson();
+
     try {
-      await updateDoc(userRef, { [progressKey]: p });
-      
-      // Log activity
+      const userRef = doc(db, 'users', state.user.uid);
+      await updateDoc(userRef, { [`progress.${state.currentCourseId}`]: p });
       await addDoc(collection(db, 'activity'), {
         uid: state.user.uid,
         type: 'lesson_completed',
@@ -390,24 +702,18 @@
         courseTitle: COURSE_DATA[state.currentCourseId].title,
         at: serverTimestamp()
       });
-
-      renderSidebar();
-      renderLesson(); // Updates button to "Next Lesson"
-      
-      // Auto advance if not last lesson
-      if (state.currentLessonIndex < state.flatLessons.length - 1) {
-        setTimeout(() => nextLesson(), 800);
-      }
     } catch(e) {
-      alert("Error saving progress: " + e.message);
+      console.warn("Could not sync to Firestore, saved locally.");
+    }
+
+    if (state.currentLessonIndex < state.flatLessons.length - 1) {
+      setTimeout(() => nextLesson(), 300);
     }
   };
 
   // ============================================================
-  // QUIZ SYSTEM (WITH ANTI-CHEAT)
+  // QUIZ SYSTEM (ANTI-CHEAT)
   // ============================================================
-  let quizTimer = null;
-
   window.openQuiz = function() {
     const course = COURSE_DATA[state.currentCourseId];
     if (!course.quiz) return;
@@ -415,7 +721,7 @@
     state.isQuizOpen = true;
     state.quizAttempt = {
       answers: new Array(course.quiz.length).fill(null),
-      shuffledQuestions: [...course.quiz].sort(() => Math.random() - 0.5) // Randomize order
+      shuffledQuestions: [...course.quiz].sort(() => Math.random() - 0.5)
     };
 
     const modal = document.getElementById('quizModal');
@@ -423,17 +729,17 @@
     
     let html = `
       <div class="quiz-header">
-        <h2>Final Quiz: ${course.title}</h2>
-        <p>Answer all questions. Do not switch tabs or the quiz will lock.</p>
+        <h2>Final Assessment</h2>
+        <p>Answer all questions. Do not switch tabs.</p>
       </div>
     `;
 
     state.quizAttempt.shuffledQuestions.forEach((q, qIdx) => {
       html += `
-        <div class="question">
+        <div class="question" id="q-block-${qIdx}">
           <p>${qIdx + 1}. ${q.q}</p>
           ${q.options.map((opt, oIdx) => `
-            <label class="option">
+            <label class="option" id="opt-${qIdx}-${oIdx}">
               <input type="radio" name="q${qIdx}" value="${oIdx}" onchange="recordAnswer(${qIdx}, ${oIdx})">
               <span>${opt}</span>
             </label>
@@ -451,21 +757,27 @@
     card.innerHTML = html;
     modal.classList.add('active');
 
-    // ANTI-CHEAT: Focus Detection
-    window.addEventListener('blur', antiCheatTrigger);
+    // ANTI-CHEAT
     document.addEventListener('visibilitychange', checkVisibility);
+    window.addEventListener('blur', antiCheatTrigger); // Fallback for desktop
   };
 
   window.recordAnswer = function(qIdx, oIdx) {
-    if (state.quizAttempt) state.quizAttempt.answers[qIdx] = oIdx;
+    if (!state.quizAttempt) return;
+    state.quizAttempt.answers[qIdx] = oIdx;
+    
+    // Highlight selected
+    const container = document.getElementById(`q-block-${qIdx}`);
+    container.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
+    document.getElementById(`opt-${qIdx}-${oIdx}`).classList.add('selected');
   };
 
-  // ANTI-CHEAT: If tab is hidden or window loses focus, trigger lock
   function antiCheatTrigger() {
     if (!state.isQuizOpen) return;
     document.getElementById('cheatWarning').style.display = 'flex';
-    state.isQuizOpen = false; // Lock it
+    state.isQuizOpen = false; 
     document.getElementById('quizModal').classList.remove('active');
+    document.removeEventListener('visibilitychange', checkVisibility);
   }
 
   function checkVisibility() {
@@ -474,8 +786,6 @@
 
   window.resetQuizState = function() {
     document.getElementById('cheatWarning').style.display = 'none';
-    // Do not allow them to retake immediately to punish cheating. 
-    // In a real app, you would lock them out for 5 minutes or until teacher review.
     alert("Attempt forfeited. Please review the lessons and try again later.");
     window.location.reload();
   };
@@ -486,9 +796,8 @@
       return;
     }
 
-    // Clean up listeners
-    window.removeEventListener('blur', antiCheatTrigger);
     document.removeEventListener('visibilitychange', checkVisibility);
+    window.removeEventListener('blur', antiCheatTrigger);
 
     let correct = 0;
     state.quizAttempt.shuffledQuestions.forEach((q, idx) => {
@@ -500,29 +809,25 @@
     const card = document.getElementById('quizCard');
     card.innerHTML = `
       <div style="text-align:center; padding: 40px 0;">
-        <h1 style="font-size:48px; color:${score >= 70 ? '#72e2c0' : '#ff8888'}; margin-bottom:20px;">${score}%</h1>
-        <h2>${score >= 70 ? 'Congratulations, you passed!' : 'Keep practicing!'}</h2>
+        <h1 style="font-size:64px; color:${score >= 70 ? 'var(--green)' : '#ff8888'}; margin-bottom:10px;">${score}%</h1>
+        <h2>${score >= 70 ? 'Congratulations!' : 'Keep practicing!'}</h2>
         <p style="color:var(--muted); margin-bottom:30px;">You got ${correct} out of ${state.quizAttempt.shuffledQuestions.length} questions correct.</p>
         <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">Return to Dashboard</button>
       </div>
     `;
 
-    // Save quiz result to Firestore
-    const userRef = doc(db, 'users', state.user.uid);
-    const progressKey = `progress.${state.currentCourseId}`;
-    const p = state.userData.progress[state.currentCourseId];
     if (score >= 70) {
-       p.quizzesPassed = (p.quizzesPassed || 0) + 1;
-       updateDoc(userRef, { [progressKey]: p });
+      // Update quiz pass in Firestore
+      const userRef = doc(db, 'users', state.user.uid);
+      const p = state.userData.progress[state.currentCourseId];
+      p.quizzesPassed = (p.quizzesPassed || 0) + 1;
+      updateDoc(userRef, { [`progress.${state.currentCourseId}`]: p });
     }
   };
 
-  // Disable right click globally on this page to stop easy copying
-  document.addEventListener('contextmenu', e => e.preventDefault());
-
-  // Mobile menu toggle
+  // Mobile sidebar toggles
   if (window.innerWidth <= 800) {
-    document.querySelector('.mobile-menu-btn').style.display = 'block';
+    document.querySelectorAll('.mobile-menu-btn').forEach(btn => btn.style.display = 'block');
   }
 </script>
 </body>
