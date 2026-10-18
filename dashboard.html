@@ -1,83 +1,867 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050a1f"><meta name="description" content="Your ISHURI ONLINE learning dashboard."><title>Dashboard · ISHURI ONLINE</title><link rel="icon" href="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5.0"><meta name="theme-color" content="#030816"><meta name="description" content="Your ISHURI ONLINE learning dashboard."><title>Dashboard · ISHURI ONLINE</title><link rel="icon" href="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png">
 <style>
-:root{color-scheme:dark;--bg:#050a1f;--panel:rgba(13,25,53,.8);--line:rgba(105,170,231,.15);--text:#eef6ff;--muted:#8da4c1;--cyan:#4ab8ff;--cyan2:#77d0ff;--green:#72e2c0}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 78% -12%,rgba(40,117,198,.2),transparent 43%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}button{font:inherit}button:focus-visible{outline:2px solid var(--cyan2);outline-offset:3px}.app{min-height:100vh;opacity:0;animation:fade .55s ease forwards}@keyframes fade{to{opacity:1}}.sidebar{position:fixed;inset:0 auto 0 0;width:250px;padding:25px 17px;background:rgba(5,11,29,.9);border-right:1px solid var(--line);backdrop-filter:blur(22px);z-index:5;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;padding:0 10px 32px;color:var(--text);text-decoration:none}.brand img,.mobile-top img{width:38px;height:38px;object-fit:contain;filter:drop-shadow(0 0 12px #4ab8ff66)}.brand-name{display:block;font-size:12px;font-weight:800;letter-spacing:.15em}.brand-tag{display:block;font-size:9px;color:var(--cyan2);letter-spacing:.2em;text-transform:uppercase}.nav-label{padding:0 12px 10px;color:#617a9b;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase}.nav{display:grid;gap:6px}.nav button{width:100%;display:flex;align-items:center;gap:13px;padding:12px;border:1px solid transparent;border-radius:12px;background:transparent;color:#91a7c3;text-align:left;cursor:pointer;transition:.2s}.nav button:hover{background:#ffffff09;color:white}.nav button.active{color:#eff9ff;border-color:#4ab8ff30;background:linear-gradient(100deg,#4ab8ff24,#4ab8ff08);box-shadow:inset 3px 0 var(--cyan)}.nav svg{width:18px;height:18px;flex:none}.spacer{flex:1}.side-note{margin:0 6px 16px;padding:14px;border:1px solid var(--line);border-radius:15px;background:#142e501f}.side-note b{font-size:12px}.side-note p{font-size:11px;color:var(--muted);margin:4px 0 0}.side-user{display:flex;align-items:center;gap:10px;padding:13px 9px 0;border-top:1px solid var(--line)}.avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#17345d;border:1px solid #77d0ff55}.user-meta{min-width:0;flex:1}.user-meta strong,.user-meta span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.user-meta strong{font-size:12px}.user-meta span{font-size:10px;color:var(--muted)}.logout{border:0;background:transparent;color:#7890ae;padding:8px;cursor:pointer;border-radius:9px}.main{margin-left:250px;padding:32px clamp(20px,4vw,55px) 55px;max-width:1680px}.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px}.crumb{font-size:12px;color:var(--muted)}.crumb strong{color:#dcecff}.date-chip{padding:8px 12px;border:1px solid var(--line);border-radius:11px;background:#0c1732a3;color:#acc0d7;font-size:11px}.date-chip b{color:var(--cyan)}.mobile-top{display:none}.page{display:none;animation:rise .3s ease}.page.active{display:block}@keyframes rise{from{opacity:.4;transform:translateY(7px)}to{opacity:1;transform:none}}.welcome{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px}.eyebrow{color:var(--cyan2);font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase}.welcome h1{font-size:clamp(25px,3vw,34px);line-height:1.15;margin:8px 0;letter-spacing:-.04em}.welcome p,.section-head p{margin:0;color:var(--muted);font-size:12px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px}.stat{padding:18px;border:1px solid #64aef028;border-radius:16px;background:linear-gradient(145deg,#102144db,#081229d1);transition:.2s}.stat:hover,.course-card:hover{transform:translateY(-3px);border-color:#4ab8ff66;box-shadow:0 12px 38px #1f7dcc24}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px}.stat-icon{display:grid;place-items:center;width:29px;height:29px;border:1px solid #4ab8ff33;border-radius:9px;color:var(--cyan2);background:#4ab8ff14}.stat-icon svg{width:16px;height:16px}.stat-value{display:block;margin-top:12px;font-size:28px;font-weight:750;letter-spacing:-.04em}.stat-foot{font-size:10px;color:#6d88a8}.hero{min-height:195px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:28px 32px;margin-bottom:28px;border:1px solid #5bbaff40;border-radius:19px;background:radial-gradient(ellipse at 82% 48%,#3ca6f440,transparent 37%),linear-gradient(110deg,#0d264ef5,#0a1834f2);box-shadow:0 18px 52px #0003}.hero-content{max-width:620px}.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);margin-right:7px}.hero h2{font-size:clamp(21px,2.5vw,30px);margin:12px 0 8px;letter-spacing:-.035em}.hero p{margin:0;color:#a9c0dc;font-size:13px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid transparent;border-radius:10px;padding:10px 14px;cursor:pointer;text-decoration:none;font-weight:650;font-size:11px;transition:.18s}.btn:hover{transform:translateY(-2px)}.btn-primary{color:#041326;background:linear-gradient(135deg,#89dcff,#42aef7);box-shadow:0 6px 22px #4ab8ff33}.btn-quiet{background:#ffffff0a;border-color:var(--line);color:#b9cbe1}.btn:disabled{opacity:.55;cursor:wait;transform:none}.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:0 0 15px}.section-head h2{margin:0;font-size:18px}.text-link{border:0;background:none;color:var(--cyan2);font-size:11px;cursor:pointer}.course-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.course-card{min-width:0;display:flex;flex-direction:column;padding:18px;border:1px solid var(--line);border-radius:15px;background:linear-gradient(155deg,#102040c7,#091329e0);transition:.2s}.course-top{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}.category{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan2);font-weight:700}.badge{font-size:9px;color:#8fe3c6;background:#54cca01a;border:1px solid #54cca029;padding:4px 8px;border-radius:30px;white-space:nowrap}.badge.free{color:#9bb4d0;background:#8da4c114;border-color:#8da4c121}.course-card h3{font-size:14px;line-height:1.35;margin:0 0 7px;min-height:38px}.course-meta{font-size:10px;color:#8299b6}.progress-area{margin-top:15px}.progress-label{display:flex;justify-content:space-between;margin-bottom:7px;font-size:10px;color:#90a8c4}.progress-label b{color:#cce8ff}.progress-track{height:5px;background:#162746;border-radius:9px;overflow:hidden}.progress-track span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2987e7,#69d0ff);box-shadow:0 0 12px #4ab8ff8c}.card-bottom{margin-top:auto;padding-top:15px;display:flex;align-items:center;justify-content:space-between}.card-bottom .btn{padding:8px 11px;font-size:10px}.empty-state{grid-column:1/-1;border:1px dashed #80a3cc3b;border-radius:15px;padding:32px;text-align:center;color:var(--muted);font-size:12px}.lower-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(245px,.75fr);gap:15px;margin-top:27px}.panel,.profile-card{border:1px solid var(--line);border-radius:16px;background:var(--panel);padding:19px}.activity-list{display:grid}.activity-item{display:flex;align-items:center;gap:11px;padding:11px 0;border-top:1px solid #7598c01a}.activity-item:first-child{border-top:0}.activity-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;color:var(--cyan2);background:#4ab8ff17}.activity-icon svg{width:15px}.activity-copy{min-width:0;flex:1}.activity-copy strong{display:block;font-size:11px;font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.activity-copy span,.activity-time{font-size:9px;color:#7188a5}.activity-time{white-space:nowrap}.activity-empty{padding:18px 0;color:var(--muted);font-size:11px}.learning-card{background:radial-gradient(ellipse at 100% 0,#4ab8ff21,transparent 55%),var(--panel)}.learning-card h3{font-size:14px;margin:7px 0}.learning-card p{font-size:11px;color:var(--muted);margin:0 0 12px}.learning-stat{display:flex;align-items:center;gap:12px;margin:12px 0}.learning-stat b{font-size:23px}.learning-stat span{font-size:10px;color:var(--muted)}.catalog-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0}.search{flex:1;min-width:210px}.search input{width:100%;padding:10px 13px;border-radius:10px;border:1px solid var(--line);background:#0a162fd1;color:var(--text);font:inherit;font-size:11px;outline:0}.search input:focus{border-color:#4ab8ff8c}.filters{display:flex;gap:6px;flex-wrap:wrap}.filter{padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:#0a162fa0;color:#8ea5c1;font-size:10px;cursor:pointer}.filter.active,.filter:hover{color:#dff5ff;border-color:#4ab8ff57;background:#4ab8ff1a}.profile-card{max-width:760px;padding:24px}.profile-head{display:flex;align-items:center;gap:16px;margin-bottom:22px}.profile-head .avatar{width:58px;height:58px}.profile-head h2{font-size:18px;margin:0 0 3px}.profile-head p{margin:0;color:var(--muted);font-size:12px}.profile-fields{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{padding:13px;border:1px solid #7598c01a;border-radius:11px;background:#ffffff05}.field span{display:block;color:#7188a5;font-size:9px;text-transform:uppercase;letter-spacing:.12em;margin-bottom:5px}.field b{font-size:12px;font-weight:550;overflow-wrap:anywhere}.toast{position:fixed;z-index:20;right:22px;bottom:22px;max-width:min(390px,calc(100vw - 30px));padding:13px 16px;border:1px solid #77d0ff55;border-radius:12px;background:#0a1831f5;box-shadow:0 14px 40px #0006;color:#eaf7ff;font-size:12px;opacity:0;transform:translateY(9px);pointer-events:none;transition:.25s}.toast.show{opacity:1;transform:none}.toast.error{border-color:#ff898973}.loading{position:fixed;inset:0;z-index:30;display:grid;place-items:center;background:var(--bg);color:var(--muted);font-size:12px;transition:.3s}.loading.hidden{opacity:0;visibility:hidden}.spinner{width:24px;height:24px;margin:0 auto 12px;border:2px solid #4ab8ff33;border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:1100px){.course-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stats{gap:9px}.stat{padding:15px}.main{padding-left:28px;padding-right:28px}}
-@media(max-width:760px){.sidebar{inset:auto 0 0;width:auto;height:72px;padding:7px 9px calc(7px + env(safe-area-inset-bottom));border:0;border-top:1px solid var(--line);background:#050b1df5;display:block}.brand,.nav-label,.spacer,.side-note,.side-user{display:none}.nav{height:100%;grid-template-columns:repeat(4,1fr);gap:4px}.nav button{height:100%;justify-content:center;flex-direction:column;gap:3px;padding:3px;font-size:9px}.nav button.active{box-shadow:inset 0 2px var(--cyan)}.main{margin:0;padding:14px 17px 100px}.mobile-top{display:flex;align-items:center;gap:8px;font-size:10px;font-weight:800;letter-spacing:.12em}.mobile-top img{width:30px;height:30px}.crumb{display:none}.topbar{margin-bottom:24px}.welcome h1{font-size:25px}.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:17px}.stat{padding:13px;border-radius:13px}.stat-value{font-size:25px;margin-top:9px}.hero{min-height:180px;padding:21px;border-radius:16px;margin-bottom:24px}.hero-action{align-self:flex-end}.hero .btn{font-size:10px;padding:9px 11px}.lower-grid{grid-template-columns:1fr;margin-top:21px}}
-@media(max-width:430px){.main{padding-left:13px;padding-right:13px}.welcome{display:block}.course-grid{grid-template-columns:1fr;gap:10px}.course-card h3{min-height:0;font-size:14px}.hero{display:block;padding:19px}.hero-action{margin-top:16px}.filters{width:100%;overflow:auto;flex-wrap:nowrap;padding-bottom:3px}.filter{white-space:nowrap}.profile-fields{grid-template-columns:1fr}.activity-time{font-size:8px}}
-@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  /* ============================================================
+     DESIGN SYSTEM & ANIMATED BACKGROUND
+     ============================================================ */
+  :root {
+    color-scheme: dark;
+    --bg: #030816;
+    --panel: rgba(13, 25, 53, 0.6);
+    --panel-hover: rgba(20, 38, 78, 0.8);
+    --border: rgba(105, 170, 231, 0.15);
+    --text: #ffffff;
+    --muted: #8da4c1;
+    
+    /* Vibrant Accents */
+    --cyan: #4ab8ff;
+    --violet: #8a5cff;
+    --pink: #ff5e8a;
+    --green: #00e5a0;
+    --gold: #ffb800;
+  }
+  
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { 
+    margin: 0; min-height: 100vh; 
+    background: var(--bg); 
+    color: var(--text); 
+    font: 15px/1.6 Inter, system-ui, -apple-system, sans-serif; 
+    -webkit-font-smoothing: antialiased; 
+    overflow-x: hidden;
+  }
+
+  /* Floating Background Orbs */
+  .bg-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.4; animation: float 20s infinite alternate ease-in-out; }
+  .orb-1 { width: 400px; height: 400px; background: var(--violet); top: -100px; left: -100px; }
+  .orb-2 { width: 300px; height: 300px; background: var(--cyan); bottom: 10%; right: -50px; animation-delay: -5s; }
+  .orb-3 { width: 250px; height: 250px; background: var(--pink); top: 40%; left: 40%; opacity: 0.2; animation-delay: -10s; }
+  @keyframes float { 
+    0% { transform: translate(0, 0) scale(1); } 
+    100% { transform: translate(50px, 50px) scale(1.1); } 
+  }
+
+  /* ============================================================
+     LAYOUT & SIDEBAR
+     ============================================================ */
+  .app { min-height: 100vh; opacity: 0; animation: fadeIn 0.6s ease forwards; }
+  @keyframes fadeIn { to { opacity: 1; } }
+
+  .sidebar { 
+    position: fixed; inset: 0 auto 0 0; width: 260px; padding: 30px 20px; 
+    background: rgba(3, 8, 22, 0.8); backdrop-filter: blur(30px); 
+    border-right: 1px solid var(--border); z-index: 50; display: flex; flex-direction: column; 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; padding: 0 10px 30px; color: var(--text); text-decoration: none; }
+  .brand img { width: 36px; height: 36px; filter: drop-shadow(0 0 10px rgba(74,184,255,0.5)); }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .brand-name { font-size: 14px; font-weight: 800; letter-spacing: .1em; }
+  .brand-tag { font-size: 9px; font-weight: 600; color: var(--cyan); letter-spacing: .2em; text-transform: uppercase; }
+  
+  .nav-label { font-size: 10px; font-weight: 700; color: #4a6285; letter-spacing: .15em; text-transform: uppercase; margin: 0 10px 15px; }
+  .nav { display: flex; flex-direction: column; gap: 6px; }
+  .nav button { 
+    width: 100%; display: flex; align-items: center; gap: 14px; padding: 14px 16px; 
+    border: 1px solid transparent; border-radius: 14px; background: transparent; 
+    color: #8da4c1; text-align: left; cursor: pointer; transition: all 0.2s ease; font-weight: 500;
+  }
+  .nav button:hover { background: rgba(255,255,255,0.05); color: white; transform: translateX(4px); }
+  .nav button.active { 
+    color: white; background: linear-gradient(90deg, rgba(138, 92, 255, 0.15), transparent); 
+    border-color: rgba(138, 92, 255, 0.3); box-shadow: inset 3px 0 var(--violet); font-weight: 600;
+  }
+  .nav svg { width: 20px; height: 20px; flex: none; stroke-width: 1.8; }
+  
+  .spacer { flex: 1; }
+  .side-user { display: flex; align-items: center; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border); }
+  .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--violet); padding: 2px; }
+  .user-meta { flex: 1; min-width: 0; }
+  .user-meta strong { display: block; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-meta span { display: block; font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .logout { background: none; border: none; color: var(--muted); cursor: pointer; padding: 8px; border-radius: 8px; transition: 0.2s; }
+  .logout:hover { background: rgba(255, 80, 80, 0.1); color: #ff5e8a; }
+
+  /* ============================================================
+     MAIN CONTENT AREA
+     ============================================================ */
+  .main { margin-left: 260px; padding: 30px clamp(20px, 4vw, 60px); max-width: 1600px; }
+  
+  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px; }
+  .mobile-top { display: none; }
+  .crumb { font-size: 13px; color: var(--muted); font-weight: 500; }
+  .crumb strong { color: white; }
+  .date-chip { 
+    padding: 8px 16px; border: 1px solid var(--border); border-radius: 100px; 
+    background: rgba(255,255,255,0.03); color: var(--muted); font-size: 12px; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .date-chip b { color: var(--cyan); }
+
+  .page { display: none; animation: slideUp 0.4s ease forwards; }
+  .page.active { display: block; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+  .welcome { margin-bottom: 32px; }
+  .eyebrow { color: var(--violet); font-size: 11px; font-weight: 800; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .eyebrow::before { content: ''; display: inline-block; width: 20px; height: 2px; background: var(--violet); border-radius: 2px; }
+  .welcome h1 { font-size: clamp(28px, 4vw, 42px); margin: 0 0 8px; letter-spacing: -0.03em; font-weight: 800; line-height: 1.1; }
+  .welcome p { margin: 0; color: var(--muted); font-size: 16px; }
+
+  /* ============================================================
+     PREMIUM OVERVIEW SECTION (CHART & STATS)
+     ============================================================ */
+  .overview-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; margin-bottom: 40px; }
+  
+  /* Circular Progress Chart */
+  .chart-card { 
+    background: linear-gradient(145deg, rgba(20, 38, 78, 0.6), rgba(10, 22, 46, 0.8)); 
+    border: 1px solid rgba(138, 92, 255, 0.3); border-radius: 24px; padding: 30px; 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+    position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  }
+  .chart-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent, var(--violet), transparent); }
+  
+  .progress-ring { width: 160px; height: 160px; transform: rotate(-90deg); margin-bottom: 20px; }
+  .progress-ring__circle-bg { fill: transparent; stroke: rgba(255,255,255,0.05); stroke-width: 8; }
+  .progress-ring__circle { fill: transparent; stroke: url(#gradient); stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s ease-out; }
+  
+  .chart-value { font-size: 36px; font-weight: 800; color: white; margin-bottom: 4px; }
+  .chart-label { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* Stats Grid */
+  .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .stat-card { 
+    background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 24px;
+    display: flex; flex-direction: column; justify-content: space-between; transition: 0.3s;
+    backdrop-filter: blur(10px); position: relative; overflow: hidden;
+  }
+  .stat-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+  .stat-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+  .stat-title { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .stat-icon { 
+    width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; 
+    background: rgba(74, 184, 255, 0.1); color: var(--cyan); 
+  }
+  .stat-icon.green { background: rgba(0, 229, 160, 0.1); color: var(--green); }
+  .stat-icon.gold { background: rgba(255, 184, 0, 0.1); color: var(--gold); }
+  .stat-icon.pink { background: rgba(255, 94, 138, 0.1); color: var(--pink); }
+  .stat-icon svg { width: 20px; height: 20px; }
+  .stat-value { font-size: 32px; font-weight: 800; color: white; line-height: 1; margin-bottom: 8px; }
+  .stat-foot { font-size: 12px; color: #5a7a9a; }
+
+  /* Hero Banner (Streak / Continue) */
+  .hero-banner {
+    background: linear-gradient(135deg, rgba(255, 94, 138, 0.15), rgba(138, 92, 255, 0.15));
+    border: 1px solid rgba(255, 94, 138, 0.3); border-radius: 24px; padding: 30px 40px;
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px;
+    position: relative; overflow: hidden;
+  }
+  .hero-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, rgba(255,94,138,0.2), transparent 60%); pointer-events: none; }
+  .hero-content { max-width: 600px; position: relative; z-index: 1; }
+  .hero-title { font-size: 24px; font-weight: 800; margin: 8px 0 10px; color: white; line-height: 1.2; }
+  .hero-desc { font-size: 14px; color: #cbd5e1; margin: 0; }
+  .btn-hero { 
+    background: white; color: #050a1f; border: none; padding: 14px 28px; border-radius: 12px; 
+    font-weight: 700; font-size: 14px; cursor: pointer; position: relative; z-index: 1; transition: 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-hero:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(255,255,255,0.2); }
+
+  /* ============================================================
+     COURSE CARDS (COLORFUL & INTERACTIVE)
+     ============================================================ */
+  .section-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 24px; }
+  .section-head h2 { font-size: 22px; font-weight: 800; margin: 0; color: white; }
+  .section-head p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
+  
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
+  .course-card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 24px; padding: 28px;
+    display: flex; flex-direction: column; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    position: relative; overflow: hidden; cursor: pointer;
+  }
+  .course-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.2); box-shadow: 0 20px 40px rgba(0,0,0,0.4); background: var(--panel-hover); }
+  
+  /* Colorful Top Bar for Cards */
+  .course-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; }
+  .course-card[data-cat="tech"]::before { background: linear-gradient(90deg, #4ab8ff, #00e5a0); }
+  .course-card[data-cat="business"]::before { background: linear-gradient(90deg, #8a5cff, #ff5e8a); }
+  .course-card[data-cat="career"]::before { background: linear-gradient(90deg, #ffb800, #ff5e8a); }
+  .course-card[data-cat="life"]::before { background: linear-gradient(90deg, #00e5a0, #4ab8ff); }
+
+  .course-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  .category-badge { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; padding: 6px 12px; border-radius: 100px; background: rgba(255,255,255,0.05); }
+  .course-card[data-cat="tech"] .category-badge { color: #4ab8ff; background: rgba(74,184,255,0.1); }
+  .course-card[data-cat="business"] .category-badge { color: #8a5cff; background: rgba(138,92,255,0.1); }
+  .course-card[data-cat="career"] .category-badge { color: #ffb800; background: rgba(255,184,0,0.1); }
+  .course-card[data-cat="life"] .category-badge { color: #00e5a0; background: rgba(0,229,160,0.1); }
+
+  .status-badge { font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 100px; }
+  .status-badge.enrolled { background: rgba(0, 229, 160, 0.15); color: var(--green); border: 1px solid rgba(0, 229, 160, 0.3); }
+  .status-badge.free { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid rgba(255,255,255,0.1); }
+
+  .course-card h3 { font-size: 18px; font-weight: 700; margin: 0 0 8px; line-height: 1.3; color: white; }
+  .course-meta { font-size: 13px; color: var(--muted); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+  
+  .progress-area { margin-bottom: 24px; margin-top: auto; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 8px; font-weight: 600; }
+  .progress-label b { color: white; }
+  .progress-track { height: 6px; background: rgba(0,0,0,0.3); border-radius: 100px; overflow: hidden; }
+  .progress-track span { display: block; height: 100%; border-radius: 100px; transition: width 0.8s ease; }
+  .course-card[data-cat="tech"] .progress-track span { background: linear-gradient(90deg, #4ab8ff, #00e5a0); box-shadow: 0 0 10px rgba(74,184,255,0.5); }
+  .course-card[data-cat="business"] .progress-track span { background: linear-gradient(90deg, #8a5cff, #ff5e8a); box-shadow: 0 0 10px rgba(138,92,255,0.5); }
+  .course-card[data-cat="career"] .progress-track span { background: linear-gradient(90deg, #ffb800, #ff5e8a); box-shadow: 0 0 10px rgba(255,184,0,0.5); }
+  .course-card[data-cat="life"] .progress-track span { background: linear-gradient(90deg, #00e5a0, #4ab8ff); box-shadow: 0 0 10px rgba(0,229,160,0.5); }
+
+  .btn-course { 
+    width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: 700; 
+    border: none; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .btn-course.continue { background: white; color: #050a1f; }
+  .btn-course.continue:hover { background: #e2e8f0; }
+  .btn-course.start { background: rgba(255,255,255,0.05); color: white; border: 1px solid rgba(255,255,255,0.1); }
+  .btn-course.start:hover { background: rgba(255,255,255,0.1); }
+
+  /* ============================================================
+     ACTIVITY & MOMENTUM
+     ============================================================ */
+  .lower-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-top: 40px; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 24px; padding: 28px; backdrop-filter: blur(10px); }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .panel-head h3 { font-size: 18px; margin: 0; color: white; }
+  
+  .activity-item { display: flex; align-items: center; gap: 16px; padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .activity-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .activity-icon { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(74, 184, 255, 0.1); color: var(--cyan); flex-shrink: 0; }
+  .activity-copy { flex: 1; }
+  .activity-copy strong { display: block; font-size: 14px; font-weight: 600; color: white; margin-bottom: 2px; }
+  .activity-copy span { font-size: 12px; color: var(--muted); }
+  .activity-time { font-size: 12px; color: #5a7a9a; font-weight: 500; white-space: nowrap; }
+
+  /* ============================================================
+     CATALOG & PROFILE (Standard views)
+     ============================================================ */
+  .catalog-toolbar { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .search-input { flex: 1; min-width: 250px; padding: 14px 20px; border-radius: 12px; background: var(--panel); border: 1px solid var(--border); color: white; font-size: 14px; outline: none; }
+  .search-input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(74,184,255,0.2); }
+  .filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+  .filter-btn { padding: 10px 20px; border-radius: 100px; background: var(--panel); border: 1px solid var(--border); color: var(--muted); font-weight: 600; cursor: pointer; white-space: nowrap; transition: 0.2s; font-size: 13px; }
+  .filter-btn:hover { background: rgba(255,255,255,0.05); color: white; }
+  .filter-btn.active { background: var(--violet); color: white; border-color: var(--violet); box-shadow: 0 4px 15px rgba(138,92,255,0.4); }
+
+  .profile-card { max-width: 800px; background: var(--panel); border: 1px solid var(--border); border-radius: 24px; padding: 40px; }
+  .profile-header { display: flex; align-items: center; gap: 24px; margin-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 30px; }
+  .profile-header .avatar { width: 80px; height: 80px; border-width: 4px; border-color: var(--violet); }
+  .profile-header h2 { font-size: 24px; margin: 0 0 4px; }
+  .profile-header p { margin: 0; color: var(--muted); font-size: 14px; }
+  .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .profile-field label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; }
+  .profile-field div { padding: 16px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); font-weight: 600; color: white; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 100px); background: white; color: #050a1f; padding: 16px 32px; border-radius: 100px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.5); opacity: 0; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; pointer-events: none; }
+  .toast.show { transform: translate(-50%, 0); opacity: 1; }
+  .toast.error { background: #ff5e8a; color: white; }
+
+  /* ============================================================
+     RESPONSIVE DESIGN
+     ============================================================ */
+  @media (max-width: 1100px) {
+    .overview-grid { grid-template-columns: 1fr; }
+    .stats-grid { grid-template-columns: repeat(4, 1fr); }
+    .lower-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 850px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0; padding: 20px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-banner { flex-direction: column; align-items: flex-start; gap: 20px; padding: 24px; }
+    .btn-hero { width: 100%; justify-content: center; }
+    .course-grid { grid-template-columns: 1fr; }
+    .mobile-top { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 20px; font-weight: 800; }
+    .mobile-top img { width: 32px; }
+    .topbar { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .profile-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 500px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .stat-card { padding: 16px; border-radius: 16px; }
+    .stat-value { font-size: 24px; }
+    .welcome h1 { font-size: 28px; }
+    .progress-ring { width: 120px; height: 120px; }
+    .chart-value { font-size: 28px; }
+  }
 </style>
 </head>
 <body>
-<div class="loading" id="loading"><div><div class="spinner"></div><div>Loading your learning space…</div></div></div>
-<div class="app" id="app" aria-busy="true">
-<aside class="sidebar" aria-label="Main navigation">
-<a class="brand" href="#dashboard"><img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt=""><span><span class="brand-name">ISHURI ONLINE</span><span class="brand-tag">Learn anything, anytime</span></span></a><div class="nav-label">Workspace</div>
-<nav class="nav">
-<button class="active" data-view="dashboard" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/></svg>Dashboard</button>
-<button data-view="catalog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21z"/><path d="M4 5.5v15M8 7h8M8 11h8"/></svg>All Courses</button>
-<button data-view="profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>My Profile</button>
-<button id="signOut"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>Sign Out</button></nav>
-<div class="spacer"></div><div class="side-note"><b>Your next skill is closer.</b><p>Small lessons. Real progress. Keep going.</p></div><div class="side-user"><img class="avatar" id="sideAvatar" alt=""><div class="user-meta"><strong id="sideName">Student</strong><span id="sideEmail"></span></div><button class="logout" id="sideSignOut" aria-label="Sign out">↗</button></div></aside>
-<main class="main"><header class="topbar"><div class="mobile-top"><img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt=""><span>ISHURI ONLINE</span></div><div class="crumb">Workspace / <strong id="crumbName">Dashboard</strong></div><div class="date-chip"><b>✦</b> <span id="today"></span></div></header>
-<section class="page active" id="dashboardPage"><div class="welcome"><div><div class="eyebrow">Your learning overview</div><h1 id="greeting">Welcome back.</h1><p>A little progress each day adds up. Ready to continue?</p></div></div>
-<div class="stats">
-<article class="stat"><div class="stat-top">Enrolled Courses <span class="stat-icon">▤</span></div><strong class="stat-value" id="statCourses">0</strong><div class="stat-foot">Courses in your library</div></article>
-<article class="stat"><div class="stat-top">Lessons Done <span class="stat-icon">✓</span></div><strong class="stat-value" id="statLessons">0</strong><div class="stat-foot">Every lesson moves you forward</div></article>
-<article class="stat"><div class="stat-top">Quizzes Passed <span class="stat-icon">▣</span></div><strong class="stat-value" id="statQuizzes">0</strong><div class="stat-foot">Knowledge put into practice</div></article>
-<article class="stat"><div class="stat-top">Learning Hours <span class="stat-icon">◷</span></div><strong class="stat-value" id="statHours">0</strong><div class="stat-foot">Estimated time invested</div></article></div>
-<section class="hero"><div class="hero-content"><div class="eyebrow"><span class="pulse"></span>Continue learning</div><h2 id="heroTitle">Your next chapter starts here.</h2><p id="heroDescription">Choose a course and take one small step today.</p></div><div class="hero-action"><button class="btn btn-primary" id="resumeButton" hidden>Resume Lesson 1 →</button><button class="btn btn-quiet" id="exploreButton">Explore courses →</button></div></section>
-<div class="section-head"><div><h2>My Courses</h2><p id="myCoursesMeta">Your active learning, all in one place.</p></div><button class="text-link" data-go="catalog">Browse catalog →</button></div><div class="course-grid" id="myCourses"></div>
-<div class="lower-grid"><section class="panel"><div class="section-head"><div><h2>Recent Activity</h2><p>Your latest learning milestones</p></div></div><div class="activity-list" id="activityList"><div class="activity-empty">Loading recent activity…</div></div></section><section class="panel learning-card"><div class="eyebrow">Your momentum</div><h3>Progress looks good on you.</h3><p>Show up for a lesson today and keep your streak moving.</p><div class="learning-stat"><b id="momentumLessons">0</b><span>lessons completed<br>across your courses</span></div><button class="btn btn-quiet" data-go="catalog">Find your next course →</button></section></div></section>
-<section class="page" id="catalogPage"><div class="welcome"><div><div class="eyebrow">Explore & grow</div><h1>Course catalog</h1><p>Find a practical skill to move you forward.</p></div></div><div class="catalog-toolbar"><label class="search"><input id="courseSearch" type="search" placeholder="Search courses…" aria-label="Search courses"></label><div class="filters" id="filters"><button class="filter active" data-category="all">All courses</button><button class="filter" data-category="tech">Technology</button><button class="filter" data-category="business">Business</button><button class="filter" data-category="career">Career</button><button class="filter" data-category="life">Life skills</button></div></div><div class="section-head"><div><h2>Explore all courses</h2><p>Start a free introduction to add a course to your learning space.</p></div></div><div class="course-grid" id="catalogGrid"></div></section>
-<section class="page" id="profilePage"><div class="welcome"><div><div class="eyebrow">Account settings</div><h1>My profile</h1><p>Your learner details and account information.</p></div></div><section class="profile-card"><div class="profile-head"><img class="avatar" id="profileAvatar" alt=""><div><h2 id="profileName">Student</h2><p id="profileEmail"></p></div></div><div class="profile-fields"><div class="field"><span>Display name</span><b id="profileDisplayName">—</b></div><div class="field"><span>Email address</span><b id="profileEmailField">—</b></div><div class="field"><span>Enrolled courses</span><b id="profileCourses">0 courses</b></div><div class="field"><span>Account</span><b>Google sign-in</b></div></div></section></section></main></div>
-<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Animated Background -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="app" id="app">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <a href="dashboard.html" class="brand">
+      <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="ISHURI">
+      <div class="brand-text">
+        <span class="brand-name">ISHURI</span>
+        <span class="brand-tag">Online</span>
+      </div>
+    </a>
+    
+    <div class="nav-label">Workspace</div>
+    <nav class="nav">
+      <button class="active" data-view="dashboard" onclick="showView('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg>
+        Dashboard
+      </button>
+      <button data-view="catalog" onclick="showView('catalog')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        All Courses
+      </button>
+      <button data-view="profile" onclick="showView('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        My Profile
+      </button>
+    </nav>
+    
+    <div class="spacer"></div>
+    
+    <div class="side-user">
+      <img class="avatar" id="sideAvatar" alt="" style="display:none;">
+      <div class="user-meta">
+        <strong id="sideName">Student</strong>
+        <span id="sideEmail">student@example.com</span>
+      </div>
+      <button class="logout" onclick="signOutUser()" title="Sign Out">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <header class="topbar">
+      <div class="mobile-top">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button onclick="document.getElementById('sidebar').classList.add('open')" style="background:none;border:none;color:white;font-size:24px;cursor:pointer;">☰</button>
+          <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="">
+          <span>ISHURI</span>
+        </div>
+      </div>
+      <div class="crumb">Workspace / <strong id="crumbName">Dashboard</strong></div>
+      <div class="date-chip">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span id="today"></span>
+      </div>
+    </header>
+
+    <!-- VIEW: DASHBOARD -->
+    <section class="page active" id="dashboardPage">
+      <div class="welcome">
+        <div class="eyebrow">Welcome Back</div>
+        <h1 id="greeting">Hello, Student.</h1>
+        <p>You're making great progress. Keep up the momentum!</p>
+      </div>
+
+      <!-- Premium Overview Section -->
+      <div class="overview-grid">
+        
+        <!-- Circular Progress Chart -->
+        <div class="chart-card">
+          <svg class="progress-ring" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#4ab8ff" />
+                <stop offset="100%" stop-color="#8a5cff" />
+              </linearGradient>
+            </defs>
+            <circle class="progress-ring__circle-bg" cx="50" cy="50" r="40" />
+            <circle class="progress-ring__circle" cx="50" cy="50" r="40" id="progressRing" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+          </svg>
+          <div class="chart-value" id="chartPercent">0%</div>
+          <div class="chart-label">Overall Completion</div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Enrolled Courses</div>
+              <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>
+            </div>
+            <div class="stat-value" id="statCourses">0</div>
+            <div class="stat-foot">In your library</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Lessons Done</div>
+              <div class="stat-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+            </div>
+            <div class="stat-value" id="statLessons">0</div>
+            <div class="stat-foot">Every step counts</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Quizzes Passed</div>
+              <div class="stat-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg></div>
+            </div>
+            <div class="stat-value" id="statQuizzes">0</div>
+            <div class="stat-foot">Knowledge verified</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-title">Learning Hours</div>
+              <div class="stat-icon pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div>
+            </div>
+            <div class="stat-value" id="statHours">0.0</div>
+            <div class="stat-foot">Time invested</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero Banner (Resume) -->
+      <div class="hero-banner" id="heroBanner" style="display:none;">
+        <div class="hero-content">
+          <div class="eyebrow" style="color:var(--pink)">Continue Learning</div>
+          <div class="hero-title" id="heroTitle">Course Title</div>
+          <div class="hero-desc" id="heroDesc">You left off at lesson X. Keep going!</div>
+        </div>
+        <button class="btn-hero" id="resumeBtn" onclick="resumeCourse()">
+          Resume Now
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </div>
+
+      <!-- My Courses -->
+      <div class="section-head">
+        <div>
+          <h2>My Active Courses</h2>
+          <p>Continue where you left off.</p>
+        </div>
+      </div>
+      <div class="course-grid" id="myCoursesGrid"></div>
+
+      <!-- Recent Activity -->
+      <div class="lower-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Recent Activity</h3>
+          </div>
+          <div id="activityList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW: CATALOG -->
+    <section class="page" id="catalogPage">
+      <div class="welcome">
+        <div class="eyebrow">Course Catalog</div>
+        <h1>Explore All Courses</h1>
+        <p>Discover new skills and add them to your library for free.</p>
+      </div>
+
+      <div class="catalog-toolbar">
+        <input type="text" class="search-input" id="courseSearch" placeholder="Search courses..." oninput="filterCourses()">
+        <div class="filters">
+          <button class="filter-btn active" data-cat="all" onclick="setCategory('all')">All Courses</button>
+          <button class="filter-btn" data-cat="tech" onclick="setCategory('tech')">Technology</button>
+          <button class="filter-btn" data-cat="business" onclick="setCategory('business')">Business</button>
+          <button class="filter-btn" data-cat="career" onclick="setCategory('career')">Career</button>
+          <button class="filter-btn" data-cat="life" onclick="setCategory('life')">Life Skills</button>
+        </div>
+      </div>
+
+      <div class="course-grid" id="catalogGrid"></div>
+    </section>
+
+    <!-- VIEW: PROFILE -->
+    <section class="page" id="profilePage">
+      <div class="welcome">
+        <div class="eyebrow">Account Settings</div>
+        <h1>My Profile</h1>
+        <p>Your personal details and account information.</p>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-header">
+          <img class="avatar" id="profileAvatar" alt="">
+          <div>
+            <h2 id="profileName">Student Name</h2>
+            <p id="profileEmail">student@example.com</p>
+          </div>
+        </div>
+        <div class="profile-grid">
+          <div class="profile-field">
+            <label>Display Name</label>
+            <div id="profileDisplayName">—</div>
+          </div>
+          <div class="profile-field">
+            <label>Email Address</label>
+            <div id="profileEmailField">—</div>
+          </div>
+          <div class="profile-field">
+            <label>Enrolled Courses</label>
+            <div id="profileCoursesCount">0 courses</div>
+          </div>
+          <div class="profile-field">
+            <label>Authentication</label>
+            <div>Google Sign-In</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-import { getFirestore, doc, getDoc, updateDoc, arrayUnion, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-const firebaseConfig={apiKey:"AIzaSyAlecssz7iDdq_h4IhVo1HKlj-MpRa3CCs",authDomain:"ishuri-online.firebaseapp.com",projectId:"ishuri-online",storageBucket:"ishuri-online.firebasestorage.app",messagingSenderId:"910778726579",appId:"1:910778726579:web:2c49c3882dcc04a48cd8c6"};
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
-const COURSES=[
-{id:'excel-advanced',title:'Advanced Microsoft Excel',cat:'tech',modules:8},{id:'word',title:'Microsoft Word',cat:'tech',modules:6},{id:'powerpoint',title:'Microsoft PowerPoint',cat:'tech',modules:5},{id:'google-workspace',title:'Google Workspace',cat:'tech',modules:5},{id:'powerbi',title:'Power BI & Data Analysis',cat:'tech',modules:7},{id:'accounting',title:'Accounting & Bookkeeping',cat:'business',modules:7},{id:'personal-finance',title:'Personal Finance & Budgeting',cat:'business',modules:5},{id:'entrepreneurship',title:'Entrepreneurship & Business Planning',cat:'business',modules:7},{id:'digital-marketing',title:'Digital Marketing',cat:'business',modules:7},{id:'network-marketing',title:'Network Marketing & MLM',cat:'business',modules:7},{id:'cv-writing',title:'CV Writing & Job Readiness',cat:'career',modules:6},{id:'ai-work',title:'AI for Everyday Work',cat:'career',modules:6},{id:'computer-basics',title:'Computer Basics & Digital Literacy',cat:'career',modules:5},{id:'first-aid',title:'Basic First Aid & Personal Safety',cat:'life',modules:5}];
-const CAT={tech:'Technology',business:'Business',career:'Career',life:'Life skills'},$=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const state={user:null,data:{purchasedCourses:[],progress:{}},category:'all',search:'',recentId:null,toastTimer:null},loading=$('#loading');
-function toast(message,error=false){const el=$('#toast');el.textContent=message;el.classList.toggle('error',error);el.classList.add('show');clearTimeout(state.toastTimer);state.toastTimer=setTimeout(()=>el.classList.remove('show'),3800)}
-function handleError(err,message='Something went wrong. Please try again.'){console.error(err);if(err?.code==='permission-denied'||err?.code==='firestore/permission-denied')toast('Permission denied. Check Firestore rules.',true);else toast(message,true)}
-function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function progress(id){const p=state.data.progress?.[id]||{};return {...p,completedLessons:Array.isArray(p.completedLessons)?p.completedLessons:[],quizzesPassed:Number(p.quizzesPassed)||0}}
-function ms(v){if(!v)return 0;if(typeof v.toMillis==='function')return v.toMillis();if(typeof v.seconds==='number')return v.seconds*1000;const n=new Date(v).getTime();return Number.isFinite(n)?n:0}
-function totalLessons(){return Object.values(state.data.progress||{}).reduce((n,p)=>n+(Array.isArray(p?.completedLessons)?p.completedLessons.length:0),0)}
-function renderStats(){const purchased=Array.isArray(state.data.purchasedCourses)?state.data.purchasedCourses:[],lessons=totalLessons(),quizzes=Object.values(state.data.progress||{}).reduce((n,p)=>n+(Number(p?.quizzesPassed)||0),0);$('#statCourses').textContent=purchased.length;$('#statLessons').textContent=lessons;$('#statQuizzes').textContent=quizzes;$('#statHours').textContent=(lessons*.5).toFixed(1).replace(/\.0$/,'');$('#momentumLessons').textContent=lessons;$('#myCoursesMeta').textContent=`${purchased.length} ${purchased.length===1?'course':'courses'} in your learning library`;$('#profileCourses').textContent=`${purchased.length} ${purchased.length===1?'course':'courses'}`}
-function card(course,catalog=false){const owned=(state.data.purchasedCourses||[]).includes(course.id),p=progress(course.id),done=p.completedLessons.length,pct=Math.min(100,Math.round(done/course.modules*100));return `<article class="course-card"><div class="course-top"><span class="category">${esc(CAT[course.cat])}</span><span class="badge ${owned?'':'free'}">${owned?'Enrolled':'Free intro'}</span></div><h3>${esc(course.title)}</h3><div class="course-meta">${course.modules} lessons · Self-paced</div><div class="progress-area"><div class="progress-label"><span>${owned?`${done} of ${course.modules} lessons`:'Start with a free introduction'}</span><b>${owned?pct+'%':'Free'}</b></div><div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${owned?pct:0}"><span style="width:${owned?pct:0}%"></span></div></div><div class="card-bottom"><span class="course-meta">${owned?'Your progress':'Explore this skill'}</span><button class="btn ${owned?'btn-quiet':'btn-primary'}" data-action="${owned?'continue':'start'}" data-id="${course.id}">${owned?'Continue':catalog?'Start Free':'Continue'} →</button></div></article>`}
-function renderCourses(){const purchased=state.data.purchasedCourses||[],mine=COURSES.filter(c=>purchased.includes(c.id));$('#myCourses').innerHTML=mine.length?mine.map(c=>card(c)).join(''):'<div class="empty-state">No courses yet. Browse the catalog and start a free introduction to build your learning library.</div>';const list=COURSES.filter(c=>(state.category==='all'||c.cat===state.category)&&c.title.toLowerCase().includes(state.search.toLowerCase()));$('#catalogGrid').innerHTML=list.length?list.map(c=>card(c,true)).join(''):'<div class="empty-state">No courses match your search. Try another topic.</div>'}
-function renderHero(){const recent=Object.entries(state.data.progress||{}).map(([id,p])=>({id,p:p||{},time:ms(p?.lastAccessedAt)||ms(p?.updatedAt)||ms(p?.startedAt)})).filter(x=>COURSES.some(c=>c.id===x.id)).sort((a,b)=>b.time-a.time)[0],course=recent&&COURSES.find(c=>c.id===recent.id),resume=$('#resumeButton'),explore=$('#exploreButton');if(!course){$('#heroTitle').textContent='Your next chapter starts here.';$('#heroDescription').textContent='Choose a course and take one small step today.';resume.hidden=true;explore.hidden=false;state.recentId=null;return}const done=progress(course.id).completedLessons.length,next=Math.min(course.modules,done+1);$('#heroTitle').textContent=`Pick up where you left off: ${course.title}`;$('#heroDescription').textContent=done?`You’ve completed ${done} ${done===1?'lesson':'lessons'} so far. Keep your momentum going.`:'Your course is ready when you are. Continue with your first lesson.';resume.textContent=`Resume Lesson ${next} →`;resume.hidden=false;explore.hidden=true;state.recentId=course.id}
-function renderProfile(){const u=state.user,name=u.displayName||'Student',email=u.email||'',photo=u.photoURL||'';$('#greeting').textContent=`Welcome back, ${name.split(' ')[0]}.`;$('#profileName').textContent=name;$('#profileDisplayName').textContent=name;$('#profileEmail').textContent=email||'No email available';$('#profileEmailField').textContent=email||'—';$('#sideName').textContent=name;$('#sideEmail').textContent=email;['#sideAvatar','#profileAvatar'].forEach(s=>{const el=$(s);if(photo)el.src=photo;else el.hidden=true})}
-function renderAll(){renderStats();renderHero();renderCourses();renderProfile()}
-function ago(value){const time=ms(value);if(!time)return'Recently';const min=Math.floor(Math.max(0,Date.now()-time)/60000);if(min<1)return'Just now';if(min<60)return`${min} min${min===1?'':'s'} ago`;const hours=Math.floor(min/60);if(hours<24)return`${hours} hour${hours===1?'':'s'} ago`;const days=Math.floor(hours/24);return days<30?`${days} day${days===1?'':'s'} ago`:new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric'}).format(new Date(time))}
-async function renderActivity(){const box=$('#activityList');try{const q=query(collection(db,'activity'),where('uid','==',state.user.uid),orderBy('at','desc'),limit(5)),snap=await getDocs(q),items=snap.docs.map(d=>({id:d.id,...d.data()}));box.innerHTML=items.length?items.map(item=>{const course=esc(item.courseTitle||COURSES.find(c=>c.id===item.courseId)?.title||'a course'),text=item.type==='course_started'?`Started ${course}`:item.type==='lesson_completed'?`Completed a lesson in ${course}`:item.type==='purchase'?`Enrolled in ${course}`:item.type==='quiz_passed'?`Passed a quiz in ${course}`:esc(item.message||'Learning activity');return `<div class="activity-item"><span class="activity-icon">✦</span><div class="activity-copy"><strong>${text}</strong><span>Learning activity</span></div><span class="activity-time">${ago(item.at)}</span></div>`}).join(''):'<div class="activity-empty">No activity yet. Start a course to see milestones here.</div>'}catch(err){console.error('Activity load error:',err);if(err?.code==='permission-denied'||err?.code==='firestore/permission-denied')toast('Permission denied. Check Firestore rules.',true);box.innerHTML='<div class="activity-empty">Recent activity is unavailable right now.</div>'}}
-async function refresh(){const snap=await getDoc(doc(db,'users',state.user.uid)),data=snap.exists()?snap.data():{};state.data={...data,purchasedCourses:Array.isArray(data.purchasedCourses)?data.purchasedCourses:[],progress:data.progress&&typeof data.progress==='object'?data.progress:{}};renderAll()}
-function showView(view){const map={dashboard:['#dashboardPage','Dashboard'],catalog:['#catalogPage','All Courses'],profile:['#profilePage','My Profile']};if(!map[view])return;$$('.page').forEach(p=>p.classList.remove('active'));$(map[view][0]).classList.add('active');$('#crumbName').textContent=map[view][1];$$('.nav button[data-view]').forEach(b=>{const active=b.dataset.view===view;b.classList.toggle('active',active);active?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});window.scrollTo({top:0,behavior:'smooth'})}
-async function startFree(id,button){const course=COURSES.find(c=>c.id===id);if(!course||!state.user)return;const original=button.innerHTML;button.disabled=true;button.textContent='Adding…';try{const p=progress(id),entry={...p,completedLessons:p.completedLessons,quizzesPassed:p.quizzesPassed,startedAt:p.startedAt||new Date().toISOString(),lastAccessedAt:new Date().toISOString()};await updateDoc(doc(db,'users',state.user.uid),{purchasedCourses:arrayUnion(id),[`progress.${id}`]:entry});try{await addDoc(collection(db,'activity'),{uid:state.user.uid,type:'course_started',courseId:id,courseTitle:course.title,at:serverTimestamp()})}catch(err){console.error('Activity write error:',err);if(err?.code==='permission-denied'||err?.code==='firestore/permission-denied')toast('Permission denied. Check Firestore rules.',true)}await refresh();toast(`Free intro added: ${course.title}.`)}catch(err){handleError(err,'Could not add this course. Please try again.')}finally{button.disabled=false;button.innerHTML=original}}
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  import { getFirestore, doc, getDoc, updateDoc, arrayUnion, collection, addDoc, query, where, getDocs, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// ==========================================
-// UPDATED: REDIRECTS TO CONTENT.HTML
-// ==========================================
-function continueCourse(id){
-  const course=COURSES.find(c=>c.id===id);
-  if(!course)return;
-  
-  // Get the last accessed lesson, or start at 0
-  const p = progress(id);
-  const lastLesson = p.lastLessonIndex || 0;
-  
-  // Redirect to the content player
-  window.location.href = `content.html?course=${id}&lesson=${lastLesson}`;
-}
+  const firebaseConfig = { apiKey: "AIzaSyAlecssz7iDdq_h4IhVo1HKlj-MpRa3CCs", authDomain: "ishuri-online.firebaseapp.com", projectId: "ishuri-online", storageBucket: "ishuri-online.firebasestorage.app", messagingSenderId: "910778726579", appId: "1:910778726579:web:2c49c3882dcc04a48cd8c6" };
+  const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 
-async function signOutUser(){const buttons=[$('#signOut'),$('#sideSignOut')];buttons.forEach(b=>b.disabled=true);try{await signOut(auth);window.location.href='index.html'}catch(err){handleError(err,'Could not sign out. Please try again.');buttons.forEach(b=>b.disabled=false)}}
-$$('.nav button[data-view]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.view)));$$('[data-go]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.go)));$('#exploreButton').addEventListener('click',()=>showView('catalog'));$('#signOut').addEventListener('click',signOutUser);$('#sideSignOut').addEventListener('click',signOutUser);$('#resumeButton').addEventListener('click',()=>state.recentId&&continueCourse(state.recentId));$('#myCourses').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(b)continueCourse(b.dataset.id)});$('#catalogGrid').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;b.dataset.action==='start'?void startFree(b.dataset.id,b):continueCourse(b.dataset.id)});$('#courseSearch').addEventListener('input',e=>{state.search=e.target.value.trim();renderCourses()});$('#filters').addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(!b)return;state.category=b.dataset.category;$$('.filter').forEach(f=>f.classList.toggle('active',f===b));renderCourses()});$$('[data-go]').forEach(b=>b.addEventListener('click',()=>showView(b.dataset.go)));$('#today').textContent=new Intl.DateTimeFormat(undefined,{weekday:'short',month:'short',day:'numeric'}).format(new Date());
-onAuthStateChanged(auth,async user=>{if(!user){window.location.href='index.html';return}state.user=user;try{await refresh();await renderActivity()}catch(err){handleError(err,'Could not load your account data.');state.data={purchasedCourses:[],progress:{}};renderAll();$('#activityList').innerHTML='<div class="activity-empty">Recent activity is unavailable right now.</div>'}finally{$('#app').setAttribute('aria-busy','false');loading.classList.add('hidden')}},err=>{handleError(err,'Could not verify your sign-in.');window.location.href='index.html'});
-</script></body></html>
+  const COURSES = [
+    { id:'excel-advanced', title:'Advanced Microsoft Excel', cat:'tech', modules:8 },
+    { id:'word', title:'Microsoft Word', cat:'tech', modules:6 },
+    { id:'powerpoint', title:'Microsoft PowerPoint', cat:'tech', modules:5 },
+    { id:'google-workspace', title:'Google Workspace', cat:'tech', modules:5 },
+    { id:'powerbi', title:'Power BI & Data Analysis', cat:'tech', modules:7 },
+    { id:'accounting', title:'Accounting & Bookkeeping', cat:'business', modules:7 },
+    { id:'personal-finance', title:'Personal Finance & Budgeting', cat:'business', modules:5 },
+    { id:'entrepreneurship', title:'Entrepreneurship & Business Planning', cat:'business', modules:7 },
+    { id:'digital-marketing', title:'Digital Marketing', cat:'business', modules:7 },
+    { id:'network-marketing', title:'Network Marketing & MLM', cat:'business', modules:7 },
+    { id:'cv-writing', title:'CV Writing & Job Readiness', cat:'career', modules:6 },
+    { id:'ai-work', title:'AI for Everyday Work', cat:'career', modules:6 },
+    { id:'computer-basics', title:'Computer Basics & Digital Literacy', cat:'career', modules:5 },
+    { id:'first-aid', title:'Basic First Aid & Personal Safety', cat:'life', modules:5 }
+  ];
+
+  const CAT_LABEL = { tech:'Technology', business:'Business', career:'Career', life:'Life Skills' };
+  
+  let state = {
+    user: null,
+    data: { purchasedCourses: [], progress: {} },
+    category: 'all',
+    search: '',
+    recentId: null
+  };
+
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+
+  function toast(msg, isErr) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.className = 'toast show' + (isErr ? ' error' : '');
+    setTimeout(() => el.className = 'toast', 3000);
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function progress(id) {
+    const p = state.data.progress?.[id] || {};
+    return { ...p, completedLessons: Array.isArray(p.completedLessons) ? p.completedLessons : [], quizzesPassed: Number(p.quizzesPassed) || 0 };
+  }
+
+  function ms(v) {
+    if (!v) return 0;
+    if (typeof v.toMillis === 'function') return v.toMillis();
+    if (typeof v.seconds === 'number') return v.seconds * 1000;
+    const n = new Date(v).getTime();
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function ago(value) {
+    const time = ms(value);
+    if (!time) return 'Recently';
+    const min = Math.floor(Math.max(0, Date.now() - time) / 60000);
+    if (min < 1) return 'Just now';
+    if (min < 60) return `${min} min${min===1?'':'s'} ago`;
+    const hours = Math.floor(min / 60);
+    if (hours < 24) return `${hours} hour${hours===1?'':'s'} ago`;
+    const days = Math.floor(hours / 24);
+    return days < 30 ? `${days} day${days===1?'':'s'} ago` : new Intl.DateTimeFormat(undefined, {month:'short', day:'numeric'}).format(new Date(time));
+  }
+
+  // ============================================================
+  // RENDER LOGIC
+  // ============================================================
+  function renderAll() {
+    const purchased = state.data.purchasedCourses || [];
+    const allProgress = state.data.progress || {};
+    
+    // Calculate stats
+    let totalLessonsDone = 0;
+    let totalQuizzes = 0;
+    let totalPossibleLessons = 0;
+    
+    COURSES.forEach(c => {
+      if (purchased.includes(c.id)) {
+        totalPossibleLessons += c.modules;
+        const p = allProgress[c.id] || {};
+        totalLessonsDone += (p.completedLessons?.length || 0);
+        totalQuizzes += (Number(p.quizzesPassed) || 0);
+      }
+    });
+    
+    const overallPct = totalPossibleLessons > 0 ? Math.round((totalLessonsDone / totalPossibleLessons) * 100) : 0;
+
+    // Update Stats UI
+    $('#statCourses').textContent = purchased.length;
+    $('#statLessons').textContent = totalLessonsDone;
+    $('#statQuizzes').textContent = totalQuizzes;
+    $('#statHours').textContent = (totalLessonsDone * 0.5).toFixed(1);
+    
+    // Update Circular Chart
+    $('#chartPercent').textContent = `${overallPct}%`;
+    const circumference = 2 * Math.PI * 40;
+    const offset = circumference - (overallPct / 100) * circumference;
+    $('#progressRing').style.strokeDashoffset = offset;
+
+    // Find most recent course for Resume Banner
+    const recent = Object.entries(allProgress)
+      .map(([id, p]) => ({ id, p: p || {}, time: ms(p.lastAccessedAt) || ms(p.updatedAt) }))
+      .filter(x => purchased.includes(x.id))
+      .sort((a, b) => b.time - a.time)[0];
+
+    if (recent) {
+      const c = COURSES.find(x => x.id === recent.id);
+      if (c) {
+        $('#heroBanner').style.display = 'flex';
+        $('#heroTitle').textContent = c.title;
+        const done = recent.p.completedLessons?.length || 0;
+        $('#heroDesc').textContent = `You've completed ${done} of ${c.modules} lessons. Ready to continue?`;
+        state.recentId = c.id;
+      }
+    } else {
+      $('#heroBanner').style.display = 'none';
+    }
+
+    // Render My Courses
+    const myCourses = COURSES.filter(c => purchased.includes(c.id));
+    $('#myCoursesGrid').innerHTML = myCourses.length 
+      ? myCourses.map(c => createCourseCard(c, true)).join('')
+      : '<div style="padding:40px; text-align:center; color:var(--muted); grid-column:1/-1;">You have not enrolled in any courses yet. Visit the Catalog to start learning!</div>';
+
+    // Render Profile Info
+    const user = state.user;
+    $('#sideName').textContent = user.displayName || 'Student';
+    $('#sideEmail').textContent = user.email || 'student@example.com';
+    $('#profileName').textContent = user.displayName || 'Student';
+    $('#profileDisplayName').textContent = user.displayName || 'Student';
+    $('#profileEmail').textContent = user.email || '';
+    $('#profileEmailField').textContent = user.email || '—';
+    $('#profileCoursesCount').textContent = `${purchased.length} courses`;
+    $('#greeting').textContent = `Hello, ${(user.displayName || 'Student').split(' ')[0]}.`;
+
+    if (user.photoURL) {
+      $('#sideAvatar').src = user.photoURL;
+      $('#sideAvatar').style.display = 'block';
+      $('#profileAvatar').src = user.photoURL;
+    }
+
+    // Render Catalog
+    renderCatalog();
+  }
+
+  function createCourseCard(c, isEnrolledView = false) {
+    const owned = (state.data.purchasedCourses || []).includes(c.id);
+    const p = progress(c.id);
+    const done = p.completedLessons.length;
+    const pct = Math.min(100, Math.round((done / c.modules) * 100));
+
+    return `
+      <article class="course-card" data-cat="${c.cat}" onclick="continueCourse('${c.id}')">
+        <div class="course-top">
+          <span class="category-badge">${CAT_LABEL[c.cat]}</span>
+          ${owned 
+            ? `<span class="status-badge enrolled">Enrolled</span>` 
+            : `<span class="status-badge free">Free Intro</span>`}
+        </div>
+        <h3>${esc(c.title)}</h3>
+        <div class="course-meta">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          ${c.modules} Lessons
+        </div>
+        
+        <div class="progress-area">
+          <div class="progress-label">
+            <span>${owned ? `${done} of ${c.modules} completed` : 'Not started'}</span>
+            <b>${owned ? pct + '%' : 'Free'}</b>
+          </div>
+          <div class="progress-track">
+            <span style="width:${owned ? pct : 0}%"></span>
+          </div>
+        </div>
+
+        <button class="btn-course ${owned ? 'continue' : 'start'}" onclick="event.stopPropagation(); ${owned ? `continueCourse('${c.id}')` : `startFree('${c.id}', this)`}">
+          ${owned ? 'Continue Learning' : 'Start for Free'}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+      </article>
+    `;
+  }
+
+  function renderCatalog() {
+    const list = COURSES.filter(c => 
+      (state.category === 'all' || c.cat === state.category) && 
+      c.title.toLowerCase().includes(state.search.toLowerCase())
+    );
+    
+    $('#catalogGrid').innerHTML = list.length 
+      ? list.map(c => createCourseCard(c, false)).join('')
+      : '<div style="padding:40px; text-align:center; color:var(--muted); grid-column:1/-1;">No courses match your search.</div>';
+  }
+
+  // ============================================================
+  // ACTIONS
+  // ============================================================
+  window.startFree = async function(id, btn) {
+    if (!state.user) return;
+    const course = COURSES.find(c => c.id === id);
+    btn.disabled = true;
+    btn.textContent = 'Adding...';
+
+    try {
+      const userRef = doc(db, 'users', state.user.uid);
+      const p = progress(id);
+      
+      await updateDoc(userRef, {
+        purchasedCourses: arrayUnion(id),
+        [`progress.${id}`]: { ...p, startedAt: new Date().toISOString(), lastAccessedAt: new Date().toISOString() }
+      });
+
+      await addDoc(collection(db, 'activity'), {
+        uid: state.user.uid, type: 'course_started', courseId: id, courseTitle: course.title, at: serverTimestamp()
+      });
+
+      toast(`Enrolled in ${course.title}!`);
+      await refreshUserData();
+      
+    } catch (e) {
+      console.error(e);
+      toast('Error enrolling. Check Firestore rules.', true);
+      btn.disabled = false;
+      btn.textContent = 'Start for Free';
+    }
+  };
+
+  window.continueCourse = function(id) {
+    const p = progress(id);
+    const last = p.lastLessonIndex || 0;
+    window.location.href = `content.html?course=${id}&lesson=${last}`;
+  };
+
+  window.resumeCourse = function() {
+    if (state.recentId) continueCourse(state.recentId);
+  };
+
+  window.showView = function(view) {
+    $$('.page').forEach(p => p.classList.remove('active'));
+    $(`#${view}Page`).classList.add('active');
+    $$('.nav button').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    $('#crumbName').textContent = view === 'dashboard' ? 'Dashboard' : view === 'catalog' ? 'All Courses' : 'My Profile';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if(window.innerWidth < 850) $('#sidebar').classList.remove('open');
+  };
+
+  window.filterCourses = function() {
+    state.search = $('#courseSearch').value.trim();
+    renderCatalog();
+  };
+
+  window.setCategory = function(cat) {
+    state.category = cat;
+    $$('.filter-btn').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+    renderCatalog();
+  };
+
+  window.signOutUser = async function() {
+    await signOut(auth);
+    window.location.href = 'index.html';
+  };
+
+  // ============================================================
+  // DATA FETCHING
+  // ============================================================
+  async function refreshUserData() {
+    const snap = await getDoc(doc(db, 'users', state.user.uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      state.data = {
+        ...data,
+        purchasedCourses: Array.isArray(data.purchasedCourses) ? data.purchasedCourses : [],
+        progress: data.progress && typeof data.progress === 'object' ? data.progress : {}
+      };
+    }
+    renderAll();
+    renderActivity();
+  }
+
+  async function renderActivity() {
+    const box = $('#activityList');
+    try {
+      const q = query(collection(db, 'activity'), where('uid', '==', state.user.uid));
+      const snap = await getDocs(q);
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+      // Sort locally to avoid composite index requirement
+      items.sort((a, b) => {
+        const tA = a.at?.toMillis ? a.at.toMillis() : 0;
+        const tB = b.at?.toMillis ? b.at.toMillis() : 0;
+        return tB - tA;
+      });
+      
+      const recent = items.slice(0, 5);
+      
+      box.innerHTML = recent.length ? recent.map(item => {
+        let icon = '📚';
+        let text = 'Learning activity';
+        if (item.type === 'course_started') { icon = '🚀'; text = `Started ${item.courseTitle}`; }
+        if (item.type === 'lesson_completed') { icon = '✅'; text = `Completed a lesson in ${item.courseTitle}`; }
+        if (item.type === 'quiz_passed') { icon = '🏆'; text = `Passed a quiz in ${item.courseTitle}`; }
+        
+        return `
+          <div class="activity-item">
+            <div class="activity-icon">${icon}</div>
+            <div class="activity-copy">
+              <strong>${esc(text)}</strong>
+              <span>Keep up the great work!</span>
+            </div>
+            <div class="activity-time">${ago(item.at)}</div>
+          </div>
+        `;
+      }).join('') : '<div style="color:var(--muted); text-align:center; padding:20px;">No recent activity yet. Start a lesson to see it here!</div>';
+    } catch (e) {
+      console.error('Activity error:', e);
+      box.innerHTML = '<div style="color:var(--muted);">Could not load activity.</div>';
+    }
+  }
+
+  // Init
+  $('#today').textContent = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'long', day: 'numeric' }).format(new Date());
+
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'index.html'; return; }
+    state.user = user;
+    await refreshUserData();
+  });
+</script>
+</body>
+</html>
