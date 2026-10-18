@@ -544,16 +544,14 @@
     isolation: isolate;
   }
   .cta-band::before {
-    content: '';
-    position: absolute; inset: 0;
+    content: ''; position: absolute; inset: 0;
     background-image:
       linear-gradient(rgba(74,184,255,0.05) 1px, transparent 1px),
       linear-gradient(90deg, rgba(74,184,255,0.05) 1px, transparent 1px);
     background-size: 32px 32px;
     mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
     -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-    pointer-events: none;
-    z-index: -1;
+    pointer-events: none; z-index: -1;
   }
   .cta-band::after {
     content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
@@ -561,12 +559,9 @@
     filter: blur(0.5px);
   }
   .cta-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    pointer-events: none;
-    opacity: 0.55;
-    z-index: -1;
+    position: absolute; border-radius: 50%;
+    filter: blur(60px); pointer-events: none;
+    opacity: 0.55; z-index: -1;
   }
   .cta-orb-1 {
     width: 320px; height: 320px;
@@ -586,67 +581,44 @@
   }
   .cta-band .eyebrow { position: relative; }
   .cta-band h2 {
-    position: relative;
-    max-width: 720px;
-    margin: 0 auto 20px;
-    line-height: 1.1;
+    position: relative; max-width: 720px;
+    margin: 0 auto 20px; line-height: 1.1;
   }
   .cta-band p.lead {
-    position: relative;
-    max-width: 600px;
-    margin: 0 auto 44px;
-    text-align: center;
-    color: #c8d8e8;
-    font-size: 17px;
-    line-height: 1.65;
+    position: relative; max-width: 600px;
+    margin: 0 auto 44px; text-align: center;
+    color: #c8d8e8; font-size: 17px; line-height: 1.65;
   }
   .cta-actions {
-    position: relative;
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 52px;
+    position: relative; display: flex;
+    gap: 14px; flex-wrap: wrap;
+    justify-content: center; margin-bottom: 52px;
   }
   .cta-band .btn-google {
     padding: 15px 26px 15px 20px;
-    font-size: 14px;
-    border-radius: 100px;
+    font-size: 14px; border-radius: 100px;
     box-shadow: 0 10px 32px rgba(0,0,0,0.35);
   }
   .cta-band .btn-google svg { width: 20px; height: 20px; }
   .cta-perks {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px 32px;
-    padding-top: 36px;
+    position: relative; display: flex;
+    justify-content: center; flex-wrap: wrap;
+    gap: 12px 32px; padding-top: 36px;
     border-top: 1px solid rgba(74,184,255,0.14);
-    max-width: 780px;
-    margin: 0 auto;
+    max-width: 780px; margin: 0 auto;
   }
   .cta-perk {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    color: #b8cfe4;
-    letter-spacing: 0.02em;
+    display: inline-flex; align-items: center;
+    gap: 10px; font-size: 13px;
+    color: #b8cfe4; letter-spacing: 0.02em;
   }
   .cta-check {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%;
     background: rgba(74,184,255,0.16);
     border: 1px solid rgba(74,184,255,0.4);
-    color: #6ac8ff;
-    font-size: 10px;
-    font-weight: 700;
-    flex-shrink: 0;
+    color: #6ac8ff; font-size: 10px;
+    font-weight: 700; flex-shrink: 0;
   }
 
   /* ============================================================
@@ -656,8 +628,7 @@
     padding: 80px 40px 40px;
     border-top: 1px solid rgba(74,184,255,0.1);
     background: linear-gradient(180deg, transparent, rgba(5,10,31,0.6));
-    position: relative;
-    z-index: 3;
+    position: relative; z-index: 3;
   }
   .footer-inner { max-width: 1200px; margin: 0 auto; }
   .footer-grid {
@@ -675,22 +646,19 @@
   }
   .footer-brand-text { display: flex; flex-direction: column; line-height: 1.05; }
   .footer-brand-text .brand-name {
-    font-size: 15px; font-weight: 700;
-    letter-spacing: 0.14em; color:#fff;
+    font-size: 15px; font-weight: 700; letter-spacing: 0.14em; color:#fff;
   }
   .footer-brand-text .brand-tag {
-    font-size: 9px; font-weight: 400;
-    letter-spacing: 0.28em; color:#6ac8ff;
-    text-transform: uppercase;
+    font-size: 9px; font-weight: 400; letter-spacing: 0.28em;
+    color:#6ac8ff; text-transform: uppercase;
   }
   .footer-desc {
     font-size: 14px; color: #8aa4bc;
     max-width: 320px; line-height: 1.65;
   }
   .footer-col h4 {
-    font-size: 12px; font-weight: 600;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    color: #6ac8ff; margin-bottom: 20px;
+    font-size: 12px; font-weight: 600; letter-spacing: 0.2em;
+    text-transform: uppercase; color: #6ac8ff; margin-bottom: 20px;
   }
   .footer-col ul { list-style: none; }
   .footer-col li { margin-bottom: 12px; }
@@ -700,62 +668,39 @@
   }
   .footer-col a:hover { color: #fff; }
   .footer-dev {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 22px 24px;
-    margin-bottom: 28px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 10px; padding: 22px 24px; margin-bottom: 28px;
     background: linear-gradient(180deg, rgba(14,42,94,0.28) 0%, rgba(5,10,31,0.45) 100%);
     border: 1px solid rgba(74,184,255,0.14);
-    border-radius: 16px;
-    font-size: 13px;
-    color: #8aa4bc;
-    letter-spacing: 0.04em;
-    text-align: center;
-    backdrop-filter: blur(14px);
-    flex-wrap: wrap;
+    border-radius: 16px; font-size: 13px; color: #8aa4bc;
+    letter-spacing: 0.04em; text-align: center;
+    backdrop-filter: blur(14px); flex-wrap: wrap;
   }
   .footer-dev-label {
-    text-transform: uppercase;
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    color: #5a7a9a;
-    font-weight: 600;
+    text-transform: uppercase; font-size: 10px;
+    letter-spacing: 0.28em; color: #5a7a9a; font-weight: 600;
   }
   .footer-dev a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: #8ad8ff;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.08em;
-    padding: 6px 14px;
+    display: inline-flex; align-items: center; gap: 8px;
+    color: #8ad8ff; text-decoration: none; font-weight: 700;
+    font-size: 14px; letter-spacing: 0.08em; padding: 6px 14px;
     background: rgba(74,184,255,0.08);
     border: 1px solid rgba(74,184,255,0.28);
-    border-radius: 100px;
-    transition: all 0.25s ease;
+    border-radius: 100px; transition: all 0.25s ease;
   }
   .footer-dev a:hover {
-    color: #fff;
-    background: rgba(74,184,255,0.18);
-    border-color: #4ab8ff;
-    transform: translateY(-1px);
+    color: #fff; background: rgba(74,184,255,0.18);
+    border-color: #4ab8ff; transform: translateY(-1px);
     box-shadow: 0 6px 20px rgba(74,184,255,0.35);
   }
   .footer-dev a::after {
-    content: '↗';
-    font-size: 12px;
-    opacity: 0.75;
+    content: '↗'; font-size: 12px; opacity: 0.75;
     transition: transform 0.25s ease;
   }
   .footer-dev a:hover::after { transform: translate(2px, -2px); }
 
   .footer-bottom {
-    padding-top: 32px;
-    border-top: 1px solid rgba(74,184,255,0.08);
+    padding-top: 32px; border-top: 1px solid rgba(74,184,255,0.08);
     display: flex; justify-content: space-between;
     align-items: center; gap: 20px; flex-wrap: wrap;
     font-size: 13px; color: #6a8aa8;
@@ -820,29 +765,20 @@
      TOAST
      ============================================================ */
   #toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
+    position: fixed; bottom: 24px; left: 50%;
     transform: translateX(-50%) translateY(80px);
-    z-index: 60;
-    padding: 12px 22px;
+    z-index: 60; padding: 12px 22px;
     background: rgba(14,42,94,0.95);
     border: 1px solid rgba(74,184,255,0.4);
-    border-radius: 12px;
-    color: #e8f2ff;
-    font-size: 13px;
-    font-weight: 500;
+    border-radius: 12px; color: #e8f2ff;
+    font-size: 13px; font-weight: 500;
     box-shadow: 0 20px 60px -10px rgba(0,0,0,0.6), 0 0 30px rgba(74,184,255,0.25);
-    backdrop-filter: blur(16px);
-    opacity: 0;
+    backdrop-filter: blur(16px); opacity: 0;
     transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1);
-    pointer-events: none;
-    max-width: 90vw;
-    text-align: center;
+    pointer-events: none; max-width: 90vw; text-align: center;
   }
   #toast.visible {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    opacity: 1; transform: translateX(-50%) translateY(0);
   }
   #toast.error {
     border-color: rgba(255,120,120,0.5);
@@ -1782,23 +1718,28 @@ async function handleGoogleSignIn() {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
     
-    // Create/update user doc in Firestore
-    const userRef = doc(db, 'users', user.uid);
-    const userSnap = await getDoc(userRef);
-    if (!userSnap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        displayName: user.displayName || '',
-        email: user.email || '',
-        photoURL: user.photoURL || '',
-        createdAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
-        purchasedCourses: [],
-        progress: {}
-      });
+    // Create/update user doc in Firestore (wrapped in try/catch so it doesn't block redirect)
+    try {
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          displayName: user.displayName || '',
+          email: user.email || '',
+          photoURL: user.photoURL || '',
+          createdAt: serverTimestamp(),
+          lastLoginAt: serverTimestamp(),
+          purchasedCourses: [],
+          progress: {}
+        });
+      }
+    } catch (dbErr) {
+      console.warn('Could not save user profile to Firestore:', dbErr);
+      // Continue to redirect even if DB write fails
     }
     
-    // Redirect to dashboard
+    // ALWAYS redirect on successful auth
     window.location.href = 'dashboard.html';
   } catch (err) {
     console.error('Sign-in error:', err);
@@ -1821,7 +1762,13 @@ document.getElementById('ctaGoogle')?.addEventListener('click', handleGoogleSign
 // ============================================================
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
-  renderAuthSlot();
+  if (user) {
+    // If the user is already logged in, redirect immediately
+    window.location.href = 'dashboard.html';
+  } else {
+    // Only render the sign-in button if not logged in
+    renderAuthSlot();
+  }
 });
 
 // ============================================================
