@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ISHURI ONLINE · Admin</title>
+<script>
+  // Check if Admin passcode was entered on the homepage
+  if (sessionStorage.getItem('isAdmin') !== 'true') {
+    window.location.href = 'index.html';
+  }
+</script>
 <style>
   body { margin:0; background:#050a1f; color:#fff; font-family:system-ui, sans-serif; display:flex; min-height:100vh; }
   .sidebar { width:260px; background:rgba(14,42,94,0.4); border-right:1px solid rgba(74,184,255,0.2); padding:24px; }
@@ -19,11 +25,11 @@
 </head>
 <body>
   <div class="sidebar">
-    <h2 style="font-size:16px; letter-spacing:0.1em; margin-bottom:30px;">ADMIN PANEL</h2>
+    <h2 style="font-size:16px; letter-spacing:0.1em; margin-bottom:30px; color:#fff;">ADMIN PANEL</h2>
     <a href="#" class="nav-item active">Courses</a>
     <a href="#" class="nav-item">Students</a>
     <a href="#" class="nav-item">Settings</a>
-    <a href="dashboard.html" class="nav-item" style="margin-top:40px; border-top:1px solid rgba(74,184,255,0.1); padding-top:20px;">← Back to Student Dashboard</a>
+    <a href="index.html" class="nav-item" style="margin-top:40px; border-top:1px solid rgba(74,184,255,0.1); padding-top:20px;" onclick="sessionStorage.removeItem('isAdmin')">← Lock & Exit</a>
   </div>
   <div class="main">
     <h1>Manage Courses</h1>
