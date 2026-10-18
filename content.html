@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning · ISHURI ONLINE</title>
+<link rel="icon" href="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png">
+<style>
+  :root { color-scheme: dark; --bg: #050a1f; --panel: #0a162e; --line: rgba(105,170,231,.15); --text: #eef6ff; --muted: #8da4c1; --cyan: #4ab8ff; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 Inter, system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; }
+  
+  /* SIDEBAR / SYLLABUS */
+  .sidebar { width: 320px; background: rgba(5,11,29,.95); border-right: 1px solid var(--line); display: flex; flex-direction: column; z-index: 10; }
+  .brand { padding: 24px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; font-weight: 800; letter-spacing: .1em; font-size: 13px; }
+  .brand img { width: 30px; }
+  .syllabus { flex: 1; overflow-y: auto; padding: 20px; }
+  .module-title { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: .1em; margin: 20px 0 10px; }
+  .lesson-link { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; color: var(--muted); text-decoration: none; font-size: 13px; margin-bottom: 4px; transition: .2s; cursor: pointer; border: 1px solid transparent; }
+  .lesson-link:hover { background: rgba(74,184,255,.05); color: #fff; }
+  .lesson-link.active { background: rgba(74,184,255,.15); color: #fff; border-color: rgba(74,184,255,.3); font-weight: 600; }
+  .lesson-link.completed .icon { background: #72e2c0; color: #041326; }
+  .icon { width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 10px; border: 1px solid var(--line); flex-shrink: 0; }
+  .lesson-link.active .icon { border-color: var(--cyan); background: var(--cyan); color: #041326; }
+
+  /* MAIN CONTENT */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(ellipse at top right, rgba(40,117,198,.1), transparent 50%), var(--bg); }
+  
+  /* PROGRESS HEADER */
+  .topbar { height: 70px; background: rgba(5,10,31,.8); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 0 32px; flex-shrink: 0; }
+  .progress-container { flex: 1; max-width: 500px; }
+  .progress-text { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar { height: 6px; background: #162746; border-radius: 99px; overflow: hidden; }
+  .progress-bar div { height: 100%; background: linear-gradient(90deg, #2987e7, #69d0ff); border-radius: 99px; transition: width .4s ease; }
+  .btn-quiz { background: linear-gradient(135deg, #ffb877, #ff9a5c); color: #000; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(255,184,119,.3); transition: .2s; }
+  .btn-quiz:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,184,119,.4); }
+
+  /* LESSON AREA */
+  .content-scroll { flex: 1; overflow-y: auto; padding: 40px; scroll-behavior: smooth; }
+  .lesson-wrapper { max-width: 800px; margin: 0 auto; background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 40px; box-shadow: 0 20px 40px rgba(0,0,0,.2); }
+  .lesson-wrapper h1 { font-size: 32px; margin: 0 0 20px; letter-spacing: -.03em; }
+  .lesson-wrapper p { color: #c8d8e8; font-size: 16px; line-height: 1.8; margin-bottom: 24px; }
+  .lesson-wrapper img { width: 100%; border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--line); }
+  .lesson-wrapper blockquote { border-left: 4px solid var(--cyan); background: rgba(74,184,255,.05); padding: 20px; border-radius: 0 12px 12px 0; margin: 24px 0; color: #fff; font-style: italic; }
+  
+  .lesson-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .btn { padding: 12px 24px; border-radius: 10px; border: none; font-weight: 600; cursor: pointer; transition: .2s; }
+  .btn-primary { background: var(--cyan); color: #041326; }
+  .btn-primary:hover { background: #89dcff; }
+  .btn-ghost { background: rgba(255,255,255,.05); color: #fff; border: 1px solid var(--line); }
+  .btn-ghost:hover { background: rgba(255,255,255,.1); }
+
+  /* QUIZ MODAL */
+  #quizModal { position: fixed; inset: 0; background: rgba(5,10,31,.95); backdrop-filter: blur(20px); z-index: 100; display: none; align-items: center; justify-content: center; flex-direction: column; }
+  #quizModal.active { display: flex; }
+  .quiz-card { background: #0a162e; border: 1px solid var(--line); border-radius: 20px; width: 100%; max-width: 650px; padding: 40px; position: relative; }
+  .quiz-header { margin-bottom: 30px; text-align: center; }
+  .quiz-header h2 { font-size: 24px; margin: 0 0 10px; }
+  .quiz-header p { color: var(--muted); margin: 0; font-size: 14px; }
+  .question { margin-bottom: 24px; }
+  .question p { font-weight: 600; font-size: 16px; margin-bottom: 12px; color: #fff; }
+  .option { display: flex; align-items: center; gap: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; cursor: pointer; transition: .2s; }
+  .option:hover { background: rgba(74,184,255,.05); }
+  .option input { accent-color: var(--cyan); width: 18px; height: 18px; }
+  .quiz-footer { text-align: center; margin-top: 30px; }
+  
+  /* ANTI-CHEAT WARNING */
+  #cheatWarning { position: fixed; inset: 0; background: rgba(200,20,20,.95); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 20px; }
+  #cheatWarning h1 { font-size: 40px; margin: 0 0 20px; }
+  #cheatWarning p { font-size: 18px; max-width: 500px; line-height: 1.6; }
+
+  @media (max-width: 800px) {
+    .sidebar { position: fixed; inset: 0 100% 0 0; transition: right .3s; width: 280px; }
+    .sidebar.open { right: 0; left: auto; }
+    .main { margin-left: 0; }
+    .lesson-wrapper { padding: 24px; }
+    .content-scroll { padding: 20px; }
+    .topbar { padding: 0 20px; }
+    .mobile-menu-btn { display: block; background: none; border: none; color: #fff; font-size: 24px; cursor: pointer; margin-right: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ANTI-CHEAT WARNING OVERLAY -->
+<div id="cheatWarning">
+  <h1>⚠️ Quiz Locked</h1>
+  <p>You navigated away from the quiz tab. To maintain academic integrity, this attempt has been locked and reset. Please stay on this page during the quiz.</p>
+  <button class="btn btn-primary" style="margin-top:20px;" onclick="resetQuizState()">Return to Lesson</button>
+</div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <a href="dashboard.html" class="brand">
+    <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="">
+    <span>ISHURI ONLINE</span>
+  </a>
+  <div class="syllabus" id="syllabusList">
+    <!-- Syllabus Injected Here -->
+  </div>
+</aside>
+
+<!-- MAIN AREA -->
+<main class="main">
+  <header class="topbar">
+    <div style="display:flex; align-items:center; width:100%;">
+      <button class="mobile-menu-btn" style="display:none;" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <div class="progress-container">
+        <div class="progress-text">
+          <span id="progressLabel">Course Progress</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="progressFill" style="width: 0%"></div>
+        </div>
+      </div>
+    </div>
+    <button class="btn-quiz" id="takeQuizBtn" style="display:none;" onclick="openQuiz()">📝 Take Quiz</button>
+  </header>
+
+  <div class="content-scroll">
+    <div class="lesson-wrapper" id="lessonContent">
+      <!-- Lesson Content Injected Here -->
+    </div>
+  </div>
+</main>
+
+<!-- QUIZ MODAL -->
+<div id="quizModal">
+  <div class="quiz-card" id="quizCard">
+    <!-- Quiz Injected Here -->
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  import { getFirestore, doc, getDoc, updateDoc, arrayUnion, serverTimestamp, addDoc, collection } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
+  const firebaseConfig = { apiKey: "AIzaSyAlecssz7iDdq_h4IhVo1HKlj-MpRa3CCs", authDomain: "ishuri-online.firebaseapp.com", projectId: "ishuri-online", storageBucket: "ishuri-online.firebasestorage.app", messagingSenderId: "910778726579", appId: "1:910778726579:web:2c49c3882dcc04a48cd8c6" };
+  const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
+
+  // ============================================================
+  // MOCK COURSE DATABASE (This is where the real content lives)
+  // ============================================================
+  const COURSE_DATA = {
+    'excel-advanced': {
+      title: 'Advanced Microsoft Excel',
+      modules: [
+        {
+          title: 'Module 1: Mastering Lookups',
+          lessons: [
+            {
+              id: 'lesson-1',
+              title: 'Introduction to VLOOKUP',
+              type: 'text',
+              content: `
+                <h1>Introduction to VLOOKUP</h1>
+                <p>VLOOKUP is one of the most powerful functions in Excel. It stands for <strong>Vertical Lookup</strong>. It allows you to search for a value in the first column of a table and return a value in the same row from a specified column.</p>
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Data Analysis">
+                <blockquote>Imagine you have a list of Employee IDs and Names. You can use VLOOKUP to find the name of the employee with ID 105 instantly.</blockquote>
+                <p>The syntax is: <code>=VLOOKUP(lookup_value, table_array, col_index_num, [range_lookup])</code></p>
+              `
+            },
+            {
+              id: 'lesson-2',
+              title: 'Moving to XLOOKUP',
+              type: 'text',
+              content: `
+                <h1>Moving to XLOOKUP</h1>
+                <p>XLOOKUP is the modern replacement for VLOOKUP. It solves many of the limitations of VLOOKUP, such as the inability to look to the left.</p>
+                <p>If you are using Microsoft 365, you should always use XLOOKUP instead of VLOOKUP.</p>
+              `
+            }
+          ]
+        },
+        {
+          title: 'Module 2: Data Summarization',
+          lessons: [
+            {
+              id: 'lesson-3',
+              title: 'Introduction to PivotTables',
+              type: 'text',
+              content: `
+                <h1>Introduction to PivotTables</h1>
+                <p>PivotTables allow you to summarize, analyze, explore, and present summary data. It's like having a superpower for data.</p>
+              `
+            }
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What does VLOOKUP stand for?', options: ['Vertical Lookup', 'Variable Lookup', 'Visual Lookup', 'Virtual Lookup'], correct: 0 },
+        { q: 'Which function is the modern replacement for VLOOKUP?', options: ['HLOOKUP', 'INDEX', 'XLOOKUP', 'MATCH'], correct: 2 },
+        { q: 'Can XLOOKUP look to the left of the lookup column?', options: ['Yes', 'No'], correct: 0 }
+      ]
+    },
+    'word': {
+      title: 'Microsoft Word',
+      modules: [
+        {
+          title: 'Module 1: Professional Formatting',
+          lessons: [
+            {
+              id: 'lesson-1',
+              title: 'Using Styles',
+              type: 'text',
+              content: `
+                <h1>Using Styles in Word</h1>
+                <p>Styles are the secret to professional formatting. Instead of manually making every heading bold and size 16, you use the built-in "Heading 1" style.</p>
+                <p>This allows you to automatically generate a Table of Contents later.</p>
+              `
+            }
+          ]
+        }
+      ],
+      quiz: [
+        { q: 'What is the main benefit of using Styles?', options: ['It makes text colorful', 'It allows automatic Table of Contents', 'It prints faster'], correct: 1 }
+      ]
+    }
+  };
+
+  // ============================================================
+  // STATE & LOGIC
+  // ============================================================
+  let state = {
+    user: null,
+    userData: null,
+    currentCourseId: null,
+    currentLessonIndex: 0,
+    flatLessons: [],
+    isQuizOpen: false,
+    quizAttempt: null
+  };
+
+  const urlParams = new URLSearchParams(window.location.search);
+  state.currentCourseId = urlParams.get('course') || 'excel-advanced';
+  const startLesson = parseInt(urlParams.get('lesson')) || 0;
+
+  // Auth Guard
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) { window.location.href = 'index.html'; return; }
+    state.user = user;
+    const snap = await getDoc(doc(db, 'users', user.uid));
+    state.userData = snap.exists() ? snap.data() : { progress: {}, purchasedCourses: [] };
+    
+    initCourse();
+    state.currentLessonIndex = startLesson;
+    renderSidebar();
+    renderLesson();
+    setupAntiCheat();
+  });
+
+  // Flatten the course modules into a single array for easy navigation
+  function initCourse() {
+    const course = COURSE_DATA[state.currentCourseId];
+    if (!course) return;
+    state.flatLessons = [];
+    course.modules.forEach(m => {
+      m.lessons.forEach(l => {
+        state.flatLessons.push(l);
+      });
+    });
+    document.title = `${course.title} · Learning`;
+  }
+
+  // Calculate user progress
+  function getProgress() {
+    const p = state.userData.progress?.[state.currentCourseId] || { completedLessons: [] };
+    const total = state.flatLessons.length;
+    const done = p.completedLessons.length;
+    const pct = Math.round((done / total) * 100) || 0;
+    return { p, total, done, pct };
+  }
+
+  // ============================================================
+  // RENDERERS
+  // ============================================================
+  function renderSidebar() {
+    const course = COURSE_DATA[state.currentCourseId];
+    const { p } = getProgress();
+    let html = '';
+    
+    course.modules.forEach((mod, mIdx) => {
+      html += `<div class="module-title">${mod.title}</div>`;
+      mod.lessons.forEach((lesson) => {
+        const globalIdx = state.flatLessons.findIndex(l => l.id === lesson.id);
+        const isCompleted = p.completedLessons.includes(lesson.id);
+        const isActive = globalIdx === state.currentLessonIndex;
+        
+        html += `
+          <a class="lesson-link ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" onclick="goToLesson(${globalIdx})">
+            <span class="icon">${isCompleted ? '✓' : globalIdx + 1}</span>
+            <span>${lesson.title}</span>
+          </a>
+        `;
+      });
+    });
+    
+    document.getElementById('syllabusList').innerHTML = html;
+  }
+
+  function renderLesson() {
+    const lesson = state.flatLessons[state.currentLessonIndex];
+    if (!lesson) return;
+
+    // Update progress bar
+    const { done, total, pct } = getProgress();
+    document.getElementById('progressPercent').textContent = `${pct}%`;
+    document.getElementById('progressFill').style.width = `${pct}%`;
+    document.getElementById('progressLabel').textContent = `${done} of ${total} lessons completed`;
+
+    // Render content
+    const container = document.getElementById('lessonContent');
+    let contentHtml = lesson.content;
+    
+    // Add Navigation
+    const isFirst = state.currentLessonIndex === 0;
+    const isLast = state.currentLessonIndex === state.flatLessons.length - 1;
+    const p = state.userData.progress?.[state.currentCourseId] || { completedLessons: [] };
+    const isCompleted = p.completedLessons.includes(lesson.id);
+
+    contentHtml += `
+      <div class="lesson-nav">
+        <button class="btn btn-ghost" onclick="prevLesson()" ${isFirst ? 'disabled' : ''}>← Previous</button>
+        ${!isCompleted 
+          ? `<button class="btn btn-primary" onclick="markComplete()">Mark as Complete</button>`
+          : `<button class="btn btn-primary" onclick="nextLesson()" ${isLast ? 'disabled' : ''}>Next Lesson →</button>`
+        }
+      </div>
+    `;
+    
+    container.innerHTML = contentHtml;
+
+    // Show Quiz button if course is finished
+    const course = COURSE_DATA[state.currentCourseId];
+    if (done === total && course.quiz) {
+      document.getElementById('takeQuizBtn').style.display = 'block';
+    } else {
+      document.getElementById('takeQuizBtn').style.display = 'none';
+    }
+  }
+
+  // ============================================================
+  // ACTIONS
+  // ============================================================
+  window.goToLesson = function(index) {
+    state.currentLessonIndex = index;
+    renderSidebar();
+    renderLesson();
+    document.querySelector('.content-scroll').scrollTo(0, 0);
+    if (window.innerWidth < 800) document.getElementById('sidebar').classList.remove('open');
+  };
+
+  window.nextLesson = function() {
+    if (state.currentLessonIndex < state.flatLessons.length - 1) goToLesson(state.currentLessonIndex + 1);
+  };
+
+  window.prevLesson = function() {
+    if (state.currentLessonIndex > 0) goToLesson(state.currentLessonIndex - 1);
+  };
+
+  window.markComplete = async function() {
+    const lesson = state.flatLessons[state.currentLessonIndex];
+    if (!lesson) return;
+
+    const userRef = doc(db, 'users', state.user.uid);
+    // Use dot notation to update nested object in Firestore
+    const progressKey = `progress.${state.currentCourseId}`;
+    
+    // Ensure structure exists
+    if (!state.userData.progress) state.userData.progress = {};
+    if (!state.userData.progress[state.currentCourseId]) state.userData.progress[state.currentCourseId] = { completedLessons: [] };
+    
+    const p = state.userData.progress[state.currentCourseId];
+    if (!p.completedLessons.includes(lesson.id)) {
+      p.completedLessons.push(lesson.id);
+    }
+    p.lastAccessedAt = new Date().toISOString();
+    p.lastLessonIndex = state.currentLessonIndex;
+
+    try {
+      await updateDoc(userRef, { [progressKey]: p });
+      
+      // Log activity
+      await addDoc(collection(db, 'activity'), {
+        uid: state.user.uid,
+        type: 'lesson_completed',
+        courseId: state.currentCourseId,
+        courseTitle: COURSE_DATA[state.currentCourseId].title,
+        at: serverTimestamp()
+      });
+
+      renderSidebar();
+      renderLesson(); // Updates button to "Next Lesson"
+      
+      // Auto advance if not last lesson
+      if (state.currentLessonIndex < state.flatLessons.length - 1) {
+        setTimeout(() => nextLesson(), 800);
+      }
+    } catch(e) {
+      alert("Error saving progress: " + e.message);
+    }
+  };
+
+  // ============================================================
+  // QUIZ SYSTEM (WITH ANTI-CHEAT)
+  // ============================================================
+  let quizTimer = null;
+
+  window.openQuiz = function() {
+    const course = COURSE_DATA[state.currentCourseId];
+    if (!course.quiz) return;
+
+    state.isQuizOpen = true;
+    state.quizAttempt = {
+      answers: new Array(course.quiz.length).fill(null),
+      shuffledQuestions: [...course.quiz].sort(() => Math.random() - 0.5) // Randomize order
+    };
+
+    const modal = document.getElementById('quizModal');
+    const card = document.getElementById('quizCard');
+    
+    let html = `
+      <div class="quiz-header">
+        <h2>Final Quiz: ${course.title}</h2>
+        <p>Answer all questions. Do not switch tabs or the quiz will lock.</p>
+      </div>
+    `;
+
+    state.quizAttempt.shuffledQuestions.forEach((q, qIdx) => {
+      html += `
+        <div class="question">
+          <p>${qIdx + 1}. ${q.q}</p>
+          ${q.options.map((opt, oIdx) => `
+            <label class="option">
+              <input type="radio" name="q${qIdx}" value="${oIdx}" onchange="recordAnswer(${qIdx}, ${oIdx})">
+              <span>${opt}</span>
+            </label>
+          `).join('')}
+        </div>
+      `;
+    });
+
+    html += `
+      <div class="quiz-footer">
+        <button class="btn btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+      </div>
+    `;
+
+    card.innerHTML = html;
+    modal.classList.add('active');
+
+    // ANTI-CHEAT: Focus Detection
+    window.addEventListener('blur', antiCheatTrigger);
+    document.addEventListener('visibilitychange', checkVisibility);
+  };
+
+  window.recordAnswer = function(qIdx, oIdx) {
+    if (state.quizAttempt) state.quizAttempt.answers[qIdx] = oIdx;
+  };
+
+  // ANTI-CHEAT: If tab is hidden or window loses focus, trigger lock
+  function antiCheatTrigger() {
+    if (!state.isQuizOpen) return;
+    document.getElementById('cheatWarning').style.display = 'flex';
+    state.isQuizOpen = false; // Lock it
+    document.getElementById('quizModal').classList.remove('active');
+  }
+
+  function checkVisibility() {
+    if (document.hidden) antiCheatTrigger();
+  }
+
+  window.resetQuizState = function() {
+    document.getElementById('cheatWarning').style.display = 'none';
+    // Do not allow them to retake immediately to punish cheating. 
+    // In a real app, you would lock them out for 5 minutes or until teacher review.
+    alert("Attempt forfeited. Please review the lessons and try again later.");
+    window.location.reload();
+  };
+
+  window.submitQuiz = function() {
+    if (state.quizAttempt.answers.includes(null)) {
+      alert("Please answer all questions before submitting.");
+      return;
+    }
+
+    // Clean up listeners
+    window.removeEventListener('blur', antiCheatTrigger);
+    document.removeEventListener('visibilitychange', checkVisibility);
+
+    let correct = 0;
+    state.quizAttempt.shuffledQuestions.forEach((q, idx) => {
+      if (state.quizAttempt.answers[idx] === q.correct) correct++;
+    });
+
+    const score = Math.round((correct / state.quizAttempt.shuffledQuestions.length) * 100);
+    
+    const card = document.getElementById('quizCard');
+    card.innerHTML = `
+      <div style="text-align:center; padding: 40px 0;">
+        <h1 style="font-size:48px; color:${score >= 70 ? '#72e2c0' : '#ff8888'}; margin-bottom:20px;">${score}%</h1>
+        <h2>${score >= 70 ? 'Congratulations, you passed!' : 'Keep practicing!'}</h2>
+        <p style="color:var(--muted); margin-bottom:30px;">You got ${correct} out of ${state.quizAttempt.shuffledQuestions.length} questions correct.</p>
+        <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">Return to Dashboard</button>
+      </div>
+    `;
+
+    // Save quiz result to Firestore
+    const userRef = doc(db, 'users', state.user.uid);
+    const progressKey = `progress.${state.currentCourseId}`;
+    const p = state.userData.progress[state.currentCourseId];
+    if (score >= 70) {
+       p.quizzesPassed = (p.quizzesPassed || 0) + 1;
+       updateDoc(userRef, { [progressKey]: p });
+    }
+  };
+
+  // Disable right click globally on this page to stop easy copying
+  document.addEventListener('contextmenu', e => e.preventDefault());
+
+  // Mobile menu toggle
+  if (window.innerWidth <= 800) {
+    document.querySelector('.mobile-menu-btn').style.display = 'block';
+  }
+</script>
+</body>
+</html>
