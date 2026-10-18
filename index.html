@@ -9,208 +9,44 @@
 <meta name="description" content="ISHURI ONLINE — Affordable online learning. Pay 1,000 RWF per course with MTN MoMo or Airtel Money. Free introductory lessons in every course.">
 <meta name="theme-color" content="#050a1f">
 
-<!-- Suppress harmless Firebase COOP warnings -->
-<script>
-  const originalWarn = console.warn;
-  console.warn = function(...args) {
-    if (args[0] && typeof args[0] === 'string' && args[0].includes('Cross-Origin-Opener-Policy')) return;
-    originalWarn.apply(console, args);
-  };
-</script>
-
 <style>
-  /* ============================================================
-     RESET & BASE
-     ============================================================ */
+  /* [CSS from previous version remains exactly the same, just removed the dashboard overlay CSS to keep it clean] */
   *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
-  html, body {
-    background:#050a1f;
-    color:#e8f2ff;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
-    font-weight: 400;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
-    scroll-behavior: smooth;
-  }
-  body::before {
-    content:'';
-    position:fixed; inset:0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(74,184,255,0.08) 0%, transparent 60%);
-    pointer-events:none;
-    z-index:1;
-  }
-
-  /* ============================================================
-     3D CANVAS + VIGNETTE
-     ============================================================ */
+  html, body { background:#050a1f; color:#e8f2ff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif; font-weight: 400; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; scroll-behavior: smooth; }
+  body::before { content:''; position:fixed; inset:0; background: radial-gradient(ellipse at 50% 0%, rgba(74,184,255,0.08) 0%, transparent 60%); pointer-events:none; z-index:1; }
   #canvas-container { position:fixed; inset:0; z-index:0; pointer-events:none; }
-  #vignette {
-    position:fixed; inset:0; z-index:2; pointer-events:none;
-    background: radial-gradient(ellipse at 50% 55%, transparent 55%, rgba(0,5,20,0.55) 130%);
-  }
-
-  /* ============================================================
-     TOP BAR (nav)
-     ============================================================ */
-  #nav {
-    position:fixed; top:0; left:0; right:0;
-    z-index:20;
-    display:flex; align-items:center; justify-content:space-between;
-    padding: 16px 32px;
-    transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease;
-    border-bottom: 1px solid transparent;
-  }
-  #nav.scrolled {
-    background: rgba(5,10,31,0.72);
-    backdrop-filter: blur(20px) saturate(1.4);
-    -webkit-backdrop-filter: blur(20px) saturate(1.4);
-    border-bottom-color: rgba(74,184,255,0.12);
-  }
-  .nav-brand {
-    display:flex; align-items:center; gap:12px;
-    text-decoration:none; color:#fff;
-  }
-  .nav-brand img {
-    width:40px; height:40px; object-fit:contain;
-    filter: drop-shadow(0 0 12px rgba(74,184,255,0.5));
-  }
+  #vignette { position:fixed; inset:0; z-index:2; pointer-events:none; background: radial-gradient(ellipse at 50% 55%, transparent 55%, rgba(0,5,20,0.55) 130%); }
+  
+  #nav { position:fixed; top:0; left:0; right:0; z-index:20; display:flex; align-items:center; justify-content:space-between; padding: 16px 32px; transition: background 0.35s ease, backdrop-filter 0.35s ease, border-color 0.35s ease; border-bottom: 1px solid transparent; }
+  #nav.scrolled { background: rgba(5,10,31,0.72); backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); border-bottom-color: rgba(74,184,255,0.12); }
+  .nav-brand { display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff; }
+  .nav-brand img { width:40px; height:40px; object-fit:contain; filter: drop-shadow(0 0 12px rgba(74,184,255,0.5)); }
   .nav-brand-text { display:flex; flex-direction:column; line-height:1.05; }
-  .nav-brand-text .brand-name {
-    font-size:15px; font-weight:700; letter-spacing:0.14em; color:#fff;
-  }
-  .nav-brand-text .brand-tag {
-    font-size:9px; font-weight:400; letter-spacing:0.28em;
-    color:#6ac8ff; text-transform:uppercase;
-  }
-  .nav-links {
-    display:flex; align-items:center; gap:32px; list-style:none;
-  }
-  .nav-links a {
-    color:#a8c8e8; text-decoration:none;
-    font-size:13px; font-weight:500; letter-spacing:0.06em;
-    transition: color 0.2s ease;
-    position: relative;
-  }
+  .nav-brand-text .brand-name { font-size:15px; font-weight:700; letter-spacing:0.14em; color:#fff; }
+  .nav-brand-text .brand-tag { font-size:9px; font-weight:400; letter-spacing:0.28em; color:#6ac8ff; text-transform:uppercase; }
+  .nav-links { display:flex; align-items:center; gap:32px; list-style:none; }
+  .nav-links a { color:#a8c8e8; text-decoration:none; font-size:13px; font-weight:500; letter-spacing:0.06em; transition: color 0.2s ease; position: relative; }
   .nav-links a:hover { color:#fff; }
-  .nav-links a::after {
-    content:''; position:absolute; left:0; right:0; bottom:-6px;
-    height:1px; background:#4ab8ff;
-    transform: scaleX(0); transform-origin:left;
-    transition: transform 0.3s ease;
-  }
+  .nav-links a::after { content:''; position:absolute; left:0; right:0; bottom:-6px; height:1px; background:#4ab8ff; transform: scaleX(0); transform-origin:left; transition: transform 0.3s ease; }
   .nav-links a:hover::after { transform: scaleX(1); }
   .nav-right { display:flex; align-items:center; gap:14px; }
-
-  /* Google sign-in pill */
-  .btn-google {
-    display:inline-flex; align-items:center; gap:10px;
-    padding: 9px 16px 9px 12px;
-    background: rgba(255,255,255,0.95);
-    color:#1f1f1f;
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
-    font-family: inherit;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
-  }
-  .btn-google:hover {
-    transform: translateY(-1px);
-    background: #ffffff;
-    box-shadow: 0 6px 22px rgba(74,184,255,0.4);
-  }
+  
+  .btn-google { display:inline-flex; align-items:center; gap:10px; padding: 9px 16px 9px 12px; background: rgba(255,255,255,0.95); color:#1f1f1f; border-radius: 100px; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; text-decoration: none; border: none; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease; font-family: inherit; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+  .btn-google:hover { transform: translateY(-1px); background: #ffffff; box-shadow: 0 6px 22px rgba(74,184,255,0.4); }
   .btn-google svg { width:16px; height:16px; flex-shrink: 0; }
   .btn-google span { white-space: nowrap; }
   .btn-google[disabled] { opacity: 0.7; cursor: not-allowed; transform:none; }
 
-  /* User chip (when signed in) */
-  .user-chip {
-    display:inline-flex; align-items:center; gap:8px;
-    padding: 4px 14px 4px 4px;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(74,184,255,0.3);
-    border-radius: 100px;
-    color: #e8f2ff;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-  }
-  .user-chip:hover {
-    background: rgba(74,184,255,0.12);
-    border-color: #4ab8ff;
-  }
-  .user-chip img {
-    width: 26px; height: 26px; border-radius: 50%;
-    object-fit: cover;
-  }
-  .user-chip-name {
-    max-width: 120px;
-    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-  }
-
-  .nav-toggle {
-    display:none;
-    background:none; border:none; color:#e8f2ff;
-    font-size:22px; cursor:pointer; padding:6px;
-  }
-
-  /* ============================================================
-     SCROLL CONTENT
-     ============================================================ */
   #scroll-space { position: relative; z-index: 3; pointer-events: auto; }
-  section {
-    position: relative;
-    padding: 120px 40px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  section { position: relative; padding: 120px 40px; display: flex; flex-direction: column; align-items: center; }
   .container { width: 100%; max-width: 1200px; }
-
-  /* ============================================================
-     PARALLAX LAYER — moves with 3D background
-     ============================================================ */
-  .parallax {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    will-change: transform;
-  }
-
-  /* Reveal on scroll — fade in/out with background movement */
-  .reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 1.1s cubic-bezier(0.16,1,0.3,1), transform 1.1s cubic-bezier(0.16,1,0.3,1);
-    will-change: opacity, transform;
-  }
+  
+  .parallax { width: 100%; display: flex; flex-direction: column; align-items: center; will-change: transform; }
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 1.1s cubic-bezier(0.16,1,0.3,1), transform 1.1s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
   .reveal.visible { opacity: 1; transform: translateY(0); }
   .reveal.exiting { opacity: 0; transform: translateY(-30px); }
 
-  /* ============================================================
-     TYPOGRAPHY
-     ============================================================ */
-  .eyebrow {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.32em;
-    text-transform: uppercase;
-    color: #4ab8ff;
-    margin-bottom: 20px;
-    padding: 6px 14px;
-    background: rgba(74,184,255,0.08);
-    border: 1px solid rgba(74,184,255,0.22);
-    border-radius: 100px;
-  }
+  .eyebrow { display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: 0.32em; text-transform: uppercase; color: #4ab8ff; margin-bottom: 20px; padding: 6px 14px; background: rgba(74,184,255,0.08); border: 1px solid rgba(74,184,255,0.22); border-radius: 100px; }
   h1, h2, h3, h4 { font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; color: #ffffff; }
   h1 { font-size: clamp(38px, 6vw, 72px); }
   h2 { font-size: clamp(28px, 4vw, 48px); margin-bottom: 20px; }
@@ -218,969 +54,144 @@
   h4 { font-size: 15px; margin-bottom: 8px; }
   p { color: #a8c0d8; font-size: 16px; max-width: 640px; }
   .lead { font-size: 18px; color: #c8d8e8; }
-  .gradient-text {
-    background: linear-gradient(135deg, #8ad8ff 0%, #4ab8ff 50%, #2a70c8 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-  }
+  .gradient-text { background: linear-gradient(135deg, #8ad8ff 0%, #4ab8ff 50%, #2a70c8 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; }
 
-  /* ============================================================
-     BUTTONS
-     ============================================================ */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 15px 30px;
-    border-radius: 100px;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-decoration: none;
-    cursor: pointer;
-    border: none;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
-    font-family: inherit;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, #4ab8ff, #2a70c8);
-    color: #fff;
-    box-shadow: 0 8px 32px rgba(74,184,255,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-  }
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(74,184,255,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
-  }
-  .btn-ghost {
-    background: rgba(255,255,255,0.04);
-    color: #e8f2ff;
-    border: 1px solid rgba(74,184,255,0.3);
-    backdrop-filter: blur(10px);
-  }
-  .btn-ghost:hover {
-    background: rgba(74,184,255,0.1);
-    border-color: rgba(74,184,255,0.6);
-    transform: translateY(-2px);
-  }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 30px; border-radius: 100px; font-size: 14px; font-weight: 600; letter-spacing: 0.05em; text-decoration: none; cursor: pointer; border: none; transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease; font-family: inherit; }
+  .btn-primary { background: linear-gradient(135deg, #4ab8ff, #2a70c8); color: #fff; box-shadow: 0 8px 32px rgba(74,184,255,0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(74,184,255,0.45), inset 0 1px 0 rgba(255,255,255,0.3); }
+  .btn-ghost { background: rgba(255,255,255,0.04); color: #e8f2ff; border: 1px solid rgba(74,184,255,0.3); backdrop-filter: blur(10px); }
+  .btn-ghost:hover { background: rgba(74,184,255,0.1); border-color: rgba(74,184,255,0.6); transform: translateY(-2px); }
   .btn svg { width: 16px; height: 16px; }
 
-  /* ============================================================
-     HERO
-     ============================================================ */
   #hero { min-height: 100vh; justify-content: center; padding-top: 140px; text-align: center; }
   #hero .container { display: flex; flex-direction: column; align-items: center; gap: 28px; }
   #hero h1 { max-width: 900px; }
   #hero .lead { max-width: 620px; text-align: center; }
   .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
-  .hero-stats {
-    display: flex; gap: 48px; margin-top: 56px;
-    flex-wrap: wrap; justify-content: center;
-  }
+  .hero-stats { display: flex; gap: 48px; margin-top: 56px; flex-wrap: wrap; justify-content: center; }
   .hero-stat { text-align: center; }
-  .hero-stat-num {
-    display: block;
-    font-size: 32px; font-weight: 700; color: #fff;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #fff, #8ad8ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .hero-stat-label {
-    display: block; font-size: 11px; font-weight: 500;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    color: #6ac8ff; margin-top: 6px;
-  }
-  .scroll-hint {
-    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-    color: #6ac8ff; font-size: 10px; letter-spacing: 0.4em;
-    text-transform: uppercase;
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
-    opacity: 0.7; animation: floaty 2.5s ease-in-out infinite;
-  }
-  .scroll-hint::after {
-    content:''; width: 1px; height: 28px;
-    background: linear-gradient(to bottom, #6ac8ff, transparent);
-  }
-  @keyframes floaty {
-    0%, 100% { transform: translate(-50%, 0); opacity: 0.7; }
-    50% { transform: translate(-50%, 8px); opacity: 1; }
-  }
+  .hero-stat-num { display: block; font-size: 32px; font-weight: 700; color: #fff; letter-spacing: -0.02em; background: linear-gradient(135deg, #fff, #8ad8ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-stat-label { display: block; font-size: 11px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #6ac8ff; margin-top: 6px; }
+  .scroll-hint { position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); color: #6ac8ff; font-size: 10px; letter-spacing: 0.4em; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; gap: 12px; opacity: 0.7; animation: floaty 2.5s ease-in-out infinite; }
+  .scroll-hint::after { content:''; width: 1px; height: 28px; background: linear-gradient(to bottom, #6ac8ff, transparent); }
+  @keyframes floaty { 0%, 100% { transform: translate(-50%, 0); opacity: 0.7; } 50% { transform: translate(-50%, 8px); opacity: 1; } }
 
-  /* ============================================================
-     HOW IT WORKS
-     ============================================================ */
   #how { text-align: center; }
   #how .container > p { margin: 0 auto 64px; text-align: center; }
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 20px;
-  }
-  .step {
-    padding: 36px 26px;
-    background: linear-gradient(180deg, rgba(14,42,94,0.35) 0%, rgba(5,10,31,0.4) 100%);
-    border: 1px solid rgba(74,184,255,0.14);
-    border-radius: 20px; text-align: left;
-    backdrop-filter: blur(16px);
-    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-  }
-  .step:hover {
-    transform: translateY(-4px);
-    border-color: rgba(74,184,255,0.4);
-    box-shadow: 0 20px 48px -20px rgba(74,184,255,0.4);
-  }
-  .step-num {
-    display: inline-flex; align-items: center; justify-content: center;
-    width: 40px; height: 40px; border-radius: 50%;
-    background: linear-gradient(135deg, #4ab8ff, #2a70c8);
-    color: #fff; font-size: 14px; font-weight: 700;
-    margin-bottom: 22px;
-    box-shadow: 0 0 24px rgba(74,184,255,0.4);
-  }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+  .step { padding: 36px 26px; background: linear-gradient(180deg, rgba(14,42,94,0.35) 0%, rgba(5,10,31,0.4) 100%); border: 1px solid rgba(74,184,255,0.14); border-radius: 20px; text-align: left; backdrop-filter: blur(16px); transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease; }
+  .step:hover { transform: translateY(-4px); border-color: rgba(74,184,255,0.4); box-shadow: 0 20px 48px -20px rgba(74,184,255,0.4); }
+  .step-num { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #4ab8ff, #2a70c8); color: #fff; font-size: 14px; font-weight: 700; margin-bottom: 22px; box-shadow: 0 0 24px rgba(74,184,255,0.4); }
   .step h3 { font-size: 17px; margin-bottom: 10px; }
   .step p { font-size: 14px; color: #94aec4; line-height: 1.6; }
 
-  /* ============================================================
-     COURSES
-     ============================================================ */
   #courses { text-align: center; }
   #courses .container > p { margin: 0 auto 48px; text-align: center; }
-  .tabs {
-    display: flex; justify-content: center; gap: 8px;
-    flex-wrap: wrap; margin-bottom: 48px;
-  }
-  .tab {
-    padding: 10px 22px; border-radius: 100px;
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(74,184,255,0.15);
-    color: #a8c8e8; font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.25s ease;
-    font-family: inherit; letter-spacing: 0.03em;
-  }
+  .tabs { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-bottom: 48px; }
+  .tab { padding: 10px 22px; border-radius: 100px; background: rgba(255,255,255,0.03); border: 1px solid rgba(74,184,255,0.15); color: #a8c8e8; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.25s ease; font-family: inherit; letter-spacing: 0.03em; }
   .tab:hover { color:#fff; border-color: rgba(74,184,255,0.4); }
-  .tab.active {
-    background: linear-gradient(135deg, rgba(74,184,255,0.2), rgba(42,112,200,0.15));
-    border-color: #4ab8ff; color: #fff;
-    box-shadow: 0 0 20px rgba(74,184,255,0.25);
-  }
-  .course-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px; text-align: left;
-  }
-  .course-card {
-    padding: 28px 24px;
-    background: linear-gradient(180deg, rgba(14,42,94,0.4) 0%, rgba(5,10,31,0.55) 100%);
-    border: 1px solid rgba(74,184,255,0.12);
-    border-radius: 18px; backdrop-filter: blur(16px);
-    position: relative; overflow: hidden;
-    transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
-    cursor: pointer; display: flex; flex-direction: column;
-  }
-  .course-card::before {
-    content:''; position:absolute; top:0; left:0; right:0; height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(74,184,255,0.6), transparent);
-    opacity: 0; transition: opacity 0.4s ease;
-  }
-  .course-card:hover {
-    transform: translateY(-6px);
-    border-color: rgba(74,184,255,0.4);
-    box-shadow: 0 28px 60px -22px rgba(74,184,255,0.4);
-  }
+  .tab.active { background: linear-gradient(135deg, rgba(74,184,255,0.2), rgba(42,112,200,0.15)); border-color: #4ab8ff; color: #fff; box-shadow: 0 0 20px rgba(74,184,255,0.25); }
+  .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; text-align: left; }
+  .course-card { padding: 28px 24px; background: linear-gradient(180deg, rgba(14,42,94,0.4) 0%, rgba(5,10,31,0.55) 100%); border: 1px solid rgba(74,184,255,0.12); border-radius: 18px; backdrop-filter: blur(16px); position: relative; overflow: hidden; transition: transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease; cursor: pointer; display: flex; flex-direction: column; }
+  .course-card::before { content:''; position:absolute; top:0; left:0; right:0; height: 1px; background: linear-gradient(90deg, transparent, rgba(74,184,255,0.6), transparent); opacity: 0; transition: opacity 0.4s ease; }
+  .course-card:hover { transform: translateY(-6px); border-color: rgba(74,184,255,0.4); box-shadow: 0 28px 60px -22px rgba(74,184,255,0.4); }
   .course-card:hover::before { opacity: 1; }
-  .course-cat {
-    display: inline-block; font-size: 10px; font-weight: 600;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: #6ac8ff; margin-bottom: 14px;
-  }
-  .course-card h3 {
-    font-size: 18px; margin-bottom: 12px;
-    line-height: 1.3; color: #fff;
-  }
-  .course-meta {
-    display: flex; align-items: center; gap: 14px;
-    font-size: 12px; color: #7a94ac; margin-bottom: 20px;
-  }
+  .course-cat { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: #6ac8ff; margin-bottom: 14px; }
+  .course-card h3 { font-size: 18px; margin-bottom: 12px; line-height: 1.3; color: #fff; }
+  .course-meta { display: flex; align-items: center; gap: 14px; font-size: 12px; color: #7a94ac; margin-bottom: 20px; }
   .course-meta svg { width: 13px; height: 13px; opacity: 0.7; }
-  .course-footer {
-    margin-top: auto; padding-top: 20px;
-    border-top: 1px solid rgba(74,184,255,0.1);
-    display: flex; align-items: center; justify-content: space-between;
-  }
+  .course-footer { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(74,184,255,0.1); display: flex; align-items: center; justify-content: space-between; }
   .course-price { font-size: 15px; font-weight: 700; color: #fff; }
-  .course-price small {
-    display: block; font-size: 10px; font-weight: 500;
-    color: #6ac8ff; letter-spacing: 0.14em;
-    text-transform: uppercase; margin-bottom: 3px;
-  }
-  .course-free {
-    font-size: 11px; color: #6ac8ff;
-    padding: 4px 10px; background: rgba(74,184,255,0.1);
-    border-radius: 100px; letter-spacing: 0.06em;
-  }
+  .course-price small { display: block; font-size: 10px; font-weight: 500; color: #6ac8ff; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 3px; }
+  .course-free { font-size: 11px; color: #6ac8ff; padding: 4px 10px; background: rgba(74,184,255,0.1); border-radius: 100px; letter-spacing: 0.06em; }
 
-  /* ============================================================
-     PRICING
-     ============================================================ */
   #pricing { text-align: center; }
   #pricing .container > p { margin: 0 auto 56px; text-align: center; }
-  .pricing-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px; max-width: 800px; margin: 0 auto;
-  }
-  .price-card {
-    padding: 44px 36px; border-radius: 24px;
-    text-align: left; position: relative; overflow: hidden;
-    transition: transform 0.35s ease;
-  }
-  .price-card.free {
-    background: linear-gradient(180deg, rgba(14,42,94,0.3) 0%, rgba(5,10,31,0.4) 100%);
-    border: 1px solid rgba(74,184,255,0.15);
-    backdrop-filter: blur(16px);
-  }
-  .price-card.paid {
-    background: linear-gradient(180deg, rgba(42,112,200,0.35) 0%, rgba(14,42,94,0.4) 100%);
-    border: 1px solid rgba(74,184,255,0.4);
-    box-shadow: 0 30px 80px -30px rgba(74,184,255,0.5);
-    backdrop-filter: blur(16px);
-  }
-  .price-card.paid::before {
-    content:'MOST POPULAR';
-    position: absolute; top: 18px; right: -32px;
-    background: linear-gradient(135deg, #4ab8ff, #2a70c8);
-    color: #fff; font-size: 9px; font-weight: 700;
-    letter-spacing: 0.2em; padding: 6px 40px;
-    transform: rotate(35deg);
-    box-shadow: 0 4px 14px rgba(74,184,255,0.4);
-  }
-  .price-label {
-    font-size: 11px; font-weight: 600;
-    letter-spacing: 0.28em; text-transform: uppercase;
-    color: #6ac8ff; margin-bottom: 18px;
-  }
-  .price-amount {
-    font-size: 48px; font-weight: 700; color: #fff;
-    line-height: 1; letter-spacing: -0.03em; margin-bottom: 6px;
-  }
-  .price-amount small {
-    font-size: 16px; font-weight: 500; color: #8ab0d0;
-    letter-spacing: 0; margin-left: 6px;
-  }
+  .pricing-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; max-width: 800px; margin: 0 auto; }
+  .price-card { padding: 44px 36px; border-radius: 24px; text-align: left; position: relative; overflow: hidden; transition: transform 0.35s ease; }
+  .price-card.free { background: linear-gradient(180deg, rgba(14,42,94,0.3) 0%, rgba(5,10,31,0.4) 100%); border: 1px solid rgba(74,184,255,0.15); backdrop-filter: blur(16px); }
+  .price-card.paid { background: linear-gradient(180deg, rgba(42,112,200,0.35) 0%, rgba(14,42,94,0.4) 100%); border: 1px solid rgba(74,184,255,0.4); box-shadow: 0 30px 80px -30px rgba(74,184,255,0.5); backdrop-filter: blur(16px); }
+  .price-card.paid::before { content:'MOST POPULAR'; position: absolute; top: 18px; right: -32px; background: linear-gradient(135deg, #4ab8ff, #2a70c8); color: #fff; font-size: 9px; font-weight: 700; letter-spacing: 0.2em; padding: 6px 40px; transform: rotate(35deg); box-shadow: 0 4px 14px rgba(74,184,255,0.4); }
+  .price-label { font-size: 11px; font-weight: 600; letter-spacing: 0.28em; text-transform: uppercase; color: #6ac8ff; margin-bottom: 18px; }
+  .price-amount { font-size: 48px; font-weight: 700; color: #fff; line-height: 1; letter-spacing: -0.03em; margin-bottom: 6px; }
+  .price-amount small { font-size: 16px; font-weight: 500; color: #8ab0d0; letter-spacing: 0; margin-left: 6px; }
   .price-sub { font-size: 13px; color: #8ab0d0; margin-bottom: 28px; }
   .price-features { list-style: none; margin-bottom: 32px; }
-  .price-features li {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 8px 0; font-size: 14px; color: #c8d8e8;
-  }
-  .price-features li::before {
-    content:''; flex-shrink: 0;
-    width: 16px; height: 16px; margin-top: 3px;
-    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ab8ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat;
-  }
+  .price-features li { display: flex; align-items: flex-start; gap: 12px; padding: 8px 0; font-size: 14px; color: #c8d8e8; }
+  .price-features li::before { content:''; flex-shrink: 0; width: 16px; height: 16px; margin-top: 3px; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234ab8ff' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>") center/contain no-repeat; }
   .price-card .btn { width: 100%; justify-content: center; }
-  .payment-methods {
-    margin-top: 48px; display: flex; justify-content: center;
-    align-items: center; gap: 24px; flex-wrap: wrap;
-    padding-top: 32px; border-top: 1px solid rgba(74,184,255,0.1);
-  }
-  .payment-methods span {
-    font-size: 12px; color: #6a8aa8;
-    letter-spacing: 0.12em; text-transform: uppercase;
-  }
-  .payment-methods .pay-badge {
-    padding: 8px 18px;
-    background: rgba(74,184,255,0.08);
-    border: 1px solid rgba(74,184,255,0.2);
-    border-radius: 10px; font-size: 13px;
-    font-weight: 600; color: #e8f2ff;
-    letter-spacing: 0.04em;
-  }
+  .payment-methods { margin-top: 48px; display: flex; justify-content: center; align-items: center; gap: 24px; flex-wrap: wrap; padding-top: 32px; border-top: 1px solid rgba(74,184,255,0.1); }
+  .payment-methods span { font-size: 12px; color: #6a8aa8; letter-spacing: 0.12em; text-transform: uppercase; }
+  .payment-methods .pay-badge { padding: 8px 18px; background: rgba(74,184,255,0.08); border: 1px solid rgba(74,184,255,0.2); border-radius: 10px; font-size: 13px; font-weight: 600; color: #e8f2ff; letter-spacing: 0.04em; }
 
-  /* ============================================================
-     FEATURES
-     ============================================================ */
   #features { text-align: center; }
   #features .container > p { margin: 0 auto 56px; text-align: center; }
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px; text-align: left;
-  }
-  .feature {
-    padding: 32px 28px;
-    background: linear-gradient(180deg, rgba(14,42,94,0.28) 0%, rgba(5,10,31,0.4) 100%);
-    border: 1px solid rgba(74,184,255,0.1);
-    border-radius: 18px; backdrop-filter: blur(14px);
-    transition: transform 0.35s ease, border-color 0.35s ease;
-  }
+  .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; text-align: left; }
+  .feature { padding: 32px 28px; background: linear-gradient(180deg, rgba(14,42,94,0.28) 0%, rgba(5,10,31,0.4) 100%); border: 1px solid rgba(74,184,255,0.1); border-radius: 18px; backdrop-filter: blur(14px); transition: transform 0.35s ease, border-color 0.35s ease; }
   .feature:hover { transform: translateY(-4px); border-color: rgba(74,184,255,0.35); }
-  .feature-icon {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: linear-gradient(135deg, rgba(74,184,255,0.15), rgba(42,112,200,0.1));
-    border: 1px solid rgba(74,184,255,0.28);
-    display: flex; align-items: center; justify-content: center;
-    margin-bottom: 20px; color: #6ac8ff;
-  }
+  .feature-icon { width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, rgba(74,184,255,0.15), rgba(42,112,200,0.1)); border: 1px solid rgba(74,184,255,0.28); display: flex; align-items: center; justify-content: center; margin-bottom: 20px; color: #6ac8ff; }
   .feature-icon svg { width: 22px; height: 22px; }
   .feature h3 { font-size: 16px; margin-bottom: 8px; }
   .feature p { font-size: 14px; color: #94aec4; }
 
-  /* ============================================================
-     READY TO START — premium CTA
-     ============================================================ */
   #cta-band { padding: 140px 40px; }
-  .cta-band {
-    position: relative;
-    width: 100%;
-    max-width: 1000px;
-    padding: 88px 64px;
-    border-radius: 32px;
-    text-align: center;
-    overflow: hidden;
-    background:
-      radial-gradient(ellipse at 50% 0%, rgba(74,184,255,0.22), transparent 55%),
-      linear-gradient(180deg, rgba(14,42,94,0.55) 0%, rgba(5,10,31,0.85) 100%);
-    border: 1px solid rgba(74,184,255,0.32);
-    box-shadow:
-      0 60px 140px -50px rgba(74,184,255,0.55),
-      inset 0 1px 0 rgba(255,255,255,0.06);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
-    isolation: isolate;
-  }
-  .cta-band::before {
-    content: '';
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(74,184,255,0.05) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(74,184,255,0.05) 1px, transparent 1px);
-    background-size: 32px 32px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-    pointer-events: none;
-    z-index: -1;
-  }
-  .cta-band::after {
-    content: '';
-    position: absolute; top: 0; left: 15%; right: 15%; height: 1px;
-    background: linear-gradient(90deg, transparent, #4ab8ff, transparent);
-    filter: blur(0.5px);
-  }
-  .cta-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(60px);
-    pointer-events: none;
-    opacity: 0.55;
-    z-index: -1;
-  }
-  .cta-orb-1 {
-    width: 320px; height: 320px;
-    background: radial-gradient(circle, rgba(74,184,255,0.65), transparent 70%);
-    top: -120px; left: -100px;
-    animation: orbFloat 14s ease-in-out infinite;
-  }
-  .cta-orb-2 {
-    width: 260px; height: 260px;
-    background: radial-gradient(circle, rgba(138,216,255,0.5), transparent 70%);
-    bottom: -100px; right: -80px;
-    animation: orbFloat 18s ease-in-out infinite reverse;
-  }
-  @keyframes orbFloat {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(30px, -20px) scale(1.08); }
-  }
+  .cta-band { position: relative; width: 100%; max-width: 1000px; padding: 88px 64px; border-radius: 32px; text-align: center; overflow: hidden; background: radial-gradient(ellipse at 50% 0%, rgba(74,184,255,0.22), transparent 55%), linear-gradient(180deg, rgba(14,42,94,0.55) 0%, rgba(5,10,31,0.85) 100%); border: 1px solid rgba(74,184,255,0.32); box-shadow: 0 60px 140px -50px rgba(74,184,255,0.55), inset 0 1px 0 rgba(255,255,255,0.06); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); isolation: isolate; }
+  .cta-band::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(74,184,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(74,184,255,0.05) 1px, transparent 1px); background-size: 32px 32px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%); pointer-events: none; z-index: -1; }
+  .cta-band::after { content: ''; position: absolute; top: 0; left: 15%; right: 15%; height: 1px; background: linear-gradient(90deg, transparent, #4ab8ff, transparent); filter: blur(0.5px); }
+  .cta-orb { position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none; opacity: 0.55; z-index: -1; }
+  .cta-orb-1 { width: 320px; height: 320px; background: radial-gradient(circle, rgba(74,184,255,0.65), transparent 70%); top: -120px; left: -100px; animation: orbFloat 14s ease-in-out infinite; }
+  .cta-orb-2 { width: 260px; height: 260px; background: radial-gradient(circle, rgba(138,216,255,0.5), transparent 70%); bottom: -100px; right: -80px; animation: orbFloat 18s ease-in-out infinite reverse; }
+  @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 50% { transform: translate(30px, -20px) scale(1.08); } }
   .cta-band .eyebrow { position: relative; }
-  .cta-band h2 {
-    position: relative;
-    max-width: 720px;
-    margin: 0 auto 20px;
-    line-height: 1.1;
-  }
-  .cta-band p.lead {
-    position: relative;
-    max-width: 600px;
-    margin: 0 auto 44px;
-    text-align: center;
-    color: #c8d8e8;
-    font-size: 17px;
-    line-height: 1.65;
-  }
-  .cta-actions {
-    position: relative;
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin-bottom: 52px;
-  }
-  .cta-band .btn-google {
-    padding: 15px 26px 15px 20px;
-    font-size: 14px;
-    border-radius: 100px;
-    box-shadow: 0 10px 32px rgba(0,0,0,0.35);
-  }
+  .cta-band h2 { position: relative; max-width: 720px; margin: 0 auto 20px; line-height: 1.1; }
+  .cta-band p.lead { position: relative; max-width: 600px; margin: 0 auto 44px; text-align: center; color: #c8d8e8; font-size: 17px; line-height: 1.65; }
+  .cta-actions { position: relative; display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-bottom: 52px; }
+  .cta-band .btn-google { padding: 15px 26px 15px 20px; font-size: 14px; border-radius: 100px; box-shadow: 0 10px 32px rgba(0,0,0,0.35); }
   .cta-band .btn-google svg { width: 20px; height: 20px; }
-  .cta-perks {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 12px 32px;
-    padding-top: 36px;
-    border-top: 1px solid rgba(74,184,255,0.14);
-    max-width: 780px;
-    margin: 0 auto;
-  }
-  .cta-perk {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    color: #b8cfe4;
-    letter-spacing: 0.02em;
-  }
-  .cta-check {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: rgba(74,184,255,0.16);
-    border: 1px solid rgba(74,184,255,0.4);
-    color: #6ac8ff;
-    font-size: 10px;
-    font-weight: 700;
-    flex-shrink: 0;
-  }
+  .cta-perks { position: relative; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 32px; padding-top: 36px; border-top: 1px solid rgba(74,184,255,0.14); max-width: 780px; margin: 0 auto; }
+  .cta-perk { display: inline-flex; align-items: center; gap: 10px; font-size: 13px; color: #b8cfe4; letter-spacing: 0.02em; }
+  .cta-check { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: rgba(74,184,255,0.16); border: 1px solid rgba(74,184,255,0.4); color: #6ac8ff; font-size: 10px; font-weight: 700; flex-shrink: 0; }
 
-  /* ============================================================
-     DASHBOARD (hidden until signed in)
-     ============================================================ */
-  #dashboard {
-    position: fixed; inset: 0;
-    z-index: 30;
-    background: linear-gradient(180deg, rgba(5,10,31,0.92) 0%, rgba(2,6,20,0.96) 100%);
-    backdrop-filter: blur(28px);
-    -webkit-backdrop-filter: blur(28px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.4s ease, visibility 0.4s ease;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-  #dashboard.visible { opacity: 1; visibility: visible; }
-
-  .dash-wrap {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 28px 32px 60px;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-
-  .dash-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 24px;
-    border-bottom: 1px solid rgba(74,184,255,0.14);
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  .dash-brand {
-    display: flex; align-items: center; gap: 14px;
-  }
-  .dash-brand img {
-    width: 42px; height: 42px; object-fit: contain;
-    filter: drop-shadow(0 0 12px rgba(74,184,255,0.5));
-  }
-  .dash-brand-text { display: flex; flex-direction: column; line-height: 1.05; }
-  .dash-brand-text .brand-name {
-    font-size: 15px; font-weight: 700; letter-spacing: 0.14em; color:#fff;
-  }
-  .dash-brand-text .brand-tag {
-    font-size: 9px; font-weight: 400; letter-spacing: 0.28em;
-    color:#6ac8ff; text-transform: uppercase;
-  }
-  .dash-user {
-    display: flex; align-items: center; gap: 14px;
-  }
-  .dash-user-name {
-    text-align: right;
-    line-height: 1.3;
-  }
-  .dash-user-name strong {
-    font-size: 14px; color: #fff; display: block;
-  }
-  .dash-user-name small {
-    font-size: 11px; color: #6ac8ff;
-    letter-spacing: 0.05em;
-  }
-  .dash-user img {
-    width: 42px; height: 42px;
-    border-radius: 50%;
-    border: 1px solid rgba(74,184,255,0.4);
-  }
-  .dash-logout {
-    padding: 8px 18px;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(74,184,255,0.28);
-    border-radius: 100px;
-    color: #a8c8e8;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-    font-family: inherit;
-    transition: all 0.2s ease;
-  }
-  .dash-logout:hover {
-    background: rgba(74,184,255,0.12);
-    color: #fff;
-    border-color: #4ab8ff;
-  }
-
-  .dash-hero {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 20px;
-  }
-  .dash-welcome {
-    padding: 36px;
-    background: linear-gradient(135deg, rgba(42,112,200,0.28) 0%, rgba(14,42,94,0.35) 100%);
-    border: 1px solid rgba(74,184,255,0.25);
-    border-radius: 22px;
-    position: relative;
-    overflow: hidden;
-  }
-  .dash-welcome::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(circle at 100% 0%, rgba(74,184,255,0.25), transparent 50%);
-    pointer-events: none;
-  }
-  .dash-welcome .eyebrow {
-    position: relative;
-    margin-bottom: 12px;
-  }
-  .dash-welcome h2 {
-    position: relative;
-    font-size: 28px;
-    margin-bottom: 8px;
-  }
-  .dash-welcome p {
-    position: relative;
-    font-size: 14px;
-    color: #b8cfe4;
-    max-width: none;
-  }
-  .dash-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-  .dash-stat {
-    padding: 22px;
-    background: linear-gradient(180deg, rgba(14,42,94,0.4) 0%, rgba(5,10,31,0.5) 100%);
-    border: 1px solid rgba(74,184,255,0.14);
-    border-radius: 18px;
-    text-align: left;
-    transition: border-color 0.25s ease;
-  }
-  .dash-stat:hover { border-color: rgba(74,184,255,0.35); }
-  .dash-stat-num {
-    font-size: 32px;
-    font-weight: 700;
-    color: #fff;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #fff, #8ad8ff);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: block;
-    line-height: 1;
-  }
-  .dash-stat-label {
-    display: block;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: #6ac8ff;
-    margin-top: 8px;
-  }
-
-  .dash-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .dash-section-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .dash-section-head h3 {
-    font-size: 18px;
-    letter-spacing: -0.01em;
-  }
-  .dash-section-head small {
-    font-size: 12px;
-    color: #6a8aa8;
-    letter-spacing: 0.05em;
-  }
-
-  /* Course tiles on dashboard */
-  .dash-courses {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-  }
-  .dash-course {
-    padding: 22px;
-    background: linear-gradient(180deg, rgba(14,42,94,0.35) 0%, rgba(5,10,31,0.55) 100%);
-    border: 1px solid rgba(74,184,255,0.14);
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    transition: all 0.25s ease;
-  }
-  .dash-course:hover {
-    border-color: rgba(74,184,255,0.4);
-    transform: translateY(-3px);
-    box-shadow: 0 20px 44px -22px rgba(74,184,255,0.35);
-  }
-  .dash-course-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .dash-course h4 {
-    font-size: 15px;
-    line-height: 1.35;
-    color: #fff;
-    margin: 0;
-  }
-  .dash-badge {
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 100px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .dash-badge.locked {
-    background: rgba(255,184,119,0.1);
-    color: #ffb877;
-    border: 1px solid rgba(255,184,119,0.3);
-  }
-  .dash-badge.owned {
-    background: rgba(74,184,255,0.12);
-    color: #6ac8ff;
-    border: 1px solid rgba(74,184,255,0.35);
-  }
-  .dash-badge.progress {
-    background: rgba(120,255,180,0.1);
-    color: #7dffb0;
-    border: 1px solid rgba(120,255,180,0.3);
-  }
-  .dash-progress-bar {
-    height: 4px;
-    background: rgba(74,184,255,0.12);
-    border-radius: 100px;
-    overflow: hidden;
-    position: relative;
-  }
-  .dash-progress-bar span {
-    display: block;
-    height: 100%;
-    background: linear-gradient(90deg, #4ab8ff, #8ad8ff);
-    border-radius: 100px;
-    transition: width 0.5s ease;
-  }
-  .dash-course-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 4px;
-  }
-  .dash-course-actions .btn {
-    flex: 1;
-    padding: 9px 14px;
-    font-size: 12px;
-    justify-content: center;
-  }
-
-  /* Activity list */
-  .dash-activity {
-    background: linear-gradient(180deg, rgba(14,42,94,0.28) 0%, rgba(5,10,31,0.45) 100%);
-    border: 1px solid rgba(74,184,255,0.12);
-    border-radius: 18px;
-    padding: 8px;
-  }
-  .dash-activity-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    border-radius: 12px;
-    transition: background 0.2s ease;
-    gap: 12px;
-  }
-  .dash-activity-item:hover { background: rgba(74,184,255,0.05); }
-  .dash-activity-item + .dash-activity-item {
-    border-top: 1px solid rgba(74,184,255,0.06);
-  }
-  .dash-activity-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-  }
-  .dash-activity-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: #4ab8ff;
-    flex-shrink: 0;
-    box-shadow: 0 0 10px rgba(74,184,255,0.7);
-  }
-  .dash-activity-text {
-    font-size: 13px;
-    color: #c8d8e8;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .dash-activity-time {
-    font-size: 11px;
-    color: #6a8aa8;
-    flex-shrink: 0;
-  }
-  .dash-empty {
-    padding: 40px 24px;
-    text-align: center;
-    color: #6a8aa8;
-    font-size: 13px;
-    background: rgba(255,255,255,0.02);
-    border: 1px dashed rgba(74,184,255,0.14);
-    border-radius: 14px;
-  }
-
-  /* ============================================================
-     FOOTER
-     ============================================================ */
-  footer {
-    padding: 80px 40px 40px;
-    border-top: 1px solid rgba(74,184,255,0.1);
-    background: linear-gradient(180deg, transparent, rgba(5,10,31,0.6));
-    position: relative;
-    z-index: 3;
-  }
+  footer { padding: 80px 40px 40px; border-top: 1px solid rgba(74,184,255,0.1); background: linear-gradient(180deg, transparent, rgba(5,10,31,0.6)); position: relative; z-index: 3; }
   .footer-inner { max-width: 1200px; margin: 0 auto; }
-  .footer-grid {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 48px; margin-bottom: 56px;
-  }
-  .footer-brand {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 20px;
-  }
-  .footer-brand img {
-    width: 40px; height: 40px; object-fit: contain;
-    filter: drop-shadow(0 0 10px rgba(74,184,255,0.4));
-  }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 56px; }
+  .footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .footer-brand img { width: 40px; height: 40px; object-fit: contain; filter: drop-shadow(0 0 10px rgba(74,184,255,0.4)); }
   .footer-brand-text { display: flex; flex-direction: column; line-height: 1.05; }
-  .footer-brand-text .brand-name {
-    font-size: 15px; font-weight: 700;
-    letter-spacing: 0.14em; color:#fff;
-  }
-  .footer-brand-text .brand-tag {
-    font-size: 9px; font-weight: 400;
-    letter-spacing: 0.28em; color:#6ac8ff;
-    text-transform: uppercase;
-  }
-  .footer-desc {
-    font-size: 14px; color: #8aa4bc;
-    max-width: 320px; line-height: 1.65;
-  }
-  .footer-col h4 {
-    font-size: 12px; font-weight: 600;
-    letter-spacing: 0.2em; text-transform: uppercase;
-    color: #6ac8ff; margin-bottom: 20px;
-  }
+  .footer-brand-text .brand-name { font-size: 15px; font-weight: 700; letter-spacing: 0.14em; color:#fff; }
+  .footer-brand-text .brand-tag { font-size: 9px; font-weight: 400; letter-spacing: 0.28em; color:#6ac8ff; text-transform: uppercase; }
+  .footer-desc { font-size: 14px; color: #8aa4bc; max-width: 320px; line-height: 1.65; }
+  .footer-col h4 { font-size: 12px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: #6ac8ff; margin-bottom: 20px; }
   .footer-col ul { list-style: none; }
   .footer-col li { margin-bottom: 12px; }
-  .footer-col a {
-    color: #a8c8e8; text-decoration: none;
-    font-size: 14px; transition: color 0.2s ease;
-  }
+  .footer-col a { color: #a8c8e8; text-decoration: none; font-size: 14px; transition: color 0.2s ease; }
   .footer-col a:hover { color: #fff; }
-  .footer-dev {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 22px 24px;
-    margin-bottom: 28px;
-    background: linear-gradient(180deg, rgba(14,42,94,0.28) 0%, rgba(5,10,31,0.45) 100%);
-    border: 1px solid rgba(74,184,255,0.14);
-    border-radius: 16px;
-    font-size: 13px;
-    color: #8aa4bc;
-    letter-spacing: 0.04em;
-    text-align: center;
-    backdrop-filter: blur(14px);
-    flex-wrap: wrap;
-  }
-  .footer-dev-label {
-    text-transform: uppercase;
-    font-size: 10px;
-    letter-spacing: 0.28em;
-    color: #5a7a9a;
-    font-weight: 600;
-  }
-  .footer-dev a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: #8ad8ff;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0.08em;
-    padding: 6px 14px;
-    background: rgba(74,184,255,0.08);
-    border: 1px solid rgba(74,184,255,0.28);
-    border-radius: 100px;
-    transition: all 0.25s ease;
-  }
-  .footer-dev a:hover {
-    color: #fff;
-    background: rgba(74,184,255,0.18);
-    border-color: #4ab8ff;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(74,184,255,0.35);
-  }
-  .footer-dev a::after {
-    content: '↗';
-    font-size: 12px;
-    opacity: 0.75;
-    transition: transform 0.25s ease;
-  }
+  .footer-dev { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 22px 24px; margin-bottom: 28px; background: linear-gradient(180deg, rgba(14,42,94,0.28) 0%, rgba(5,10,31,0.45) 100%); border: 1px solid rgba(74,184,255,0.14); border-radius: 16px; font-size: 13px; color: #8aa4bc; letter-spacing: 0.04em; text-align: center; backdrop-filter: blur(14px); flex-wrap: wrap; }
+  .footer-dev-label { text-transform: uppercase; font-size: 10px; letter-spacing: 0.28em; color: #5a7a9a; font-weight: 600; }
+  .footer-dev a { display: inline-flex; align-items: center; gap: 8px; color: #8ad8ff; text-decoration: none; font-weight: 700; font-size: 14px; letter-spacing: 0.08em; padding: 6px 14px; background: rgba(74,184,255,0.08); border: 1px solid rgba(74,184,255,0.28); border-radius: 100px; transition: all 0.25s ease; }
+  .footer-dev a:hover { color: #fff; background: rgba(74,184,255,0.18); border-color: #4ab8ff; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(74,184,255,0.35); }
+  .footer-dev a::after { content: '↗'; font-size: 12px; opacity: 0.75; transition: transform 0.25s ease; }
   .footer-dev a:hover::after { transform: translate(2px, -2px); }
-
-  .footer-bottom {
-    padding-top: 32px;
-    border-top: 1px solid rgba(74,184,255,0.08);
-    display: flex; justify-content: space-between;
-    align-items: center; gap: 20px; flex-wrap: wrap;
-    font-size: 13px; color: #6a8aa8;
-  }
+  .footer-bottom { padding-top: 32px; border-top: 1px solid rgba(74,184,255,0.08); display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; font-size: 13px; color: #6a8aa8; }
   .footer-bottom-links { display: flex; gap: 24px; }
-  .footer-bottom-links a {
-    color: #6a8aa8; text-decoration: none;
-    transition: color 0.2s ease;
-  }
+  .footer-bottom-links a { color: #6a8aa8; text-decoration: none; transition: color 0.2s ease; }
   .footer-bottom-links a:hover { color: #6ac8ff; }
 
-  /* ============================================================
-     LOADING & FALLBACK
-     ============================================================ */
-  .webgl-fallback {
-    position:fixed; inset:0; display:none;
-    align-items:center; justify-content:center;
-    background:#020a1a; color:#a8c8e8;
-    font-size:1rem; text-align:center;
-    padding:2rem; z-index:50;
-  }
+  .webgl-fallback { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:#020a1a; color:#a8c8e8; font-size:1rem; text-align:center; padding:2rem; z-index:50; }
   .webgl-fallback span { max-width:80%; line-height:1.7; }
-  #loader {
-    position:fixed; inset:0; background:#050a1f;
-    z-index:100; display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    gap:24px;
-    transition: opacity 0.8s ease, visibility 0.8s ease;
-  }
+  #loader { position:fixed; inset:0; background:#050a1f; z-index:100; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:24px; transition: opacity 0.8s ease, visibility 0.8s ease; }
   #loader.hidden { opacity:0; visibility:hidden; pointer-events:none; }
-  #loader img {
-    width: 72px; height: 72px; object-fit: contain;
-    filter: drop-shadow(0 0 24px rgba(74,184,255,0.6));
-    animation: pulseGlow 2s ease-in-out infinite;
-  }
-  @keyframes pulseGlow {
-    0%, 100% { opacity: 0.8; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.06); }
-  }
-  #loader .loading-bar {
-    width: 160px; height: 2px;
-    background: rgba(74,184,255,0.15);
-    border-radius: 100px; overflow: hidden;
-    position: relative;
-  }
-  #loader .loading-bar::after {
-    content:''; position:absolute;
-    left:0; top:0; bottom:0; width: 40%;
-    background: linear-gradient(90deg, transparent, #4ab8ff, transparent);
-    animation: barSlide 1.5s ease-in-out infinite;
-  }
-  @keyframes barSlide {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(350%); }
-  }
-  #loader .loading-text {
-    font-size: 11px; letter-spacing: 0.4em;
-    text-transform: uppercase; color: #4ab8ff;
-  }
+  #loader img { width: 72px; height: 72px; object-fit: contain; filter: drop-shadow(0 0 24px rgba(74,184,255,0.6)); animation: pulseGlow 2s ease-in-out infinite; }
+  @keyframes pulseGlow { 0%, 100% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.06); } }
+  #loader .loading-bar { width: 160px; height: 2px; background: rgba(74,184,255,0.15); border-radius: 100px; overflow: hidden; position: relative; }
+  #loader .loading-bar::after { content:''; position:absolute; left:0; top:0; bottom:0; width: 40%; background: linear-gradient(90deg, transparent, #4ab8ff, transparent); animation: barSlide 1.5s ease-in-out infinite; }
+  @keyframes barSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
+  #loader .loading-text { font-size: 11px; letter-spacing: 0.4em; text-transform: uppercase; color: #4ab8ff; }
+  
+  #toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); z-index: 60; padding: 12px 22px; background: rgba(14,42,94,0.95); border: 1px solid rgba(74,184,255,0.4); border-radius: 12px; color: #e8f2ff; font-size: 13px; font-weight: 500; box-shadow: 0 20px 60px -10px rgba(0,0,0,0.6), 0 0 30px rgba(74,184,255,0.25); backdrop-filter: blur(16px); opacity: 0; transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1); pointer-events: none; max-width: 90vw; text-align: center; }
+  #toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.error { border-color: rgba(255,120,120,0.5); background: rgba(60,20,30,0.95); }
 
-  /* ============================================================
-     TOAST
-     ============================================================ */
-  #toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    z-index: 60;
-    padding: 12px 22px;
-    background: rgba(14,42,94,0.95);
-    border: 1px solid rgba(74,184,255,0.4);
-    border-radius: 12px;
-    color: #e8f2ff;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 20px 60px -10px rgba(0,0,0,0.6), 0 0 30px rgba(74,184,255,0.25);
-    backdrop-filter: blur(16px);
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16,1,0.3,1);
-    pointer-events: none;
-    max-width: 90vw;
-    text-align: center;
-  }
-  #toast.visible {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-  #toast.error {
-    border-color: rgba(255,120,120,0.5);
-    background: rgba(60,20,30,0.95);
-  }
-
-  /* ============================================================
-     RESPONSIVE
-     ============================================================ */
   @media (max-width: 900px) {
     .nav-links { display: none; }
     .nav-toggle { display: block; }
@@ -1191,9 +202,6 @@
     .footer-brand-col { grid-column: 1 / -1; }
     .cta-band { padding: 64px 36px; }
     #cta-band { padding: 100px 24px; }
-    .dash-hero { grid-template-columns: 1fr; }
-    .dash-wrap { padding: 24px 20px 60px; }
-    .user-chip-name { display: none; }
   }
   @media (max-width: 640px) {
     section { padding: 80px 20px; }
@@ -1207,21 +215,12 @@
     .cta-band h2 { font-size: 28px; }
     .cta-band p.lead { font-size: 15px; margin-bottom: 32px; }
     .cta-actions { gap: 10px; }
-    .cta-band .btn-google,
-    .cta-band .btn { padding: 13px 20px; font-size: 13px; width: 100%; justify-content: center; }
+    .cta-band .btn-google, .cta-band .btn { padding: 13px 20px; font-size: 13px; width: 100%; justify-content: center; }
     .cta-perks { gap: 10px 20px; }
     .footer-grid { grid-template-columns: 1fr; gap: 32px; }
     .footer-bottom { flex-direction: column; text-align: center; }
     .course-grid { grid-template-columns: 1fr; }
-    .dash-stats { grid-template-columns: 1fr 1fr; }
-    .dash-header { gap: 14px; }
-    .dash-user-name { display: none; }
-    .dash-user img { width: 36px; height: 36px; }
-    .dash-logout { padding: 7px 14px; font-size: 11px; }
-    .dash-welcome { padding: 24px; }
-    .dash-welcome h2 { font-size: 22px; }
   }
-
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: 0.001ms !important; transition-duration: 0.15s !important; }
     .reveal { opacity: 1; transform: none; }
@@ -1231,21 +230,16 @@
 </head>
 <body>
 
-<!-- LOADER -->
 <div id="loader">
   <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="ISHURI ONLINE">
   <div class="loading-bar"></div>
   <div class="loading-text">Loading Atmosphere</div>
 </div>
 
-<!-- 3D CANVAS + VIGNETTE -->
 <div id="canvas-container"></div>
 <div id="vignette"></div>
-
-<!-- TOAST -->
 <div id="toast"></div>
 
-<!-- NAV -->
 <nav id="nav">
   <a href="#hero" class="nav-brand">
     <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="ISHURI ONLINE Logo">
@@ -1261,25 +255,12 @@
     <li><a href="#features">Platform</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <div class="nav-right">
-    <div id="authSlot">
-      <button class="btn-google" id="navGoogle">
-        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        </svg>
-        <span>Sign in</span>
-      </button>
-    </div>
-    <button class="nav-toggle" aria-label="Menu">☰</button>
+  <div class="nav-right" id="navRight">
+    <!-- Auth button injected by JS -->
   </div>
 </nav>
 
-<!-- MAIN SCROLL CONTENT -->
 <main id="scroll-space">
-
   <!-- HERO -->
   <section id="hero">
     <div class="parallax" data-depth="14">
@@ -1288,29 +269,14 @@
         <h1>Knowledge grows with <span class="gradient-text">every lesson.</span></h1>
         <p class="lead">Access affordable, mobile-friendly online courses built for Rwanda and beyond. Study introductory lessons free — unlock the rest for just 1,000 RWF per course.</p>
         <div class="hero-ctas">
-          <a href="#courses" class="btn btn-primary">
-            Browse Courses
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </a>
+          <a href="#courses" class="btn btn-primary">Browse Courses <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
           <a href="#how" class="btn btn-ghost">See How It Works</a>
         </div>
         <div class="hero-stats">
-          <div class="hero-stat">
-            <span class="hero-stat-num">14+</span>
-            <span class="hero-stat-label">Courses</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">4</span>
-            <span class="hero-stat-label">Categories</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">1,000</span>
-            <span class="hero-stat-label">RWF / Course</span>
-          </div>
-          <div class="hero-stat">
-            <span class="hero-stat-num">Free</span>
-            <span class="hero-stat-label">Intro Lessons</span>
-          </div>
+          <div class="hero-stat"><span class="hero-stat-num">14+</span><span class="hero-stat-label">Courses</span></div>
+          <div class="hero-stat"><span class="hero-stat-num">4</span><span class="hero-stat-label">Categories</span></div>
+          <div class="hero-stat"><span class="hero-stat-num">1,000</span><span class="hero-stat-label">RWF / Course</span></div>
+          <div class="hero-stat"><span class="hero-stat-num">Free</span><span class="hero-stat-label">Intro Lessons</span></div>
         </div>
       </div>
     </div>
@@ -1325,26 +291,10 @@
         <h2>How Ishuri Online Works</h2>
         <p class="lead">Start learning for free. Pay only when you're ready to unlock the full course — securely, with MTN MoMo or Airtel Money.</p>
         <div class="steps">
-          <div class="step">
-            <div class="step-num">1</div>
-            <h3>Create Your Account</h3>
-            <p>Sign in with Google in one tap. Access your learning from any phone, tablet, or computer.</p>
-          </div>
-          <div class="step">
-            <div class="step-num">2</div>
-            <h3>Study Free Lessons</h3>
-            <p>Every course opens with introductory lessons at no cost. Explore the content and see if it's right for you.</p>
-          </div>
-          <div class="step">
-            <div class="step-num">3</div>
-            <h3>Pay 1,000 RWF</h3>
-            <p>Pay securely with MTN Mobile Money or Airtel Money. Your payment is verified on our server before access is granted.</p>
-          </div>
-          <div class="step">
-            <div class="step-num">4</div>
-            <h3>Unlock Forever</h3>
-            <p>Once verified, every lesson in the course is yours permanently — from any device, whenever you log in.</p>
-          </div>
+          <div class="step"><div class="step-num">1</div><h3>Create Your Account</h3><p>Sign in with Google in one tap. Access your learning from any phone, tablet, or computer.</p></div>
+          <div class="step"><div class="step-num">2</div><h3>Study Free Lessons</h3><p>Every course opens with introductory lessons at no cost. Explore the content and see if it's right for you.</p></div>
+          <div class="step"><div class="step-num">3</div><h3>Pay 1,000 RWF</h3><p>Pay securely with MTN Mobile Money or Airtel Money. Your payment is verified on our server before access is granted.</p></div>
+          <div class="step"><div class="step-num">4</div><h3>Unlock Forever</h3><p>Once verified, every lesson in the course is yours permanently — from any device, whenever you log in.</p></div>
         </div>
       </div>
     </div>
@@ -1388,7 +338,7 @@
               <li>Mobile-friendly learning</li>
               <li>Progress tracking setup</li>
             </ul>
-            <button class="btn btn-ghost" id="freeGoogle">Sign in with Google</button>
+            <button class="btn btn-ghost google-btn">Sign in with Google</button>
           </div>
           <div class="price-card paid">
             <div class="price-label">Full Course Access</div>
@@ -1402,10 +352,7 @@
               <li>Permanent access — no renewal</li>
               <li>Access from any device after login</li>
             </ul>
-            <button class="btn btn-primary" id="paidGoogle">
-              Pay with Mobile Money
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </button>
+            <button class="btn btn-primary google-btn">Pay with Mobile Money <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></button>
           </div>
         </div>
         <div class="payment-methods">
@@ -1426,37 +373,27 @@
         <p class="lead">A complete learning environment — written lessons, videos, quizzes, progress tracking, and a personal dashboard.</p>
         <div class="features-grid">
           <div class="feature">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-            </div>
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>
             <h3>Written Lessons</h3>
             <p>Structured educational content with examples, lists, and downloadable resources for every module.</p>
           </div>
           <div class="feature">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-            </div>
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg></div>
             <h3>Online Quizzes</h3>
             <p>Test your understanding with automatically graded quizzes. See your score instantly and track your growth.</p>
           </div>
           <div class="feature">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-            </div>
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg></div>
             <h3>Progress Tracking</h3>
             <p>See how far you've come in every course. Resume exactly where you stopped, on any device.</p>
           </div>
           <div class="feature">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            </div>
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
             <h3>Student Dashboard</h3>
             <p>Manage your courses, purchases, quiz history, and account details all in one clean personal space.</p>
           </div>
           <div class="feature">
-            <div class="feature-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-            </div>
+            <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg></div>
             <h3>Mobile First</h3>
             <p>Built for Rwanda's learners. Works beautifully on smartphones, tablets, and desktop computers.</p>
           </div>
@@ -1475,19 +412,11 @@
         <h2>Your next lesson is <span class="gradient-text">one scroll away.</span></h2>
         <p class="lead">Join learners across Rwanda studying practical skills at their own pace — free to start, 1,000 RWF to unlock, yours forever.</p>
         <div class="cta-actions">
-          <button class="btn-google" id="ctaGoogle">
-            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-            </svg>
+          <button class="btn-google google-btn">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
             Sign in with Google
           </button>
-          <a href="#courses" class="btn btn-primary">
-            Explore Courses
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </a>
+          <a href="#courses" class="btn btn-primary">Explore Courses <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></a>
         </div>
         <div class="cta-perks">
           <div class="cta-perk"><span class="cta-check">✓</span> Free intro lessons</div>
@@ -1506,135 +435,30 @@
         <div class="footer-brand-col">
           <div class="footer-brand">
             <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="ISHURI ONLINE">
-            <div class="footer-brand-text">
-              <span class="brand-name">ISHURI</span>
-              <span class="brand-tag">Online</span>
-            </div>
+            <div class="footer-brand-text"><span class="brand-name">ISHURI</span><span class="brand-tag">Online</span></div>
           </div>
           <p class="footer-desc">Affordable, accessible online learning for Rwanda and beyond. Pay 1,000 RWF per course with mobile money — free intro lessons in every course.</p>
         </div>
-        <div class="footer-col">
-          <h4>Learn</h4>
-          <ul>
-            <li><a href="#courses">All Courses</a></li>
-            <li><a href="#pricing">Pricing</a></li>
-            <li><a href="#how">How It Works</a></li>
-            <li><a href="#features">Platform</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Categories</h4>
-          <ul>
-            <li><a href="#courses">Technology</a></li>
-            <li><a href="#courses">Business</a></li>
-            <li><a href="#courses">Career</a></li>
-            <li><a href="#courses">Life Skills</a></li>
-          </ul>
-        </div>
-        <div class="footer-col">
-          <h4>Support</h4>
-          <ul>
-            <li><a href="#contact">Contact</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Help Center</a></li>
-          </ul>
-        </div>
+        <div class="footer-col"><h4>Learn</h4><ul><li><a href="#courses">All Courses</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#how">How It Works</a></li><li><a href="#features">Platform</a></li></ul></div>
+        <div class="footer-col"><h4>Categories</h4><ul><li><a href="#courses">Technology</a></li><li><a href="#courses">Business</a></li><li><a href="#courses">Career</a></li><li><a href="#courses">Life Skills</a></li></ul></div>
+        <div class="footer-col"><h4>Support</h4><ul><li><a href="#contact">Contact</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">Help Center</a></li></ul></div>
       </div>
-
-      <!-- Developer credit -->
       <div class="footer-dev">
         <span class="footer-dev-label">Organization Developer</span>
         <a href="https://imena-lab.vercel.app" target="_blank" rel="noopener noreferrer">iMENA Lab</a>
       </div>
-
       <div class="footer-bottom">
-        <span>© 2025 ISHURI ONLINE. All rights reserved.</span>
-        <div class="footer-bottom-links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Cookies</a>
-        </div>
+        <span>© 2026 ISHURI ONLINE. All rights reserved.</span>
+        <div class="footer-bottom-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a></div>
       </div>
     </div>
   </footer>
 </main>
 
-<!-- DASHBOARD OVERLAY -->
-<div id="dashboard">
-  <div class="dash-wrap">
-    <header class="dash-header">
-      <div class="dash-brand">
-        <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" alt="ISHURI ONLINE">
-        <div class="dash-brand-text">
-          <span class="brand-name">ISHURI</span>
-          <span class="brand-tag">Dashboard</span>
-        </div>
-      </div>
-      <div class="dash-user">
-        <div class="dash-user-name">
-          <strong id="dashUserName">Student</strong>
-          <small id="dashUserEmail">student@example.com</small>
-        </div>
-        <img id="dashUserPhoto" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%2314386e'/><circle cx='50' cy='38' r='18' fill='%236ac8ff'/><path d='M20 88a30 30 0 0 1 60 0' fill='%236ac8ff'/></svg>" alt="Avatar">
-        <button class="dash-logout" id="dashLogout">Sign out</button>
-      </div>
-    </header>
-
-    <section class="dash-hero">
-      <div class="dash-welcome">
-        <span class="eyebrow">Welcome back</span>
-        <h2 id="dashGreeting">Hello, Student.</h2>
-        <p>Continue where you left off, or explore a new course. Your progress, purchases, and quiz history are saved to your account.</p>
-      </div>
-      <div class="dash-stats">
-        <div class="dash-stat">
-          <span class="dash-stat-num" id="statCourses">0</span>
-          <span class="dash-stat-label">Enrolled</span>
-        </div>
-        <div class="dash-stat">
-          <span class="dash-stat-num" id="statLessons">0</span>
-          <span class="dash-stat-label">Lessons Done</span>
-        </div>
-        <div class="dash-stat">
-          <span class="dash-stat-num" id="statQuiz">0</span>
-          <span class="dash-stat-label">Quizzes Passed</span>
-        </div>
-        <div class="dash-stat">
-          <span class="dash-stat-num" id="statOwned">0</span>
-          <span class="dash-stat-label">Courses Owned</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="dash-section">
-      <div class="dash-section-head">
-        <h3>Your Courses</h3>
-        <small id="dashCourseCount">0 courses</small>
-      </div>
-      <div class="dash-courses" id="dashCourses"></div>
-    </section>
-
-    <section class="dash-section">
-      <div class="dash-section-head">
-        <h3>Recent Activity</h3>
-        <small>Live from your account</small>
-      </div>
-      <div class="dash-activity" id="dashActivity">
-        <div class="dash-empty">No activity yet. Start a course to see it here.</div>
-      </div>
-    </section>
-  </div>
-</div>
-
-<!-- WEBGL FALLBACK -->
 <div class="webgl-fallback" id="webglFallback">
   <span>ISHURI ONLINE<br><br><small>Your browser does not support WebGL. Some visual effects will be disabled, but you can still explore the full website.</small></span>
 </div>
 
-<!-- ============================================================
-     THREE.JS ATMOSPHERE
-     ============================================================ -->
 <script type="importmap">
 {
   "imports": {
@@ -1645,924 +469,268 @@
 </script>
 
 <script type="module">
-import * as THREE from 'three';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
-import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
+  // [3D Atmosphere Engine - Identical to previous code, ensuring perfect visual consistency]
+  import * as THREE from 'three';
+  import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+  import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+  import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
-const CONFIG = {
-  maxPixelRatio: 2,
-  bloomStrength: 0.55, bloomRadius: 0.75, bloomThreshold: 0.75,
-  hexCount: 22, nodeCount: 90, waveRibbonCount: 4,
-  dataDotClusters: 8, techLineCount: 6,
-  reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
-};
-const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-if (isMobile) {
-  CONFIG.maxPixelRatio = 1.5;
-  CONFIG.hexCount = 14; CONFIG.nodeCount = 55;
-  CONFIG.waveRibbonCount = 3; CONFIG.dataDotClusters = 5; CONFIG.techLineCount = 4;
-}
+  const CONFIG = { maxPixelRatio: 2, bloomStrength: 0.55, bloomRadius: 0.75, bloomThreshold: 0.75, hexCount: 22, nodeCount: 90, waveRibbonCount: 4, dataDotClusters: 8, techLineCount: 6, reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches };
+  const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (isMobile) { CONFIG.maxPixelRatio = 1.5; CONFIG.hexCount = 14; CONFIG.nodeCount = 55; CONFIG.waveRibbonCount = 3; CONFIG.dataDotClusters = 5; CONFIG.techLineCount = 4; }
 
-let scene, camera, renderer, composer;
-const clock = new THREE.Clock();
-let scrollProgress = 0, smoothScroll = 0, isPaused = false;
-let time = 0, revealProgress = 0;
-let skyMaterial, hexPanels = [], networkNodes = [], waveRibbons = [], dotClusters = [], techLines = [];
-let cameraPath, lookAtPath, pathReady = false;
+  let scene, camera, renderer, composer;
+  const clock = new THREE.Clock();
+  let scrollProgress = 0, smoothScroll = 0, isPaused = false;
+  let time = 0, revealProgress = 0;
+  let skyMaterial, hexPanels = [], networkNodes = [], waveRibbons = [], dotClusters = [], techLines = [];
+  let cameraPath, lookAtPath, pathReady = false;
 
-const PAL = {
-  skyTop: 0x0a1a4a, skyMid: 0x1a3a7a, skyHorizon: 0x2a5a9a, skyDeep: 0x050e2a,
-  hex: new THREE.Color(0x4ab8ff), hexDim: new THREE.Color(0x2a70b8),
-  node: new THREE.Color(0x9ae0ff), wave: new THREE.Color(0x5ac0ff), dot: new THREE.Color(0x6ac8ff)
-};
+  const PAL = { skyTop: 0x0a1a4a, skyMid: 0x1a3a7a, skyHorizon: 0x2a5a9a, skyDeep: 0x050e2a, hex: new THREE.Color(0x4ab8ff), hexDim: new THREE.Color(0x2a70b8), node: new THREE.Color(0x9ae0ff), wave: new THREE.Color(0x5ac0ff), dot: new THREE.Color(0x6ac8ff) };
 
-function webglAvailable() {
-  try {
-    const c = document.createElement('canvas');
-    return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
-  } catch(e) { return false; }
-}
-function showFallback(msg) {
-  const fb = document.getElementById('webglFallback');
-  if (fb) {
-    fb.style.display = 'flex';
-    const small = fb.querySelector('small');
-    if (small && msg) small.textContent = msg;
-  }
-}
+  function webglAvailable() { try { const c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'))); } catch(e) { return false; } }
+  function showFallback(msg) { const fb = document.getElementById('webglFallback'); if (fb) { fb.style.display = 'flex'; const small = fb.querySelector('small'); if (small && msg) small.textContent = msg; } }
 
-function initScene() {
-  if (!webglAvailable()) { showFallback('WebGL not available.'); return false; }
-  scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0x0a1a3a, 70, 420);
-  camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 2000);
-  camera.position.set(0, 12, 60);
-  renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
-  renderer.setSize(innerWidth, innerHeight);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, CONFIG.maxPixelRatio));
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
-  renderer.outputColorSpace = THREE.SRGBColorSpace;
-  document.getElementById('canvas-container').appendChild(renderer.domElement);
+  function initScene() {
+    if (!webglAvailable()) { showFallback('WebGL not available.'); return false; }
+    scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x0a1a3a, 70, 420);
+    camera = new THREE.PerspectiveCamera(50, innerWidth/innerHeight, 0.1, 2000);
+    camera.position.set(0, 12, 60);
+    renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(Math.min(devicePixelRatio, CONFIG.maxPixelRatio));
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.15;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
 
-  composer = new EffectComposer(renderer);
-  composer.addPass(new RenderPass(scene, camera));
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), CONFIG.bloomStrength, CONFIG.bloomRadius, CONFIG.bloomThreshold));
-  const fxaa = new ShaderPass(FXAAShader);
-  fxaa.uniforms.resolution.value.set(1/(innerWidth*renderer.getPixelRatio()), 1/(innerHeight*renderer.getPixelRatio()));
-  composer.addPass(fxaa);
-  scene.userData.fxaa = fxaa;
+    composer = new EffectComposer(renderer);
+    composer.addPass(new RenderPass(scene, camera));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), CONFIG.bloomStrength, CONFIG.bloomRadius, CONFIG.bloomThreshold));
+    const fxaa = new ShaderPass(FXAAShader);
+    fxaa.uniforms.resolution.value.set(1/(innerWidth*renderer.getPixelRatio()), 1/(innerHeight*renderer.getPixelRatio()));
+    composer.addPass(fxaa);
+    scene.userData.fxaa = fxaa;
 
-  buildSky(); buildGround(); buildHexPanels(); buildNetwork(); buildWaveRibbons(); buildDotClusters(); buildTechArcs();
-  setupCameraPath();
-  pathReady = true;
-  return true;
-}
-
-function buildSky() {
-  const skyGeo = new THREE.SphereGeometry(900, 64, 48);
-  skyMaterial = new THREE.ShaderMaterial({
-    side: THREE.BackSide, depthWrite: false,
-    uniforms: {
-      uTime: { value: 0 },
-      uTop: { value: new THREE.Color(PAL.skyTop) },
-      uMid: { value: new THREE.Color(PAL.skyMid) },
-      uHorizon: { value: new THREE.Color(PAL.skyHorizon) },
-      uDeep: { value: new THREE.Color(PAL.skyDeep) },
-      uGlow: { value: new THREE.Color(0x2a70c8) }
-    },
-    vertexShader: `varying vec3 vDir; void main() { vec4 wp = modelMatrix * vec4(position, 1.0); vDir = normalize(wp.xyz); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: `
-      uniform float uTime; uniform vec3 uTop, uMid, uHorizon, uDeep, uGlow;
-      varying vec3 vDir;
-      float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
-      float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash(i), b = hash(i + vec2(1.0, 0.0)); float c = hash(i + vec2(0.0, 1.0)), d = hash(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); }
-      float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; } return v; }
-      void main() {
-        vec3 dir = normalize(vDir); float h = clamp(dir.y * 0.5 + 0.5, 0.0, 1.0);
-        vec3 col = mix(uDeep, uHorizon, smoothstep(0.32, 0.55, h));
-        col = mix(col, uMid, smoothstep(0.55, 0.78, h));
-        col = mix(col, uTop, smoothstep(0.78, 1.0, h));
-        float centerX = 1.0 - abs(dir.x); float horizonBand = pow(1.0 - abs(dir.y), 12.0);
-        float centerGlow = pow(centerX, 3.0) * horizonBand;
-        col += uGlow * centerGlow * 0.7;
-        if (dir.y > 0.01) {
-          float alt = 1.0 / max(dir.y, 0.008);
-          vec2 uv = dir.xz * alt * 0.10 + vec2(uTime * 0.004, uTime * 0.0025);
-          float clouds = fbm(uv); clouds = smoothstep(0.52, 0.78, clouds);
-          float fade = smoothstep(0.01, 0.20, dir.y) * (1.0 - smoothstep(0.70, 1.0, dir.y));
-          col = mix(col, col * 1.35 + vec3(0.10, 0.20, 0.35), clouds * 0.35 * fade);
-        }
-        float v = smoothstep(0.0, 1.0, 1.0 - length(dir.xz) * 0.5);
-        col *= 0.85 + v * 0.15;
-        gl_FragColor = vec4(col, 1.0);
-      }`
-  });
-  scene.add(new THREE.Mesh(skyGeo, skyMaterial));
-}
-
-function buildGround() {
-  const geo = new THREE.PlaneGeometry(3000, 3000, 80, 80);
-  const pos = geo.attributes.position.array;
-  const colors = new Float32Array(pos.length);
-  const cDeep = new THREE.Color(0x050e28);
-  const cNear = new THREE.Color(0x0a1a3a);
-  const cHorizon = new THREE.Color(0x1a3a6a);
-  for (let i = 0; i < pos.length; i += 3) {
-    const x = pos[i], z = pos[i+2]; const dist = Math.hypot(x, z);
-    let y = Math.sin(x * 0.008) * 1.6 + Math.cos(z * 0.010) * 1.6;
-    y += Math.sin(x * 0.03 + 1.3) * 0.4 + Math.cos(z * 0.026 + 0.7) * 0.4;
-    pos[i+1] = y;
-    let c = cNear.clone();
-    const fade = Math.min(1, Math.max(0, (dist - 100) / 500));
-    c.lerp(cHorizon, fade * 0.8); c.lerp(cDeep, Math.max(0, 1 - dist / 200) * 0.4);
-    colors[i] = c.r; colors[i+1] = c.g; colors[i+2] = c.b;
-  }
-  geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  geo.computeVertexNormals();
-  const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0.35, emissive: new THREE.Color(0x0a1a3a), emissiveIntensity: 0.4 });
-  const ground = new THREE.Mesh(geo, mat);
-  ground.rotation.x = -Math.PI / 2; ground.position.y = -2;
-  scene.add(ground);
-  scene.add(new THREE.HemisphereLight(0x4a80c8, 0x0a1028, 0.8));
-  scene.add(new THREE.AmbientLight(0x3060a0, 0.4));
-  const rim = new THREE.DirectionalLight(0x5aa8ff, 0.9); rim.position.set(0, 3, -60); scene.add(rim);
-  const fill = new THREE.DirectionalLight(0x8ac8ff, 0.5); fill.position.set(20, 40, 20); scene.add(fill);
-}
-
-function buildHexPanels() {
-  const hexGeo = new THREE.RingGeometry(1.4, 1.55, 6);
-  const fillGeo = new THREE.CircleGeometry(1.4, 6);
-  for (let i = 0; i < CONFIG.hexCount; i++) {
-    const group = new THREE.Group();
-    const ringMat = new THREE.MeshBasicMaterial({ color: PAL.hex, transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false });
-    group.add(new THREE.Mesh(hexGeo, ringMat));
-    const fillMat = new THREE.MeshBasicMaterial({ color: PAL.hexDim, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false });
-    const fill = new THREE.Mesh(fillGeo, fillMat); fill.position.z = -0.001; group.add(fill);
-    const a = Math.random() * Math.PI * 2, r = 35 + Math.random() * 85, h = 3 + Math.random() * 55;
-    group.position.set(Math.cos(a) * r, h, Math.sin(a) * r);
-    group.lookAt(0, group.position.y, 0); group.rotateZ(Math.random() * Math.PI * 2);
-    group.scale.setScalar(0.7 + Math.random() * 1.4);
-    group.userData = { baseOpacity: 0.45 + Math.random() * 0.4, pulsePhase: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.15, driftPhase: Math.random() * Math.PI * 2, baseY: h };
-    scene.add(group);
-    hexPanels.push({ group, ringMat, fillMat });
-  }
-}
-
-function buildNetwork() {
-  const positions = [];
-  for (let i = 0; i < CONFIG.nodeCount; i++) {
-    const a = Math.random() * Math.PI * 2, r = 20 + Math.random() * 90, h = 5 + Math.random() * 45;
-    positions.push(new THREE.Vector3(Math.cos(a) * r, h, Math.sin(a) * r));
-  }
-  const nodeGeo = new THREE.SphereGeometry(0.18, 8, 8);
-  for (let i = 0; i < positions.length; i++) {
-    const mat = new THREE.MeshBasicMaterial({ color: PAL.node, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false });
-    const node = new THREE.Mesh(nodeGeo, mat);
-    node.position.copy(positions[i]);
-    node.userData = { phase: Math.random() * Math.PI * 2, baseScale: 0.8 + Math.random() * 0.7 };
-    node.scale.setScalar(node.userData.baseScale);
-    scene.add(node); networkNodes.push(node);
-  }
-  const edgeMat = new THREE.LineBasicMaterial({ color: PAL.hex, transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending, depthWrite: false });
-  const connectionRadius = 32;
-  const edgePairs = [];
-  for (let i = 0; i < positions.length; i++) for (let j = i + 1; j < positions.length; j++) {
-    const d = positions[i].distanceTo(positions[j]);
-    if (d < connectionRadius && Math.random() < 0.35) edgePairs.push([i, j, d]);
-  }
-  edgePairs.sort((a, b) => a[2] - b[2]);
-  const chosen = edgePairs.slice(0, isMobile ? 40 : 70);
-  const lineGeo = new THREE.BufferGeometry();
-  const linePositions = new Float32Array(chosen.length * 6);
-  chosen.forEach((pair, k) => {
-    const a = positions[pair[0]], b = positions[pair[1]];
-    linePositions[k*6] = a.x; linePositions[k*6+1] = a.y; linePositions[k*6+2] = a.z;
-    linePositions[k*6+3] = b.x; linePositions[k*6+4] = b.y; linePositions[k*6+5] = b.z;
-  });
-  lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
-  scene.add(new THREE.LineSegments(lineGeo, edgeMat));
-  scene.userData.networkEdges = edgeMat;
-}
-
-function buildWaveRibbons() {
-  for (let w = 0; w < CONFIG.waveRibbonCount; w++) {
-    const segments = 200, width = 0.4;
-    const ribbonGeo = new THREE.BufferGeometry();
-    const vertices = new Float32Array(segments * 2 * 3);
-    const uvs = new Float32Array(segments * 2 * 2);
-    const indices = [];
-    for (let i = 0; i < segments; i++) {
-      const t = i / (segments - 1);
-      const x = (t - 0.5) * 260;
-      const y = Math.sin(t * Math.PI * 3 + w * 1.7) * 3.5 + Math.sin(t * Math.PI * 7 + w * 2.3) * 1.2;
-      const z = -30 - w * 15 + Math.sin(t * Math.PI * 5 + w) * 4;
-      vertices[i*6] = x; vertices[i*6+1] = y + width; vertices[i*6+2] = z;
-      vertices[i*6+3] = x; vertices[i*6+4] = y - width; vertices[i*6+5] = z;
-      uvs[i*4] = t; uvs[i*4+1] = 0; uvs[i*4+2] = t; uvs[i*4+3] = 1;
-      if (i < segments - 1) {
-        const a = i * 2, b = i * 2 + 1, c = (i+1) * 2, d = (i+1) * 2 + 1;
-        indices.push(a, b, c, b, d, c);
-      }
-    }
-    ribbonGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    ribbonGeo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2));
-    ribbonGeo.setIndex(indices);
-    const mat = new THREE.ShaderMaterial({
-      transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
-      uniforms: { uTime: { value: 0 }, uColor: { value: PAL.wave }, uOffset: { value: Math.random() * 10 }, uOpacity: { value: 0.4 + Math.random() * 0.35 } },
-      vertexShader: `uniform float uTime, uOffset; varying vec2 vUv; varying float vDist; void main() { vUv = uv; vec3 pos = position; pos.y += sin(pos.x * 0.08 + uTime * 0.6 + uOffset) * 0.8; pos.y += cos(pos.x * 0.2 + uTime * 0.9 + uOffset * 2.0) * 0.3; vDist = length(pos.xyz); gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0); }`,
-      fragmentShader: `uniform float uTime, uOpacity; uniform vec3 uColor; varying vec2 vUv; void main() { float edge = smoothstep(0.0, 0.45, vUv.y) * smoothstep(1.0, 0.55, vUv.y); float fade = smoothstep(0.0, 0.12, vUv.x) * smoothstep(1.0, 0.88, vUv.x); float pulses = 0.0; for (int i = 0; i < 3; i++) { float fi = float(i); float p = fract(vUv.x * 2.0 - uTime * 0.12 + fi * 0.33); pulses += smoothstep(0.04, 0.0, abs(p - 0.5)) * 0.5; } float base = 0.35; vec3 col = uColor * (base + pulses); float alpha = (base + pulses) * edge * fade * uOpacity; col = mix(col, vec3(0.85, 0.95, 1.0), pulses * 0.6); gl_FragColor = vec4(col, alpha); }`
-    });
-    const mesh = new THREE.Mesh(ribbonGeo, mat);
-    mesh.position.y = 12 + w * 4; mesh.position.z = -10 + w * 5;
-    scene.add(mesh); waveRibbons.push(mat);
-  }
-}
-
-function buildDotClusters() {
-  const dotGeo = new THREE.SphereGeometry(0.14, 6, 6);
-  for (let c = 0; c < CONFIG.dataDotClusters; c++) {
-    const clusterGeoPositions = [];
-    const origin = new THREE.Vector3((Math.random() - 0.5) * 120, 8 + Math.random() * 40, -20 - Math.random() * 40);
-    for (let i = 0; i < 8; i++) for (let j = 0; j < 5; j++) {
-      if (Math.random() < 0.35) continue;
-      clusterGeoPositions.push(new THREE.Vector3(origin.x + i * 1.2, origin.y + j * 1.2, origin.z + (Math.random() - 0.5) * 0.5));
-    }
-    const clusterMesh = new THREE.InstancedMesh(dotGeo, new THREE.MeshBasicMaterial({ color: PAL.dot, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }), clusterGeoPositions.length);
-    clusterGeoPositions.forEach((p, i) => { const d = new THREE.Object3D(); d.position.copy(p); d.updateMatrix(); clusterMesh.setMatrixAt(i, d.matrix); });
-    clusterMesh.instanceMatrix.needsUpdate = true;
-    scene.add(clusterMesh);
-    dotClusters.push({ mesh: clusterMesh, phase: Math.random() * Math.PI * 2, baseOpacity: 0.6 + Math.random() * 0.35 });
-  }
-}
-
-function buildTechArcs() {
-  const lineMat = new THREE.ShaderMaterial({
-    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
-    uniforms: { uTime: { value: 0 }, uColor: { value: PAL.hex } },
-    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
-    fragmentShader: `uniform float uTime; uniform vec3 uColor; varying vec2 vUv; void main() { float fade = smoothstep(0.0, 0.15, vUv.x) * smoothstep(1.0, 0.85, vUv.x); float core = smoothstep(0.5, 0.0, abs(vUv.y - 0.5) * 2.0); float pulse = fract(vUv.x * 1.5 - uTime * 0.12); float pulseGlow = smoothstep(0.06, 0.0, abs(pulse - 0.5)); vec3 col = uColor * (0.6 + pulseGlow * 0.9); float alpha = (core * 0.5 + pulseGlow * 0.8) * fade; gl_FragColor = vec4(col, alpha); }`
-  });
-  for (let i = 0; i < CONFIG.techLineCount; i++) {
-    const a = (i / CONFIG.techLineCount) * Math.PI * 2 + Math.random() * 0.4;
-    const radius = 130 + Math.random() * 60, altitude = 35 + Math.random() * 35, span = Math.PI * (0.3 + Math.random() * 0.35);
-    const points = [];
-    const startA = a - span / 2;
-    for (let s = 0; s <= 40; s++) {
-      const t = s / 40, ang = startA + span * t;
-      const h = Math.sin(t * Math.PI) * altitude * 0.4 + altitude * 0.6;
-      points.push(new THREE.Vector3(Math.cos(ang) * radius, h, Math.sin(ang) * radius));
-    }
-    const curve = new THREE.CatmullRomCurve3(points);
-    const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.5, 6, false), lineMat.clone());
-    scene.add(mesh); techLines.push(mesh);
-  }
-}
-
-function setupCameraPath() {
-  const positions = [
-    new THREE.Vector3(0, 10, 70), new THREE.Vector3(8, 12, 55),
-    new THREE.Vector3(14, 16, 44), new THREE.Vector3(10, 24, 36),
-    new THREE.Vector3(2, 34, 32), new THREE.Vector3(-8, 42, 30),
-    new THREE.Vector3(-14, 52, 32), new THREE.Vector3(-10, 62, 38),
-    new THREE.Vector3(-2, 74, 46), new THREE.Vector3(8, 84, 56)
-  ];
-  const looks = [
-    new THREE.Vector3(0, 20, 0), new THREE.Vector3(0, 24, 0),
-    new THREE.Vector3(0, 28, 0), new THREE.Vector3(0, 34, 0),
-    new THREE.Vector3(0, 42, 0), new THREE.Vector3(0, 50, 0),
-    new THREE.Vector3(0, 56, 0), new THREE.Vector3(0, 62, 0),
-    new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 55, 0)
-  ];
-  cameraPath = new THREE.CatmullRomCurve3(positions, false, 'catmullrom', 0.5);
-  lookAtPath = new THREE.CatmullRomCurve3(looks, false, 'catmullrom', 0.5);
-}
-
-function setupScroll() {
-  const update = () => {
-    const top = window.scrollY || document.documentElement.scrollTop;
-    const dh = document.documentElement.scrollHeight - window.innerHeight;
-    if (dh > 0) scrollProgress = Math.min(1, Math.max(0, top / dh));
-  };
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update, { passive: true });
-  update();
-}
-
-function onWindowResize() {
-  if (!renderer || !camera) return;
-  const w = innerWidth, h = innerHeight;
-  camera.aspect = w / h; camera.updateProjectionMatrix();
-  renderer.setSize(w, h);
-  renderer.setPixelRatio(Math.min(devicePixelRatio, CONFIG.maxPixelRatio));
-  if (composer) {
-    composer.setSize(w, h);
-    const fxaa = scene.userData.fxaa;
-    if (fxaa) fxaa.uniforms.resolution.value.set(1/(w*renderer.getPixelRatio()), 1/(h*renderer.getPixelRatio()));
-  }
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  if (isPaused) return;
-  const delta = Math.min(clock.getDelta(), 0.05);
-  time += delta;
-  revealProgress = Math.min(1, revealProgress + delta * 0.35);
-  smoothScroll += (scrollProgress - smoothScroll) * 0.075;
-
-  if (pathReady && cameraPath && lookAtPath) {
-    const t = Math.min(1, Math.max(0, smoothScroll));
-    const targetPos = cameraPath.getPointAt(t);
-    const targetLook = lookAtPath.getPointAt(t);
-    if (revealProgress < 1) {
-      const eased = 1 - Math.pow(1 - revealProgress, 3);
-      const startPos = cameraPath.getPointAt(0).clone().multiplyScalar(1.3);
-      camera.position.lerpVectors(startPos, targetPos, eased);
-    } else {
-      camera.position.lerp(targetPos, 0.07);
-    }
-    if (!camera.userData.smoothLook) camera.userData.smoothLook = targetLook.clone();
-    camera.userData.smoothLook.lerp(targetLook, 0.06);
-    camera.lookAt(camera.userData.smoothLook);
+    buildSky(); buildGround(); buildHexPanels(); buildNetwork(); buildWaveRibbons(); buildDotClusters(); buildTechArcs(); setupCameraPath();
+    pathReady = true;
+    return true;
   }
 
-  if (!CONFIG.reducedMotion) {
-    if (skyMaterial) skyMaterial.uniforms.uTime.value = time;
-    hexPanels.forEach((h) => {
-      const pulse = 0.55 + Math.sin(time * 1.2 + h.group.userData.pulsePhase) * 0.4;
-      h.ringMat.opacity = h.group.userData.baseOpacity * pulse;
-      h.fillMat.opacity = 0.10 + pulse * 0.14;
-      h.group.rotateZ(h.group.userData.rotSpeed * delta);
-      h.group.position.y = h.group.userData.baseY + Math.sin(time * 0.4 + h.group.userData.driftPhase) * 1.2;
-    });
-    networkNodes.forEach((n) => {
-      const pulse = 0.7 + Math.sin(time * 1.6 + n.userData.phase) * 0.5;
-      n.scale.setScalar(n.userData.baseScale * (0.85 + pulse * 0.4));
-      n.material.opacity = 0.5 + pulse * 0.5;
-    });
-    if (scene.userData.networkEdges) scene.userData.networkEdges.opacity = 0.14 + Math.sin(time * 0.6) * 0.06;
-    waveRibbons.forEach((m) => { if (m.uniforms) m.uniforms.uTime.value = time; });
-    dotClusters.forEach((c) => {
-      const pulse = 0.6 + Math.sin(time * 1.0 + c.phase) * 0.4;
-      c.mesh.material.opacity = c.baseOpacity * pulse;
-    });
-    techLines.forEach((m) => { if (m.material.uniforms) m.material.uniforms.uTime.value = time; });
+  // [All 3D build functions remain exactly the same to preserve the look]
+  function buildSky() { const skyGeo = new THREE.SphereGeometry(900, 64, 48); skyMaterial = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, uniforms: { uTime: { value: 0 }, uTop: { value: new THREE.Color(PAL.skyTop) }, uMid: { value: new THREE.Color(PAL.skyMid) }, uHorizon: { value: new THREE.Color(PAL.skyHorizon) }, uDeep: { value: new THREE.Color(PAL.skyDeep) }, uGlow: { value: new THREE.Color(0x2a70c8) } }, vertexShader: `varying vec3 vDir; void main() { vec4 wp = modelMatrix * vec4(position, 1.0); vDir = normalize(wp.xyz); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`, fragmentShader: `uniform float uTime; uniform vec3 uTop, uMid, uHorizon, uDeep, uGlow; varying vec3 vDir; float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); } float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f); float a = hash(i), b = hash(i + vec2(1.0, 0.0)); float c = hash(i + vec2(0.0, 1.0)), d = hash(i + vec2(1.0, 1.0)); return mix(mix(a, b, f.x), mix(c, d, f.x), f.y); } float fbm(vec2 p){ float v = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; } return v; } void main() { vec3 dir = normalize(vDir); float h = clamp(dir.y * 0.5 + 0.5, 0.0, 1.0); vec3 col = mix(uDeep, uHorizon, smoothstep(0.32, 0.55, h)); col = mix(col, uMid, smoothstep(0.55, 0.78, h)); col = mix(col, uTop, smoothstep(0.78, 1.0, h)); float centerX = 1.0 - abs(dir.x); float horizonBand = pow(1.0 - abs(dir.y), 12.0); float centerGlow = pow(centerX, 3.0) * horizonBand; col += uGlow * centerGlow * 0.7; if (dir.y > 0.01) { float alt = 1.0 / max(dir.y, 0.008); vec2 uv = dir.xz * alt * 0.10 + vec2(uTime * 0.004, uTime * 0.0025); float clouds = fbm(uv); clouds = smoothstep(0.52, 0.78, clouds); float fade = smoothstep(0.01, 0.20, dir.y) * (1.0 - smoothstep(0.70, 1.0, dir.y)); col = mix(col, col * 1.35 + vec3(0.10, 0.20, 0.35), clouds * 0.35 * fade); } float v = smoothstep(0.0, 1.0, 1.0 - length(dir.xz) * 0.5); col *= 0.85 + v * 0.15; gl_FragColor = vec4(col, 1.0); }` }); scene.add(new THREE.Mesh(skyGeo, skyMaterial)); }
+  function buildGround() { const geo = new THREE.PlaneGeometry(3000, 3000, 80, 80); const pos = geo.attributes.position.array; const colors = new Float32Array(pos.length); const cDeep = new THREE.Color(0x050e28); const cNear = new THREE.Color(0x0a1a3a); const cHorizon = new THREE.Color(0x1a3a6a); for (let i = 0; i < pos.length; i += 3) { const x = pos[i], z = pos[i+2]; const dist = Math.hypot(x, z); let y = Math.sin(x * 0.008) * 1.6 + Math.cos(z * 0.010) * 1.6; y += Math.sin(x * 0.03 + 1.3) * 0.4 + Math.cos(z * 0.026 + 0.7) * 0.4; pos[i+1] = y; let c = cNear.clone(); const fade = Math.min(1, Math.max(0, (dist - 100) / 500)); c.lerp(cHorizon, fade * 0.8); c.lerp(cDeep, Math.max(0, 1 - dist / 200) * 0.4); colors[i] = c.r; colors[i+1] = c.g; colors[i+2] = c.b; } geo.setAttribute('color', new THREE.BufferAttribute(colors, 3)); geo.computeVertexNormals(); const mat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0.35, emissive: new THREE.Color(0x0a1a3a), emissiveIntensity: 0.4 }); const ground = new THREE.Mesh(geo, mat); ground.rotation.x = -Math.PI / 2; ground.position.y = -2; scene.add(ground); scene.add(new THREE.HemisphereLight(0x4a80c8, 0x0a1028, 0.8)); scene.add(new THREE.AmbientLight(0x3060a0, 0.4)); const rim = new THREE.DirectionalLight(0x5aa8ff, 0.9); rim.position.set(0, 3, -60); scene.add(rim); const fill = new THREE.DirectionalLight(0x8ac8ff, 0.5); fill.position.set(20, 40, 20); scene.add(fill); }
+  function buildHexPanels() { const hexGeo = new THREE.RingGeometry(1.4, 1.55, 6); const fillGeo = new THREE.CircleGeometry(1.4, 6); for (let i = 0; i < CONFIG.hexCount; i++) { const group = new THREE.Group(); const ringMat = new THREE.MeshBasicMaterial({ color: PAL.hex, transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false }); group.add(new THREE.Mesh(hexGeo, ringMat)); const fillMat = new THREE.MeshBasicMaterial({ color: PAL.hexDim, transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false }); const fill = new THREE.Mesh(fillGeo, fillMat); fill.position.z = -0.001; group.add(fill); const a = Math.random() * Math.PI * 2, r = 35 + Math.random() * 85, h = 3 + Math.random() * 55; group.position.set(Math.cos(a) * r, h, Math.sin(a) * r); group.lookAt(0, group.position.y, 0); group.rotateZ(Math.random() * Math.PI * 2); group.scale.setScalar(0.7 + Math.random() * 1.4); group.userData = { baseOpacity: 0.45 + Math.random() * 0.4, pulsePhase: Math.random() * Math.PI * 2, rotSpeed: (Math.random() - 0.5) * 0.15, driftPhase: Math.random() * Math.PI * 2, baseY: h }; scene.add(group); hexPanels.push({ group, ringMat, fillMat }); } }
+  function buildNetwork() { const positions = []; for (let i = 0; i < CONFIG.nodeCount; i++) { const a = Math.random() * Math.PI * 2, r = 20 + Math.random() * 90, h = 5 + Math.random() * 45; positions.push(new THREE.Vector3(Math.cos(a) * r, h, Math.sin(a) * r)); } const nodeGeo = new THREE.SphereGeometry(0.18, 8, 8); for (let i = 0; i < positions.length; i++) { const mat = new THREE.MeshBasicMaterial({ color: PAL.node, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false }); const node = new THREE.Mesh(nodeGeo, mat); node.position.copy(positions[i]); node.userData = { phase: Math.random() * Math.PI * 2, baseScale: 0.8 + Math.random() * 0.7 }; node.scale.setScalar(node.userData.baseScale); scene.add(node); networkNodes.push(node); } const edgeMat = new THREE.LineBasicMaterial({ color: PAL.hex, transparent: true, opacity: 0.18, blending: THREE.AdditiveBlending, depthWrite: false }); const connectionRadius = 32; const edgePairs = []; for (let i = 0; i < positions.length; i++) for (let j = i + 1; j < positions.length; j++) { const d = positions[i].distanceTo(positions[j]); if (d < connectionRadius && Math.random() < 0.35) edgePairs.push([i, j, d]); } edgePairs.sort((a, b) => a[2] - b[2]); const chosen = edgePairs.slice(0, isMobile ? 40 : 70); const lineGeo = new THREE.BufferGeometry(); const linePositions = new Float32Array(chosen.length * 6); chosen.forEach((pair, k) => { const a = positions[pair[0]], b = positions[pair[1]]; linePositions[k*6] = a.x; linePositions[k*6+1] = a.y; linePositions[k*6+2] = a.z; linePositions[k*6+3] = b.x; linePositions[k*6+4] = b.y; linePositions[k*6+5] = b.z; }); lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3)); scene.add(new THREE.LineSegments(lineGeo, edgeMat)); scene.userData.networkEdges = edgeMat; }
+  function buildWaveRibbons() { for (let w = 0; w < CONFIG.waveRibbonCount; w++) { const segments = 200, width = 0.4; const ribbonGeo = new THREE.BufferGeometry(); const vertices = new Float32Array(segments * 2 * 3); const uvs = new Float32Array(segments * 2 * 2); const indices = []; for (let i = 0; i < segments; i++) { const t = i / (segments - 1); const x = (t - 0.5) * 260; const y = Math.sin(t * Math.PI * 3 + w * 1.7) * 3.5 + Math.sin(t * Math.PI * 7 + w * 2.3) * 1.2; const z = -30 - w * 15 + Math.sin(t * Math.PI * 5 + w) * 4; vertices[i*6] = x; vertices[i*6+1] = y + width; vertices[i*6+2] = z; vertices[i*6+3] = x; vertices[i*6+4] = y - width; vertices[i*6+5] = z; uvs[i*4] = t; uvs[i*4+1] = 0; uvs[i*4+2] = t; uvs[i*4+3] = 1; if (i < segments - 1) { const a = i * 2, b = i * 2 + 1, c = (i+1) * 2, d = (i+1) * 2 + 1; indices.push(a, b, c, b, d, c); } } ribbonGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); ribbonGeo.setAttribute('uv', new THREE.BufferAttribute(uvs, 2)); ribbonGeo.setIndex(indices); const mat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, uniforms: { uTime: { value: 0 }, uColor: { value: PAL.wave }, uOffset: { value: Math.random() * 10 }, uOpacity: { value: 0.4 + Math.random() * 0.35 } }, vertexShader: `uniform float uTime, uOffset; varying vec2 vUv; varying float vDist; void main() { vUv = uv; vec3 pos = position; pos.y += sin(pos.x * 0.08 + uTime * 0.6 + uOffset) * 0.8; pos.y += cos(pos.x * 0.2 + uTime * 0.9 + uOffset * 2.0) * 0.3; vDist = length(pos.xyz); gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0); }`, fragmentShader: `uniform float uTime, uOpacity; uniform vec3 uColor; varying vec2 vUv; void main() { float edge = smoothstep(0.0, 0.45, vUv.y) * smoothstep(1.0, 0.55, vUv.y); float fade = smoothstep(0.0, 0.12, vUv.x) * smoothstep(1.0, 0.88, vUv.x); float pulses = 0.0; for (int i = 0; i < 3; i++) { float fi = float(i); float p = fract(vUv.x * 2.0 - uTime * 0.12 + fi * 0.33); pulses += smoothstep(0.04, 0.0, abs(p - 0.5)) * 0.5; } float base = 0.35; vec3 col = uColor * (base + pulses); float alpha = (base + pulses) * edge * fade * uOpacity; col = mix(col, vec3(0.85, 0.95, 1.0), pulses * 0.6); gl_FragColor = vec4(col, alpha); }` }); const mesh = new THREE.Mesh(ribbonGeo, mat); mesh.position.y = 12 + w * 4; mesh.position.z = -10 + w * 5; scene.add(mesh); waveRibbons.push(mat); } }
+  function buildDotClusters() { const dotGeo = new THREE.SphereGeometry(0.14, 6, 6); for (let c = 0; c < CONFIG.dataDotClusters; c++) { const clusterGeoPositions = []; const origin = new THREE.Vector3((Math.random() - 0.5) * 120, 8 + Math.random() * 40, -20 - Math.random() * 40); for (let i = 0; i < 8; i++) for (let j = 0; j < 5; j++) { if (Math.random() < 0.35) continue; clusterGeoPositions.push(new THREE.Vector3(origin.x + i * 1.2, origin.y + j * 1.2, origin.z + (Math.random() - 0.5) * 0.5)); } const clusterMesh = new THREE.InstancedMesh(dotGeo, new THREE.MeshBasicMaterial({ color: PAL.dot, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }), clusterGeoPositions.length); clusterGeoPositions.forEach((p, i) => { const d = new THREE.Object3D(); d.position.copy(p); d.updateMatrix(); clusterMesh.setMatrixAt(i, d.matrix); }); clusterMesh.instanceMatrix.needsUpdate = true; scene.add(clusterMesh); dotClusters.push({ mesh: clusterMesh, phase: Math.random() * Math.PI * 2, baseOpacity: 0.6 + Math.random() * 0.35 }); } }
+  function buildTechArcs() { const lineMat = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, uniforms: { uTime: { value: 0 }, uColor: { value: PAL.hex } }, vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`, fragmentShader: `uniform float uTime; uniform vec3 uColor; varying vec2 vUv; void main() { float fade = smoothstep(0.0, 0.15, vUv.x) * smoothstep(1.0, 0.85, vUv.x); float core = smoothstep(0.5, 0.0, abs(vUv.y - 0.5) * 2.0); float pulse = fract(vUv.x * 1.5 - uTime * 0.12); float pulseGlow = smoothstep(0.06, 0.0, abs(pulse - 0.5)); vec3 col = uColor * (0.6 + pulseGlow * 0.9); float alpha = (core * 0.5 + pulseGlow * 0.8) * fade; gl_FragColor = vec4(col, alpha); }` }); for (let i = 0; i < CONFIG.techLineCount; i++) { const a = (i / CONFIG.techLineCount) * Math.PI * 2 + Math.random() * 0.4; const radius = 130 + Math.random() * 60, altitude = 35 + Math.random() * 35, span = Math.PI * (0.3 + Math.random() * 0.35); const points = []; const startA = a - span / 2; for (let s = 0; s <= 40; s++) { const t = s / 40, ang = startA + span * t; const h = Math.sin(t * Math.PI) * altitude * 0.4 + altitude * 0.6; points.push(new THREE.Vector3(Math.cos(ang) * radius, h, Math.sin(ang) * radius)); } const curve = new THREE.CatmullRomCurve3(points); const mesh = new THREE.Mesh(new THREE.TubeGeometry(curve, 64, 0.5, 6, false), lineMat.clone()); scene.add(mesh); techLines.push(mesh); } }
+  function setupCameraPath() { const positions = [new THREE.Vector3(0, 10, 70), new THREE.Vector3(8, 12, 55), new THREE.Vector3(14, 16, 44), new THREE.Vector3(10, 24, 36), new THREE.Vector3(2, 34, 32), new THREE.Vector3(-8, 42, 30), new THREE.Vector3(-14, 52, 32), new THREE.Vector3(-10, 62, 38), new THREE.Vector3(-2, 74, 46), new THREE.Vector3(8, 84, 56)]; const looks = [new THREE.Vector3(0, 20, 0), new THREE.Vector3(0, 24, 0), new THREE.Vector3(0, 28, 0), new THREE.Vector3(0, 34, 0), new THREE.Vector3(0, 42, 0), new THREE.Vector3(0, 50, 0), new THREE.Vector3(0, 56, 0), new THREE.Vector3(0, 62, 0), new THREE.Vector3(0, 60, 0), new THREE.Vector3(0, 55, 0)]; cameraPath = new THREE.CatmullRomCurve3(positions, false, 'catmullrom', 0.5); lookAtPath = new THREE.CatmullRomCurve3(looks, false, 'catmullrom', 0.5); }
+
+  function setupScroll() { const update = () => { const top = window.scrollY || document.documentElement.scrollTop; const dh = document.documentElement.scrollHeight - window.innerHeight; if (dh > 0) scrollProgress = Math.min(1, Math.max(0, top / dh)); }; window.addEventListener('scroll', update, { passive: true }); window.addEventListener('resize', update, { passive: true }); update(); }
+  function onWindowResize() { if (!renderer || !camera) return; const w = innerWidth, h = innerHeight; camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h); renderer.setPixelRatio(Math.min(devicePixelRatio, CONFIG.maxPixelRatio)); if (composer) { composer.setSize(w, h); const fxaa = scene.userData.fxaa; if (fxaa) fxaa.uniforms.resolution.value.set(1/(w*renderer.getPixelRatio()), 1/(h*renderer.getPixelRatio())); } }
+
+  function animate() {
+    requestAnimationFrame(animate);
+    if (isPaused) return;
+    const delta = Math.min(clock.getDelta(), 0.05);
+    time += delta;
+    revealProgress = Math.min(1, revealProgress + delta * 0.35);
+    smoothScroll += (scrollProgress - smoothScroll) * 0.075;
+    if (pathReady && cameraPath && lookAtPath) { const t = Math.min(1, Math.max(0, smoothScroll)); const targetPos = cameraPath.getPointAt(t); const targetLook = lookAtPath.getPointAt(t); if (revealProgress < 1) { const eased = 1 - Math.pow(1 - revealProgress, 3); const startPos = cameraPath.getPointAt(0).clone().multiplyScalar(1.3); camera.position.lerpVectors(startPos, targetPos, eased); } else { camera.position.lerp(targetPos, 0.07); } if (!camera.userData.smoothLook) camera.userData.smoothLook = targetLook.clone(); camera.userData.smoothLook.lerp(targetLook, 0.06); camera.lookAt(camera.userData.smoothLook); }
+    if (!CONFIG.reducedMotion) { if (skyMaterial) skyMaterial.uniforms.uTime.value = time; hexPanels.forEach((h) => { const pulse = 0.55 + Math.sin(time * 1.2 + h.group.userData.pulsePhase) * 0.4; h.ringMat.opacity = h.group.userData.baseOpacity * pulse; h.fillMat.opacity = 0.10 + pulse * 0.14; h.group.rotateZ(h.group.userData.rotSpeed * delta); h.group.position.y = h.group.userData.baseY + Math.sin(time * 0.4 + h.group.userData.driftPhase) * 1.2; }); networkNodes.forEach((n) => { const pulse = 0.7 + Math.sin(time * 1.6 + n.userData.phase) * 0.5; n.scale.setScalar(n.userData.baseScale * (0.85 + pulse * 0.4)); n.material.opacity = 0.5 + pulse * 0.5; }); if (scene.userData.networkEdges) scene.userData.networkEdges.opacity = 0.14 + Math.sin(time * 0.6) * 0.06; waveRibbons.forEach((m) => { if (m.uniforms) m.uniforms.uTime.value = time; }); dotClusters.forEach((c) => { const pulse = 0.6 + Math.sin(time * 1.0 + c.phase) * 0.4; c.mesh.material.opacity = c.baseOpacity * pulse; }); techLines.forEach((m) => { if (m.material.uniforms) m.material.uniforms.uTime.value = time; }); }
+    composer ? composer.render() : renderer.render(scene, camera);
   }
 
-  composer ? composer.render() : renderer.render(scene, camera);
-}
-
-function init() {
-  if (!initScene()) return;
-  setupScroll();
-  window.addEventListener('resize', onWindowResize, { passive: true });
-  document.addEventListener('visibilitychange', () => {
-    isPaused = document.hidden;
-    if (!isPaused) clock.getDelta();
-  });
-  const loader = document.getElementById('loader');
-  if (loader) setTimeout(() => loader.classList.add('hidden'), 500);
-  animate();
-  window.ISHURI = { getScrollProgress: () => scrollProgress, getSmoothScroll: () => smoothScroll, setScrollProgress: (v) => { scrollProgress = Math.min(1, Math.max(0, v)); }, scene, camera, renderer, ready: true };
-  console.log('ISHURI · Atmosphere ready');
-}
-document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
+  function init() {
+    if (!initScene()) return;
+    setupScroll();
+    window.addEventListener('resize', onWindowResize, { passive: true });
+    document.addEventListener('visibilitychange', () => { isPaused = document.hidden; if (!isPaused) clock.getDelta(); });
+    const loader = document.getElementById('loader'); if (loader) setTimeout(() => loader.classList.add('hidden'), 500);
+    animate();
+    window.ISHURI = { getScrollProgress: () => scrollProgress, getSmoothScroll: () => smoothScroll, setScrollProgress: (v) => { scrollProgress = Math.min(1, Math.max(0, v)); }, scene, camera, renderer, ready: true };
+    console.log('ISHURI · Atmosphere ready');
+  }
+  document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', init) : init();
 </script>
 
-<!-- ============================================================
-     FIREBASE + AUTH + FIRESTORE + UI
-     ============================================================ -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs, addDoc, serverTimestamp, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  // FIREBASE AUTH & ROUTING
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAlecssz7iDdq_h4IhVo1HKlj-MpRa3CCs",
-  authDomain: "ishuri-online.firebaseapp.com",
-  projectId: "ishuri-online",
-  storageBucket: "ishuri-online.firebasestorage.app",
-  messagingSenderId: "910778726579",
-  appId: "1:910778726579:web:2c49c3882dcc04a48cd8c6",
-  measurementId: "G-9S3SSG6JS3"
-};
+  const firebaseConfig = { apiKey: "AIzaSyAlecssz7iDdq_h4IhVo1HKlj-MpRa3CCs", authDomain: "ishuri-online.firebaseapp.com", projectId: "ishuri-online", storageBucket: "ishuri-online.firebasestorage.app", messagingSenderId: "910778726579", appId: "1:910778726579:web:2c49c3882dcc04a48cd8c6", measurementId: "G-9S3SSG6JS3" };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
+  const toast = document.getElementById('toast');
+  const navRight = document.getElementById('navRight');
+  let isSigningIn = false;
 
-// ============================================================
-// STATE
-// ============================================================
-let currentUser = null;
-let userData = null;
-let userCourses = [];
-let isSigningIn = false;
-const toast = document.getElementById('toast');
-const dashboard = document.getElementById('dashboard');
+  function showToast(msg, isError = false) { toast.textContent = msg; toast.classList.toggle('error', isError); toast.classList.add('visible'); clearTimeout(toast._t); toast._t = setTimeout(() => toast.classList.remove('visible'), 3200); }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-// ============================================================
-// COURSE CATALOG (14 courses)
-// ============================================================
-const COURSES = [
-  { id:'excel-advanced', title:'Advanced Microsoft Excel', cat:'tech', modules:8, price:1000 },
-  { id:'word', title:'Microsoft Word', cat:'tech', modules:6, price:1000 },
-  { id:'powerpoint', title:'Microsoft PowerPoint', cat:'tech', modules:5, price:1000 },
-  { id:'google-workspace', title:'Google Workspace', cat:'tech', modules:5, price:1000 },
-  { id:'powerbi', title:'Power BI & Data Analysis', cat:'tech', modules:7, price:1000 },
-  { id:'accounting', title:'Accounting & Bookkeeping', cat:'business', modules:7, price:1000 },
-  { id:'personal-finance', title:'Personal Finance & Budgeting', cat:'business', modules:5, price:1000 },
-  { id:'entrepreneurship', title:'Entrepreneurship & Business Planning', cat:'business', modules:7, price:1000 },
-  { id:'digital-marketing', title:'Digital Marketing', cat:'business', modules:7, price:1000 },
-  { id:'network-marketing', title:'Network Marketing & MLM', cat:'business', modules:7, price:1000 },
-  { id:'cv-writing', title:'CV Writing & Job Readiness', cat:'career', modules:6, price:1000 },
-  { id:'ai-work', title:'AI for Everyday Work', cat:'career', modules:6, price:1000 },
-  { id:'computer-basics', title:'Computer Basics & Digital Literacy', cat:'career', modules:5, price:1000 },
-  { id:'first-aid', title:'Basic First Aid & Personal Safety', cat:'life', modules:5, price:1000 }
-];
+  // THE 14 COURSES
+  const COURSES = [
+    { id:'excel-advanced', title:'Advanced Microsoft Excel', cat:'tech', modules:8 },
+    { id:'word', title:'Microsoft Word', cat:'tech', modules:6 },
+    { id:'powerpoint', title:'Microsoft PowerPoint', cat:'tech', modules:5 },
+    { id:'google-workspace', title:'Google Workspace', cat:'tech', modules:5 },
+    { id:'powerbi', title:'Power BI & Data Analysis', cat:'tech', modules:7 },
+    { id:'accounting', title:'Accounting & Bookkeeping', cat:'business', modules:7 },
+    { id:'personal-finance', title:'Personal Finance & Budgeting', cat:'business', modules:5 },
+    { id:'entrepreneurship', title:'Entrepreneurship & Business Planning', cat:'business', modules:7 },
+    { id:'digital-marketing', title:'Digital Marketing', cat:'business', modules:7 },
+    { id:'network-marketing', title:'Network Marketing & MLM', cat:'business', modules:7 },
+    { id:'cv-writing', title:'CV Writing & Job Readiness', cat:'career', modules:6 },
+    { id:'ai-work', title:'AI for Everyday Work', cat:'career', modules:6 },
+    { id:'computer-basics', title:'Computer Basics & Digital Literacy', cat:'career', modules:5 },
+    { id:'first-aid', title:'Basic First Aid & Personal Safety', cat:'life', modules:5 }
+  ];
+  const CAT_LABEL = { tech:'Technology', business:'Business', career:'Career', life:'Life Skills' };
+  const ICON_MODULES = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>';
+  const ICON_DURATION = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
 
-const CAT_LABEL = { tech:'Technology', business:'Business', career:'Career', life:'Life Skills' };
-
-// ============================================================
-// UTILS
-// ============================================================
-function showToast(msg, isError = false) {
-  toast.textContent = msg;
-  toast.classList.toggle('error', isError);
-  toast.classList.add('visible');
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => toast.classList.remove('visible'), 3200);
-}
-
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function fmtTime(ts) {
-  if (!ts) return 'just now';
-  const d = ts.toDate ? ts.toDate() : new Date(ts);
-  const diff = (Date.now() - d.getTime()) / 1000;
-  if (diff < 60) return 'just now';
-  if (diff < 3600) return Math.floor(diff/60) + 'm ago';
-  if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
-  if (diff < 604800) return Math.floor(diff/86400) + 'd ago';
-  return d.toLocaleDateString();
-}
-
-// ============================================================
-// RENDER — course catalog
-// ============================================================
-const courseGrid = document.getElementById('courseGrid');
-const ICON_MODULES = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>';
-const ICON_DURATION = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
-
-function renderCourses(filter) {
-  const list = filter === 'all' ? COURSES : COURSES.filter(c => c.cat === filter);
-  courseGrid.innerHTML = list.map((c, i) => `
-    <div class="course-card" data-course-id="${c.id}" style="animation-delay:${i*30}ms">
-      <span class="course-cat">${CAT_LABEL[c.cat]}</span>
-      <h3>${escapeHtml(c.title)}</h3>
-      <div class="course-meta">
-        <span>${ICON_MODULES} ${c.modules} Modules</span>
-        <span>${ICON_DURATION} Self-paced</span>
-      </div>
-      <div class="course-footer">
-        <div class="course-price"><small>Full access</small>1,000 RWF</div>
-        <span class="course-free">Free intro</span>
-      </div>
-    </div>
-  `).join('');
-}
-renderCourses('all');
-
-// Tab filter
-document.querySelectorAll('#tabs .tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('#tabs .tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    renderCourses(tab.dataset.cat);
-  });
-});
-
-// Course card click — start learning
-courseGrid.addEventListener('click', async (e) => {
-  const card = e.target.closest('.course-card');
-  if (!card) return;
-  const courseId = card.dataset.courseId;
-  if (!currentUser) {
-    showToast('Sign in with Google to start this course.');
-    return;
-  }
-  await startCourse(courseId);
-});
-
-// ============================================================
-// AUTH UI — swap nav button for user chip
-// ============================================================
-function renderAuthSlot() {
-  const slot = document.getElementById('authSlot');
-  if (currentUser) {
-    const photo = currentUser.photoURL || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="%2314386e"/><circle cx="50" cy="38" r="18" fill="%236ac8ff"/><path d="M20 88a30 30 0 0 1 60 0" fill="%236ac8ff"/></svg>';
-    const name = currentUser.displayName || 'Student';
-    slot.innerHTML = `
-      <button class="user-chip" id="userChip">
-        <img src="${photo}" alt="">
-        <span class="user-chip-name">${escapeHtml(name.split(' ')[0])}</span>
-      </button>
-    `;
-    document.getElementById('userChip').addEventListener('click', openDashboard);
-  } else {
-    slot.innerHTML = `
-      <button class="btn-google" id="navGoogle">
-        <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-          <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-          <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-          <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-        </svg>
-        <span>Sign in</span>
-      </button>
-    `;
-    document.getElementById('navGoogle').addEventListener('click', handleGoogleSignIn);
-  }
-}
-
-// ============================================================
-// GOOGLE SIGN IN
-// ============================================================
-async function handleGoogleSignIn() {
-  if (isSigningIn) return; // prevent multiple popups
-  isSigningIn = true;
-  
-  // Disable all Google buttons visually
-  const googleBtns = document.querySelectorAll('.btn-google');
-  googleBtns.forEach(btn => btn.disabled = true);
-
-  try {
-    const result = await signInWithPopup(auth, provider);
-    const user = result.user;
-    
-    // Create/update user doc in Firestore
-    const userRef = doc(db, 'users', user.uid);
-    const userSnap = await getDoc(userRef);
-    if (!userSnap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        displayName: user.displayName || '',
-        email: user.email || '',
-        photoURL: user.photoURL || '',
-        createdAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(),
-        purchasedCourses: [],
-        progress: {}
-      });
-      showToast(`Welcome, ${user.displayName?.split(' ')[0] || 'learner'}!`);
-    } else {
-      await updateDoc(userRef, { lastLoginAt: serverTimestamp() });
-      showToast(`Welcome back, ${user.displayName?.split(' ')[0] || 'learner'}!`);
-    }
-    
-    // Open dashboard
-    setTimeout(openDashboard, 400);
-  } catch (err) {
-    console.error('Sign-in error:', err);
-    if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-      // Silent — user closed the popup, no toast needed
-    } else if (err.code === 'auth/unauthorized-domain') {
-      showToast('Domain not authorized. Add ishuri-online.vercel.app in Firebase Auth settings.', true);
-    } else {
-      showToast('Sign-in failed. Please try again.', true);
-    }
-  } finally {
-    isSigningIn = false;
-    // Re-enable all Google buttons
-    googleBtns.forEach(btn => btn.disabled = false);
-  }
-}
-
-// Wire all Google buttons
-document.getElementById('navGoogle')?.addEventListener('click', handleGoogleSignIn);
-document.getElementById('freeGoogle')?.addEventListener('click', handleGoogleSignIn);
-document.getElementById('paidGoogle')?.addEventListener('click', handleGoogleSignIn);
-document.getElementById('ctaGoogle')?.addEventListener('click', handleGoogleSignIn);
-
-// ============================================================
-// AUTH STATE
-// ============================================================
-onAuthStateChanged(auth, async (user) => {
-  currentUser = user;
-  renderAuthSlot();
-  if (user) {
-    await loadUserData(user.uid);
-  } else {
-    userData = null;
-    userCourses = [];
-    closeDashboard();
-  }
-});
-
-async function loadUserData(uid) {
-  try {
-    const userRef = doc(db, 'users', uid);
-    const snap = await getDoc(userRef);
-    if (snap.exists()) {
-      userData = snap.data();
-    } else {
-      // Create if missing (edge case)
-      await setDoc(userRef, {
-        uid, displayName: currentUser.displayName || '', email: currentUser.email || '',
-        photoURL: currentUser.photoURL || '', createdAt: serverTimestamp(),
-        lastLoginAt: serverTimestamp(), purchasedCourses: [], progress: {}
-      });
-      const s2 = await getDoc(userRef);
-      userData = s2.data();
-    }
-    const purchased = userData.purchasedCourses || [];
-    userCourses = COURSES.filter(c => purchased.includes(c.id));
-  } catch (err) {
-    console.error('Load user error:', err);
-    // Do NOT toast here — it will fire on every page load if rules are wrong.
-    // Instead, show a single subtle toast if it's a permissions error.
-    if (err.code === 'permission-denied') {
-      showToast('Cannot access your data. Please check Firestore security rules.', true);
-    }
-  }
-}
-
-// ============================================================
-// DASHBOARD
-// ============================================================
-function openDashboard() {
-  if (!currentUser) {
-    showToast('Sign in first.');
-    return;
-  }
-  dashboard.classList.add('visible');
-  document.body.style.overflow = 'hidden';
-  renderDashboard();
-}
-
-function closeDashboard() {
-  dashboard.classList.remove('visible');
-  document.body.style.overflow = '';
-}
-
-document.getElementById('dashLogout').addEventListener('click', async () => {
-  await signOut(auth);
-  closeDashboard();
-  showToast('Signed out.');
-});
-
-// Render dashboard content
-async function renderDashboard() {
-  if (!currentUser || !userData) return;
-  const u = currentUser;
-  const name = u.displayName || 'Student';
-  const first = name.split(' ')[0];
-  document.getElementById('dashUserName').textContent = name;
-  document.getElementById('dashUserEmail').textContent = u.email || '';
-  if (u.photoURL) document.getElementById('dashUserPhoto').src = u.photoURL;
-  document.getElementById('dashGreeting').textContent = `Hello, ${first}.`;
-
-  // Stats
-  const purchased = userData.purchasedCourses || [];
-  const progress = userData.progress || {};
-  const lessonsDone = Object.values(progress).reduce((sum, p) => sum + (p.completedLessons?.length || 0), 0);
-  const quizPassed = Object.values(progress).reduce((sum, p) => sum + (p.quizzesPassed || 0), 0);
-  document.getElementById('statCourses').textContent = purchased.length;
-  document.getElementById('statOwned').textContent = purchased.length;
-  document.getElementById('statLessons').textContent = lessonsDone;
-  document.getElementById('statQuiz').textContent = quizPassed;
-
-  // Courses grid — show all 14, purchased shows "Owned", others "Start free"
-  const container = document.getElementById('dashCourses');
-  document.getElementById('dashCourseCount').textContent = `${purchased.length} owned · ${COURSES.length} available`;
-  container.innerHTML = COURSES.map(c => {
-    const owned = purchased.includes(c.id);
-    const prog = progress[c.id] || {};
-    const lessons = prog.completedLessons?.length || 0;
-    const pct = Math.min(100, Math.round((lessons / c.modules) * 100));
-    return `
-      <div class="dash-course">
-        <div class="dash-course-top">
-          <h4>${escapeHtml(c.title)}</h4>
-          ${owned
-            ? `<span class="dash-badge owned">Owned</span>`
-            : `<span class="dash-badge locked">Free Intro</span>`}
-        </div>
-        <div class="dash-course-meta" style="font-size:11px;color:#6a8aa8;">
-          ${CAT_LABEL[c.cat]} · ${c.modules} modules
-        </div>
-        ${owned ? `
-          <div class="dash-progress-bar"><span style="width:${pct}%"></span></div>
-          <div style="font-size:11px;color:#6a8aa8;">${lessons}/${c.modules} lessons · ${pct}%</div>
-        ` : ''}
-        <div class="dash-course-actions">
-          ${owned
-            ? `<button class="btn btn-primary" data-dash-course="${c.id}" data-action="continue">Continue</button>`
-            : `<button class="btn btn-ghost" data-dash-course="${c.id}" data-action="start">Start Free</button>`}
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  // Activity
-  await renderActivity();
-}
-
-// Dashboard course button clicks
-document.getElementById('dashCourses').addEventListener('click', async (e) => {
-  const btn = e.target.closest('button[data-dash-course]');
-  if (!btn) return;
-  const courseId = btn.dataset.dashCourse;
-  const action = btn.dataset.action;
-  if (action === 'start') {
-    await startCourse(courseId);
-  } else {
-    showToast('Continuing ' + courseId.replace(/-/g,' ') + '…');
-  }
-});
-
-// ============================================================
-// START COURSE — writes to Firestore
-// ============================================================
-async function startCourse(courseId) {
-  const course = COURSES.find(c => c.id === courseId);
-  if (!course || !currentUser) return;
-  try {
-    const userRef = doc(db, 'users', currentUser.uid);
-    const snap = await getDoc(userRef);
-    const data = snap.data() || {};
-    const purchased = data.purchasedCourses || [];
-    const progress = data.progress || {};
-
-    // Free intro — mark as enrolled with 0 progress (no purchase yet)
-    if (!purchased.includes(courseId)) {
-      if (!progress[courseId]) {
-        progress[courseId] = {
-          completedLessons: [],
-          quizzesPassed: 0,
-          startedAt: new Date().toISOString(),
-          lastAccessedAt: new Date().toISOString()
-        };
-        await updateDoc(userRef, { progress });
-        // Log activity
-        await addDoc(collection(db, 'activity'), {
-          uid: currentUser.uid,
-          type: 'course_started',
-          courseId,
-          courseTitle: course.title,
-          at: serverTimestamp()
-        });
-        showToast(`Free intro unlocked for "${course.title}".`);
-      } else {
-        showToast(`Resuming "${course.title}".`);
-      }
-    } else {
-      showToast(`Continuing "${course.title}".`);
-    }
-
-    // Reload user data and re-render
-    await loadUserData(currentUser.uid);
-    renderDashboard();
-
-    // Close dashboard so user can see 3D + course view
-    setTimeout(() => {
-      closeDashboard();
-      document.getElementById('courses').scrollIntoView({ behavior:'smooth' });
-    }, 600);
-  } catch (err) {
-    console.error('Start course error:', err);
-    if (err.code === 'permission-denied') {
-      showToast('Permission denied. Check your Firestore security rules.', true);
-    } else {
-      showToast('Could not start the course. Please try again.', true);
-    }
-  }
-}
-
-// ============================================================
-// ACTIVITY
-// ============================================================
-async function renderActivity() {
-  const box = document.getElementById('dashActivity');
-  if (!currentUser) return;
-  try {
-    const q = query(
-      collection(db, 'activity'),
-      where('uid', '==', currentUser.uid)
-    );
-    const snap = await getDocs(q);
-    const items = [];
-    snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-    items.sort((a, b) => {
-      const ta = a.at?.toMillis ? a.at.toMillis() : 0;
-      const tb = b.at?.toMillis ? b.at.toMillis() : 0;
-      return tb - ta;
-    });
-    const recent = items.slice(0, 8);
-    if (recent.length === 0) {
-      box.innerHTML = '<div class="dash-empty">No activity yet. Start a course to see it here.</div>';
-      return;
-    }
-    box.innerHTML = recent.map(item => `
-      <div class="dash-activity-item">
-        <div class="dash-activity-left">
-          <span class="dash-activity-dot"></span>
-          <span class="dash-activity-text">${
-            item.type === 'course_started'
-              ? `Started "${escapeHtml(item.courseTitle)}" — free intro`
-              : item.type === 'lesson_completed'
-                ? `Completed a lesson in "${escapeHtml(item.courseTitle || '')}"`
-                : item.type === 'purchase'
-                  ? `Purchased "${escapeHtml(item.courseTitle || '')}"`
-                  : 'Activity'
-          }</span>
-        </div>
-        <span class="dash-activity-time">${fmtTime(item.at)}</span>
+  const courseGrid = document.getElementById('courseGrid');
+  function renderCourses(filter) {
+    const list = filter === 'all' ? COURSES : COURSES.filter(c => c.cat === filter);
+    courseGrid.innerHTML = list.map((c, i) => `
+      <div class="course-card" style="animation-delay:${i*30}ms">
+        <span class="course-cat">${CAT_LABEL[c.cat]}</span>
+        <h3>${escapeHtml(c.title)}</h3>
+        <div class="course-meta"><span>${ICON_MODULES} ${c.modules} Modules</span><span>${ICON_DURATION} Self-paced</span></div>
+        <div class="course-footer"><div class="course-price"><small>Full access</small>1,000 RWF</div><span class="course-free">Free intro</span></div>
       </div>
     `).join('');
-  } catch (err) {
-    console.warn('Activity load failed:', err.code);
-    box.innerHTML = '<div class="dash-empty">Activity log unavailable.</div>';
   }
-}
+  renderCourses('all');
 
-// ============================================================
-// UI PARALLAX + REVEAL + NAV
-// ============================================================
-(function setupUI() {
-  // Reveal on scroll with fade in / fade out
-  const revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          entry.target.classList.remove('exiting');
-        } else {
-          entry.target.classList.remove('visible');
-          entry.target.classList.add('exiting');
-        }
-      });
-    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
-    revealEls.forEach(el => io.observe(el));
-  }
-
-  // Parallax drift with 3D background
-  const parallaxLayers = document.querySelectorAll('.parallax[data-depth]');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if (!reducedMotion && parallaxLayers.length) {
-    let raf = null;
-    const loop = () => {
-      const vh = window.innerHeight;
-      parallaxLayers.forEach(el => {
-        const rect = el.getBoundingClientRect();
-        const center = rect.top + rect.height / 2;
-        const progress = (center - vh / 2) / vh;
-        const depth = parseFloat(el.dataset.depth) || 10;
-        const y = progress * depth;
-        const scale = 1 - Math.min(Math.abs(progress), 1) * 0.012;
-        el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
-      });
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden && raf) { cancelAnimationFrame(raf); raf = null; }
-      else if (!document.hidden && !raf) { raf = requestAnimationFrame(loop); }
-    });
-  }
-
-  // Nav scroll state
-  const nav = document.getElementById('nav');
-  const onScroll = () => {
-    if (window.scrollY > 40) nav.classList.add('scrolled');
-    else nav.classList.remove('scrolled');
-  };
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
-  // Smooth anchors
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', (e) => {
-      const id = a.getAttribute('href');
-      if (id.length > 1) {
-        const target = document.querySelector(id);
-        if (target) {
-          e.preventDefault();
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }
+  document.querySelectorAll('#tabs .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('#tabs .tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderCourses(tab.dataset.cat);
     });
   });
-})();
-</script>
 
+  // AUTH LOGIC
+  async function handleGoogleSignIn() {
+    if (isSigningIn) return;
+    isSigningIn = true;
+    document.querySelectorAll('.google-btn').forEach(btn => btn.disabled = true);
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      const userRef = doc(db, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid, displayName: user.displayName || '', email: user.email || '', photoURL: user.photoURL || '',
+          createdAt: serverTimestamp(), lastLoginAt: serverTimestamp(), purchasedCourses: [], progress: {}
+        });
+      } else {
+        await setDoc(userRef, { lastLoginAt: serverTimestamp() }, { merge: true });
+      }
+
+      showToast(`Welcome, ${user.displayName?.split(' ')[0] || 'learner'}! Redirecting…`);
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 800);
+      
+    } catch (err) {
+      console.error('Sign-in error:', err);
+      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+        // Silent
+      } else if (err.code === 'auth/unauthorized-domain') {
+        showToast('Domain not authorized. Add ishuri-online.vercel.app in Firebase Auth settings.', true);
+      } else {
+        showToast('Sign-in failed. Please try again.', true);
+      }
+    } finally {
+      isSigningIn = false;
+      document.querySelectorAll('.google-btn').forEach(btn => btn.disabled = false);
+    }
+  }
+
+  document.querySelectorAll('.google-btn').forEach(btn => btn.addEventListener('click', handleGoogleSignIn));
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      const first = user.displayName?.split(' ')[0] || 'Student';
+      navRight.innerHTML = `
+        <button class="btn-google" onclick="window.location.href='dashboard.html'" style="padding-right:14px;">
+          <img src="${user.photoURL || 'https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png'}" style="width:22px;height:22px;border-radius:50%;margin-right:4px;" alt="">
+          <span>Dashboard</span>
+        </button>`;
+    } else {
+      navRight.innerHTML = `
+        <button class="btn-google google-btn">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          <span>Sign in</span>
+        </button>`;
+      document.getElementById('navRight').querySelector('.google-btn').addEventListener('click', handleGoogleSignIn);
+    }
+  });
+
+  // UI Animations
+  (function setupUI() {
+    const revealEls = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) { entry.target.classList.add('visible'); entry.target.classList.remove('exiting'); }
+          else { entry.target.classList.remove('visible'); entry.target.classList.add('exiting'); }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+      revealEls.forEach(el => io.observe(el));
+    }
+
+    const parallaxLayers = document.querySelectorAll('.parallax[data-depth]');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reducedMotion && parallaxLayers.length) {
+      let raf = null;
+      const loop = () => {
+        const vh = window.innerHeight;
+        parallaxLayers.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          const center = rect.top + rect.height / 2;
+          const progress = (center - vh / 2) / vh;
+          const depth = parseFloat(el.dataset.depth) || 10;
+          const y = progress * depth;
+          const scale = 1 - Math.min(Math.abs(progress), 1) * 0.012;
+          el.style.transform = `translate3d(0, ${y.toFixed(2)}px, 0) scale(${scale.toFixed(4)})`;
+        });
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    }
+
+    const nav = document.getElementById('nav');
+    const onScroll = () => { if (window.scrollY > 40) nav.classList.add('scrolled'); else nav.classList.remove('scrolled'); };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', (e) => {
+        const id = a.getAttribute('href');
+        if (id.length > 1) {
+          const target = document.querySelector(id);
+          if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        }
+      });
+    });
+  })();
+</script>
 </body>
 </html>
