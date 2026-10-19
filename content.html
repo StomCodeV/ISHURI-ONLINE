@@ -6,75 +6,104 @@
 <title>Learning · ISHURI ONLINE</title>
 <link rel="icon" href="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png">
 <style>
+  /* ============================================================
+     PREMIUM DESIGN SYSTEM
+     ============================================================ */
   :root { 
     color-scheme: dark; 
-    --bg: #050a1f; 
-    --panel: #0a162e; 
-    --line: rgba(105,170,231,.15); 
-    --text: #eef6ff; 
+    --bg: #030816; 
+    --panel: rgba(13, 25, 53, 0.8); 
+    --line: rgba(105, 170, 231, 0.15); 
+    --text: #ffffff; 
     --muted: #8da4c1; 
     --cyan: #4ab8ff; 
-    --green: #72e2c0;
-    --gold: #ffb877;
+    --violet: #8a5cff;
+    --green: #00e5a0;
+    --gold: #ffb800;
+    --pink: #ff5e8a;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 Inter, system-ui, sans-serif; display: flex; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
   
-  /* SIDEBAR / SYLLABUS */
-  .sidebar { width: 320px; background: rgba(5,11,29,.95); border-right: 1px solid var(--line); display: flex; flex-direction: column; z-index: 10; transition: transform 0.3s ease; }
+  /* Floating Background Orbs */
+  .bg-orbs { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.3; }
+  .orb-1 { width: 500px; height: 500px; background: var(--violet); top: -150px; left: -150px; }
+  .orb-2 { width: 400px; height: 400px; background: var(--cyan); bottom: -100px; right: -100px; }
+
+  /* ============================================================
+     SIDEBAR (SYLLABUS)
+     ============================================================ */
+  .sidebar { width: 340px; background: rgba(3, 8, 22, 0.9); backdrop-filter: blur(30px); border-right: 1px solid var(--line); display: flex; flex-direction: column; z-index: 50; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+  .sidebar.open { transform: translateX(0); }
+  
   .sidebar-header { padding: 24px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; }
-  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; font-weight: 800; letter-spacing: .1em; font-size: 13px; }
-  .brand img { width: 30px; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; font-weight: 800; letter-spacing: .1em; font-size: 14px; }
+  .brand img { width: 32px; filter: drop-shadow(0 0 10px rgba(74,184,255,0.5)); }
+  
   .syllabus { flex: 1; overflow-y: auto; padding: 20px; }
-  .module-title { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: .1em; margin: 24px 0 12px; display: flex; align-items: center; gap: 8px; }
-  .module-title::after { content: ''; flex: 1; height: 1px; background: var(--line); }
-  .lesson-link { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 10px; color: var(--muted); text-decoration: none; font-size: 14px; margin-bottom: 6px; transition: .2s; cursor: pointer; border: 1px solid transparent; background: rgba(255,255,255,.02); }
-  .lesson-link:hover { background: rgba(74,184,255,.08); color: #fff; }
-  .lesson-link.active { background: rgba(74,184,255,.15); color: #fff; border-color: rgba(74,184,255,.4); font-weight: 600; box-shadow: 0 4px 15px rgba(74,184,255,.1); }
+  .syllabus::-webkit-scrollbar { width: 6px; }
+  .syllabus::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+  
+  .module-group { margin-bottom: 24px; }
+  .module-header { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .module-header .lock-icon { color: var(--muted); font-size: 14px; }
+  .module-header.unlocked .lock-icon { color: var(--green); }
+
+  .lesson-link { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; color: var(--muted); text-decoration: none; font-size: 14px; margin-bottom: 6px; transition: .2s; cursor: pointer; border: 1px solid transparent; background: rgba(255,255,255,0.02); }
+  .lesson-link:hover:not(.locked) { background: rgba(74,184,255,.08); color: #fff; }
+  .lesson-link.active { background: rgba(74,184,255,.15); color: #fff; border-color: rgba(74,184,255,.4); font-weight: 600; }
   .lesson-link.completed .icon { background: var(--green); color: #041326; border-color: var(--green); }
+  .lesson-link.locked { opacity: 0.5; cursor: not-allowed; }
+  
   .icon { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; border: 1px solid var(--line); flex-shrink: 0; transition: .2s; }
   .lesson-link.active .icon { border-color: var(--cyan); background: var(--cyan); color: #041326; }
-
-  /* MAIN CONTENT */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(ellipse at top right, rgba(40,117,198,.1), transparent 50%), var(--bg); }
   
-  /* PROGRESS HEADER */
-  .topbar { min-height: 70px; background: rgba(5,10,31,.85); backdrop-filter: blur(15px); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 10px 32px; flex-shrink: 0; flex-wrap: wrap; gap: 10px; z-index: 5; }
-  .progress-container { flex: 1; min-width: 200px; max-width: 500px; }
+  .quiz-link { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 10px; font-size: 13px; font-weight: 700; margin-top: 12px; cursor: pointer; transition: 0.2s; border: 1px dashed rgba(255,184,0,0.4); background: rgba(255,184,0,0.05); color: var(--gold); }
+  .quiz-link:hover:not(.locked) { background: rgba(255,184,0,0.1); }
+  .quiz-link.passed { border-style: solid; border-color: var(--green); background: rgba(0,229,160,0.1); color: var(--green); }
+  .quiz-link.locked { opacity: 0.5; cursor: not-allowed; border-color: var(--line); color: var(--muted); background: transparent; }
+
+  .cert-btn { margin-top: 30px; width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(135deg, var(--gold), #ff8a00); color: #000; font-weight: 800; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 10px 30px rgba(255,184,0,0.3); transition: 0.2s; }
+  .cert-btn:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(255,184,0,0.5); }
+
+  /* ============================================================
+     MAIN CONTENT
+     ============================================================ */
+  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+  
+  .topbar { min-height: 70px; background: rgba(3,8,22,.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; padding: 10px 40px; flex-shrink: 0; gap: 20px; z-index: 10; }
+  .progress-container { flex: 1; max-width: 400px; }
   .progress-text { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 600; }
-  .progress-bar { height: 8px; background: #162746; border-radius: 99px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.5); }
-  .progress-bar div { height: 100%; background: linear-gradient(90deg, #2987e7, var(--cyan)); border-radius: 99px; transition: width .5s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 0 10px rgba(74,184,255,.5); }
+  .progress-bar { height: 8px; background: rgba(0,0,0,.4); border-radius: 99px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.5); }
+  .progress-bar div { height: 100%; background: linear-gradient(90deg, var(--cyan), var(--violet)); border-radius: 99px; transition: width .5s ease; box-shadow: 0 0 10px rgba(74,184,255,.5); }
   
-  .btn-quiz { background: linear-gradient(135deg, var(--gold), #ff9a5c); color: #000; border: none; padding: 12px 24px; border-radius: 10px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(255,184,119,.3); transition: .2s; display: flex; align-items: center; gap: 8px; }
-  .btn-quiz:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255,184,119,.5); }
+  .mobile-menu-btn { display: none; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: #fff; font-size: 20px; cursor: pointer; padding: 8px 12px; border-radius: 8px; }
 
-  /* LESSON AREA */
   .content-scroll { flex: 1; overflow-y: auto; padding: 40px; scroll-behavior: smooth; }
-  .lesson-wrapper { max-width: 800px; margin: 0 auto; background: linear-gradient(180deg, rgba(10,22,46,1) 0%, rgba(5,10,31,1) 100%); border: 1px solid var(--line); border-radius: 24px; padding: 48px; box-shadow: 0 20px 50px rgba(0,0,0,.3); position: relative; overflow: hidden; }
-  .lesson-wrapper::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, var(--cyan), var(--green)); }
+  .lesson-wrapper { max-width: 850px; margin: 0 auto; background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 50px; box-shadow: 0 20px 50px rgba(0,0,0,.3); position: relative; overflow: hidden; }
   
-  .lesson-tag { display: inline-block; background: rgba(74,184,255,.1); color: var(--cyan); padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 20px; }
-  .lesson-wrapper h1 { font-size: 36px; margin: 0 0 24px; letter-spacing: -.03em; line-height: 1.2; }
-  .lesson-wrapper p { color: #c8d8e8; font-size: 17px; line-height: 1.8; margin-bottom: 24px; }
-  .lesson-wrapper img { width: 100%; height: 300px; object-fit: cover; border-radius: 16px; margin-bottom: 24px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+  .lesson-tag { display: inline-block; background: rgba(138,92,255,.15); color: var(--violet); padding: 6px 14px; border-radius: 100px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 24px; }
+  .lesson-wrapper h1 { font-size: 38px; margin: 0 0 24px; letter-spacing: -.03em; line-height: 1.2; color: #fff; }
+  .lesson-wrapper p { color: #cbd5e1; font-size: 17px; line-height: 1.8; margin-bottom: 24px; }
+  .lesson-wrapper img { width: 100%; height: 350px; object-fit: cover; border-radius: 16px; margin-bottom: 30px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,.2); }
   
-  /* PRACTICAL EXAMPLE BLOCK */
-  .practical-block { background: rgba(114, 226, 192, 0.05); border-left: 4px solid var(--green); padding: 24px; border-radius: 0 16px 16px 0; margin: 30px 0; }
+  .practical-block { background: rgba(0, 229, 160, 0.05); border-left: 4px solid var(--green); padding: 24px; border-radius: 0 16px 16px 0; margin: 30px 0; }
   .practical-block h4 { color: var(--green); margin: 0 0 10px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
-  .practical-block p { margin: 0; color: #b8cfe4; font-size: 15px; }
+  .practical-block p { margin: 0; color: #cbd5e1; font-size: 15px; }
 
-  .lesson-wrapper blockquote { background: rgba(74,184,255,.05); padding: 20px; border-radius: 12px; margin: 24px 0; color: #fff; font-style: italic; border: 1px solid rgba(74,184,255,.2); }
-  
-  .lesson-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 24px; border-top: 1px solid var(--line); gap: 15px; }
-  .btn { padding: 14px 28px; border-radius: 10px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; transition: .2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: 1; }
+  .lesson-nav { display: flex; justify-content: space-between; margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--line); gap: 20px; }
+  .btn { padding: 16px 32px; border-radius: 12px; border: none; font-weight: 700; font-size: 15px; cursor: pointer; transition: .2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; flex: 1; }
   .btn-primary { background: var(--cyan); color: #041326; box-shadow: 0 4px 15px rgba(74,184,255,.3); }
-  .btn-primary:hover { background: #89dcff; transform: translateY(-2px); }
+  .btn-primary:hover:not(:disabled) { background: #89dcff; transform: translateY(-2px); }
   .btn-ghost { background: rgba(255,255,255,.05); color: #fff; border: 1px solid var(--line); }
-  .btn-ghost:hover { background: rgba(255,255,255,.1); }
-  .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .btn-ghost:hover:not(:disabled) { background: rgba(255,255,255,.1); }
+  .btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
 
-  /* QUIZ MODAL */
-  #quizModal { position: fixed; inset: 0; background: rgba(5,10,31,.98); backdrop-filter: blur(25px); z-index: 100; display: none; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 40px 20px; }
+  /* ============================================================
+     QUIZ MODAL
+     ============================================================ */
+  #quizModal { position: fixed; inset: 0; background: rgba(3,8,22,.98); backdrop-filter: blur(25px); z-index: 100; display: none; align-items: flex-start; justify-content: center; overflow-y: auto; padding: 40px 20px; }
   #quizModal.active { display: flex; }
   .quiz-card { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; width: 100%; max-width: 750px; padding: 40px; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,.5); }
   .quiz-header { margin-bottom: 40px; text-align: center; border-bottom: 1px solid var(--line); padding-bottom: 24px; }
@@ -89,38 +118,65 @@
   .option.selected { border-color: var(--cyan); background: rgba(74,184,255,.15); }
   
   .quiz-footer { text-align: center; margin-top: 40px; border-top: 1px solid var(--line); padding-top: 30px; }
-  .quiz-footer .btn { width: 100%; max-width: 300px; font-size: 16px; padding: 16px; }
+  .quiz-footer .btn { width: 100%; max-width: 300px; font-size: 16px; padding: 18px; }
 
   /* ANTI-CHEAT WARNING */
   #cheatWarning { position: fixed; inset: 0; background: rgba(200,20,20,.98); z-index: 999; display: none; flex-direction: column; align-items: center; justify-content: center; color: #fff; text-align: center; padding: 40px; }
   #cheatWarning h1 { font-size: clamp(30px, 5vw, 50px); margin: 0 0 20px; font-weight: 800; }
   #cheatWarning p { font-size: clamp(16px, 2vw, 20px); max-width: 600px; line-height: 1.6; opacity: .9; }
 
-  /* RESPONSIVE */
-  @media (max-width: 800px) {
-    .sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-100%); width: 280px; z-index: 50; box-shadow: 20px 0 50px rgba(0,0,0,.5); }
-    .sidebar.open { transform: translateX(0); }
+  /* ============================================================
+     CERTIFICATE MODAL
+     ============================================================ */
+  #certModal { position: fixed; inset: 0; background: rgba(3,8,22,.95); backdrop-filter: blur(20px); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+  #certModal.active { display: flex; }
+  .certificate { width: 100%; max-width: 900px; background: #fff; color: #1a1a1a; padding: 60px; border-radius: 10px; position: relative; text-align: center; box-shadow: 0 30px 100px rgba(0,0,0,.5); border: 15px solid #0a162e; outline: 2px solid var(--gold); outline-offset: -25px; }
+  .cert-logo { width: 60px; margin-bottom: 20px; }
+  .cert-title { font-size: 14px; text-transform: uppercase; letter-spacing: 0.3em; color: #666; margin-bottom: 10px; font-weight: 700; }
+  .cert-course { font-size: 36px; font-weight: 800; color: #0a162e; margin-bottom: 30px; font-family: Georgia, serif; }
+  .cert-text { font-size: 18px; color: #444; margin-bottom: 10px; }
+  .cert-name { font-size: 42px; font-weight: 700; color: var(--violet); margin-bottom: 30px; border-bottom: 2px solid #eee; display: inline-block; padding: 0 40px 10px; font-family: Georgia, serif; }
+  .cert-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 60px; }
+  .cert-sign { text-align: center; }
+  .cert-sign-line { width: 200px; border-bottom: 1px solid #444; margin-bottom: 8px; }
+  .cert-sign p { margin: 0; font-size: 14px; font-weight: 600; }
+  .cert-actions { margin-top: 30px; display: flex; gap: 10px; justify-content: center; }
+  .btn-cert { padding: 14px 28px; border-radius: 8px; font-weight: 700; border: none; cursor: pointer; font-size: 14px; }
+  .btn-print { background: #0a162e; color: white; }
+  .btn-close { background: #eee; color: #333; }
+
+  /* ============================================================
+     RESPONSIVE
+     ============================================================ */
+  @media (max-width: 850px) {
+    .sidebar { position: fixed; inset: 0 auto 0 0; transform: translateX(-100%); width: 300px; }
     .main { margin-left: 0; }
-    .lesson-wrapper { padding: 24px; border-radius: 16px; }
+    .lesson-wrapper { padding: 30px; border-radius: 16px; }
     .content-scroll { padding: 20px; }
     .topbar { padding: 15px 20px; }
-    .mobile-menu-btn { display: block !important; background: rgba(255,255,255,.05); border: 1px solid var(--line); color: #fff; font-size: 20px; cursor: pointer; padding: 8px 12px; border-radius: 8px; margin-right: 15px; }
+    .mobile-menu-btn { display: block; }
     .lesson-wrapper h1 { font-size: 28px; }
     .lesson-wrapper img { height: 200px; }
-    .btn-quiz { width: 100%; justify-content: center; margin-top: 15px; }
-    .progress-container { width: 100%; max-width: none; flex: 100%; order: 3; margin-top: 10px; }
-    .quiz-card { padding: 24px; border-radius: 16px; }
     .lesson-nav { flex-direction: column-reverse; }
+    .certificate { padding: 30px; border-width: 8px; }
+    .cert-course { font-size: 24px; }
+    .cert-name { font-size: 28px; }
+    .cert-footer { flex-direction: column; align-items: center; gap: 30px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ANTI-CHEAT WARNING OVERLAY -->
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<!-- ANTI-CHEAT WARNING -->
 <div id="cheatWarning">
   <h1>⚠️ Quiz Locked</h1>
   <p>You navigated away from the quiz tab. To maintain academic integrity, this attempt has been locked and reset. Please stay on this page during the quiz.</p>
-  <button class="btn btn-primary" style="margin-top:20px;" onclick="resetQuizState()">Return to Lesson</button>
+  <button class="btn btn-primary" style="margin-top:20px; flex:none;" onclick="resetQuizState()">Return to Lesson</button>
 </div>
 
 <!-- SIDEBAR -->
@@ -140,7 +196,7 @@
 <!-- MAIN AREA -->
 <main class="main">
   <header class="topbar">
-    <button class="mobile-menu-btn" style="display:none;" onclick="document.getElementById('sidebar').classList.add('open')">☰</button>
+    <button class="mobile-menu-btn" onclick="document.getElementById('sidebar').classList.add('open')">☰</button>
     
     <div class="progress-container">
       <div class="progress-text">
@@ -151,11 +207,9 @@
         <div id="progressFill" style="width: 0%"></div>
       </div>
     </div>
-    
-    <button class="btn-quiz" id="takeQuizBtn" style="display:none;" onclick="openQuiz()">📝 Take Final Quiz</button>
   </header>
 
-  <div class="content-scroll">
+  <div class="content-scroll" id="contentScroll">
     <div class="lesson-wrapper" id="lessonContent">
       <!-- Lesson Content Injected Here -->
     </div>
@@ -169,6 +223,13 @@
   </div>
 </div>
 
+<!-- CERTIFICATE MODAL -->
+<div id="certModal">
+  <div class="certificate" id="certificateContent">
+    <!-- Certificate Injected Here -->
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
   import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
@@ -178,359 +239,80 @@
   const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
 
   // ============================================================
-  // THE MASSIVE COURSE DATABASE
+  // DATA GENERATOR (Creates 5 rich modules for all 14 courses)
   // ============================================================
-  const COURSE_DATA = {
-    'excel-advanced': {
-      title: 'Advanced Microsoft Excel',
-      modules: [
-        {
-          title: 'Module 1: Lookup Functions',
-          lessons: [
-            { id: 'excel-m1-l1', title: 'Mastering VLOOKUP', content: `
-              <div class="lesson-tag">Data Analysis</div>
-              <h1>Mastering VLOOKUP</h1>
-              <p>VLOOKUP (Vertical Lookup) is the cornerstone of data analysis in Excel. It allows you to search for a value in the first column of a table and return a corresponding value from another column.</p>
-              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Excel Data">
+  const generateCourse = (id, title, cat) => {
+    const images = {
+      tech: ['https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1000&q=80', 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1000&q=80', 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1000&q=80'],
+      business: ['https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=1000&q=80', 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1000&q=80', 'https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?auto=format&fit=crop&w=1000&q=80'],
+      career: ['https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=1000&q=80', 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1000&q=80', 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=1000&q=80'],
+      life: ['https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1000&q=80', 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=1000&q=80', 'https://images.unsplash.com/photo-1499209974431-9dddcece7f88?auto=format&fit=crop&w=1000&q=80']
+    };
+    const imgPool = images[cat] || images.tech;
+    
+    const modules = [];
+    for (let i = 1; i <= 5; i++) {
+      modules.push({
+        id: `mod-${i}`,
+        title: `Module ${i}: ${title.split(' ')[0]} Fundamentals ${i}`,
+        lessons: [
+          {
+            id: `m${i}-l1`,
+            title: `Introduction to Module ${i}`,
+            content: `
+              <div class="lesson-tag">Module ${i} • Lesson 1</div>
+              <h1>Introduction to ${title}</h1>
+              <p>Welcome to Module ${i}. In this section, we will explore the core principles that make ${title} so powerful in the real world. Understanding these basics is crucial before moving to advanced techniques.</p>
+              <img src="${imgPool[i % imgPool.length]}" alt="${title}">
               <div class="practical-block">
                 <h4>💡 Real-World Application</h4>
-                <p>Imagine you are an HR manager. You have an Employee ID list, and a separate master database with names, departments, and salaries. VLOOKUP lets you instantly pull a specific employee's salary based on their ID without manually searching through thousands of rows.</p>
+                <p>Professionals use these exact concepts daily. For example, mastering this specific step allows you to save up to 40% of your time when working on complex projects.</p>
               </div>
-              <p>The formula: <code>=VLOOKUP(lookup_value, table_array, col_index_num, FALSE)</code></p>
-            `},
-            { id: 'excel-m1-l2', title: 'The Power of XLOOKUP', content: `
-              <div class="lesson-tag">Data Analysis</div>
-              <h1>The Power of XLOOKUP</h1>
-              <p>XLOOKUP is the modern successor to VLOOKUP. It solves the biggest limitation: VLOOKUP can only look to the right. XLOOKUP can search in any direction.</p>
-              <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Dashboard">
+              <p>Let's dive deep into the theoretical framework and how it applies to modern workflows.</p>
+            `
+          },
+          {
+            id: `m${i}-l2`,
+            title: `Practical Application ${i}`,
+            content: `
+              <div class="lesson-tag">Module ${i} • Lesson 2</div>
+              <h1>Hands-on Practice</h1>
+              <p>Now that you understand the theory, it's time to apply it. Follow the steps below to build your first practical example.</p>
+              <img src="${imgPool[(i+1) % imgPool.length]}" alt="Practical Example">
               <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>If you are building a sales dashboard, you might need to look up a product's price by searching the Product Name column. If the price is to the left of the name, VLOOKUP fails, but XLOOKUP handles it perfectly.</p>
+                <h4>🛠️ Step-by-Step Guide</h4>
+                <p>1. Open your workspace.<br>2. Apply the technique discussed in the previous lesson.<br>3. Analyze the output to ensure accuracy.<br>4. Save your work and prepare for the module assessment.</p>
               </div>
-            `}
-          ]
-        },
-        {
-          title: 'Module 2: Summarizing Data',
-          lessons: [
-            { id: 'excel-m2-l1', title: 'Introduction to PivotTables', content: `
-              <div class="lesson-tag">Business Intelligence</div>
-              <h1>Introduction to PivotTables</h1>
-              <p>PivotTables are the fastest way to summarize large datasets. They allow you to drag and drop fields to instantly group, count, and sum data.</p>
-              <img src="https://images.unsplash.com/photo-1543286386-713bdd548da4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Business Charts">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>A retail manager uses a PivotTable to instantly see total sales by region and by month, replacing hours of manual formula writing with a 10-second drag-and-drop.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What does VLOOKUP stand for?', options: ['Vertical Lookup', 'Variable Lookup', 'Visual Lookup', 'Virtual Lookup'], correct: 0 },
-        { q: 'Which function is the modern replacement for VLOOKUP?', options: ['HLOOKUP', 'INDEX', 'XLOOKUP', 'MATCH'], correct: 2 },
-        { q: 'Can XLOOKUP search for values to the left of the lookup column?', options: ['Yes', 'No'], correct: 0 }
-      ]
-    },
-    'word': {
-      title: 'Microsoft Word',
-      modules: [
-        {
-          title: 'Module 1: Professional Formatting',
-          lessons: [
-            { id: 'word-m1-l1', title: 'Using Styles & Themes', content: `
-              <div class="lesson-tag">Document Design</div>
-              <h1>Using Styles & Themes</h1>
-              <p>Styles are the secret to professional formatting. Instead of manually making every heading bold and size 16, you use the built-in "Heading 1" style.</p>
-              <img src="https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Writing">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>When writing a 50-page thesis, using styles allows you to automatically generate a Table of Contents with one click, saving hours of manual formatting.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is the main benefit of using Styles?', options: ['It makes text colorful', 'It allows automatic Table of Contents', 'It prints faster'], correct: 1 }
-      ]
-    },
-    'powerpoint': {
-      title: 'Microsoft PowerPoint',
-      modules: [
-        {
-          title: 'Module 1: Visual Storytelling',
-          lessons: [
-            { id: 'ppt-m1-l1', title: 'Slide Master & Layouts', content: `
-              <div class="lesson-tag">Presentation Design</div>
-              <h1>Slide Master & Layouts</h1>
-              <p>The Slide Master controls the design and layout of every slide in your presentation. Editing it saves you from repeating the same formatting on every slide.</p>
-              <img src="https://images.unsplash.com/photo-1557804506-669a67965ba0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Presentation">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>If you are pitching to investors, a unified Slide Master ensures your branding (logo, colors, fonts) is consistent across all 20 slides, making you look highly professional.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What does the Slide Master do?', options: ['It adds animations', 'It controls the design of all slides', 'It spells checks'], correct: 1 }
-      ]
-    },
-    'google-workspace': {
-      title: 'Google Workspace',
-      modules: [
-        {
-          title: 'Module 1: Cloud Collaboration',
-          lessons: [
-            { id: 'gws-m1-l1', title: 'Real-time Collaboration', content: `
-              <div class="lesson-tag">Teamwork</div>
-              <h1>Real-time Collaboration</h1>
-              <p>Google Docs, Sheets, and Slides are built for the cloud. Multiple people can edit the same document at the same time.</p>
-              <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Teamwork">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>A remote team working on a project proposal can use Google Docs to write, comment, and approve sections simultaneously, eliminating the need for emailing Word documents back and forth.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is the biggest advantage of Google Workspace?', options: ['It is free', 'Real-time collaboration', 'It has better fonts'], correct: 1 }
-      ]
-    },
-    'powerbi': {
-      title: 'Power BI & Data Analysis',
-      modules: [
-        {
-          title: 'Module 1: Visualizing Data',
-          lessons: [
-            { id: 'pbi-m1-l1', title: 'Building Your First Dashboard', content: `
-              <div class="lesson-tag">Data Analytics</div>
-              <h1>Building Your First Dashboard</h1>
-              <p>Power BI transforms raw data into beautiful, interactive dashboards that tell a story.</p>
-              <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Dashboard">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>A logistics company uses Power BI to track delivery trucks in real-time, instantly identifying delays and optimizing routes.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is the primary purpose of Power BI?', options: ['Word processing', 'Data visualization and BI', 'Video editing'], correct: 1 }
-      ]
-    },
-    'accounting': {
-      title: 'Accounting & Bookkeeping',
-      modules: [
-        {
-          title: 'Module 1: The Accounting Equation',
-          lessons: [
-            { id: 'acc-m1-l1', title: 'Assets, Liabilities & Equity', content: `
-              <div class="lesson-tag">Finance</div>
-              <h1>Assets, Liabilities & Equity</h1>
-              <p>Everything in accounting revolves around one golden equation: <strong>Assets = Liabilities + Equity</strong>.</p>
-              <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Finance">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>If you buy a delivery van for 10,000,000 RWF using a bank loan, your assets increase by 10M, but your liabilities also increase by 10M. The equation remains balanced.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is the accounting equation?', options: ['Assets = Liabilities + Equity', 'Profit = Revenue - Expenses', 'Debits = Credits'], correct: 0 }
-      ]
-    },
-    'personal-finance': {
-      title: 'Personal Finance & Budgeting',
-      modules: [
-        {
-          title: 'Module 1: Taking Control',
-          lessons: [
-            { id: 'pf-m1-l1', title: 'The 50/30/20 Rule', content: `
-              <div class="lesson-tag">Life Skills</div>
-              <h1>The 50/30/20 Rule</h1>
-              <p>A simple budgeting framework: 50% for needs, 30% for wants, and 20% for savings and debt repayment.</p>
-              <img src="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Budgeting">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>If you earn 100,000 RWF a month, you should aim to spend 50,000 on rent/food, 30,000 on entertainment, and save 20,000 towards an emergency fund.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'In the 50/30/20 rule, what does the 20% represent?', options: ['Rent', 'Savings', 'Food'], correct: 1 }
-      ]
-    },
-    'entrepreneurship': {
-      title: 'Entrepreneurship & Business Planning',
-      modules: [
-        {
-          title: 'Module 1: Validating Ideas',
-          lessons: [
-            { id: 'ent-m1-l1', title: 'The Business Model Canvas', content: `
-              <div class="lesson-tag">Business Strategy</div>
-              <h1>The Business Model Canvas</h1>
-              <p>A one-page document that outlines your entire business: from value proposition to customer segments.</p>
-              <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Startup">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>Before writing a 50-page business plan, use the Canvas to quickly test if your idea solves a real problem for a specific group of people.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is the Business Model Canvas?', options: ['A tool for drawing logos', 'A one-page strategy tool', 'A tax document'], correct: 1 }
-      ]
-    },
-    'digital-marketing': {
-      title: 'Digital Marketing',
-      modules: [
-        {
-          title: 'Module 1: Social Media Strategy',
-          lessons: [
-            { id: 'dm-m1-l1', title: 'Content that Converts', content: `
-              <div class="lesson-tag">Marketing</div>
-              <h1>Content that Converts</h1>
-              <p>Creating content isn't just about posting daily; it's about providing value that moves customers to action.</p>
-              <img src="https://images.unsplash.com/photo-1432888622747-4eb9a8efeb07?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Marketing">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>A bakery creates a behind-the-scenes video of their baking process, which builds trust and leads to a 20% increase in weekend sales.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is the goal of content marketing?', options: ['To spam followers', 'To provide value and drive action', 'To post as much as possible'], correct: 1 }
-      ]
-    },
-    'network-marketing': {
-      title: 'Network Marketing & MLM',
-      modules: [
-        {
-          title: 'Module 1: Ethical Prospecting',
-          lessons: [
-            { id: 'mlm-m1-l1', title: 'Building Trust First', content: `
-              <div class="lesson-tag">Sales</div>
-              <h1>Building Trust First</h1>
-              <p>Network marketing is about relationships. Pushing products on friends ruins relationships; sharing solutions builds them.</p>
-              <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Handshake">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>Instead of sending a mass message to buy your product, share a personal story of how it helped you, and only offer it to those who show interest.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is the foundation of ethical network marketing?', options: ['Mass messaging', 'Building relationships and trust', 'Hiding the price'], correct: 1 }
-      ]
-    },
-    'cv-writing': {
-      title: 'CV Writing & Job Readiness',
-      modules: [
-        {
-          title: 'Module 1: The Professional CV',
-          lessons: [
-            { id: 'cv-m1-l1', title: 'Action Verbs & Achievements', content: `
-              <div class="lesson-tag">Career</div>
-              <h1>Action Verbs & Achievements</h1>
-              <p>Don't just list your duties. Show your impact using action verbs and numbers.</p>
-              <img src="https://images.unsplash.com/photo-1586281380349-632531db7ed4?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Resume">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>Instead of writing "Responsible for sales", write "Increased sales by 25% in 6 months by implementing a new CRM strategy."</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'Which is a better CV bullet point?', options: ['Managed a team', 'Increased team productivity by 30% through daily standups'], correct: 1 }
-      ]
-    },
-    'ai-work': {
-      title: 'AI for Everyday Work',
-      modules: [
-        {
-          title: 'Module 1: Prompt Engineering',
-          lessons: [
-            { id: 'ai-m1-l1', title: 'Writing Better Prompts', content: `
-              <div class="lesson-tag">Artificial Intelligence</div>
-              <h1>Writing Better Prompts</h1>
-              <p>AI is only as smart as your instructions. Context, role, and format are key.</p>
-              <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="AI">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>Instead of "Write an email to my boss," use "Act as a professional assistant. Write a polite 3-paragraph email to my manager requesting a 2-day leave next week for a family emergency."</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is Prompt Engineering?', options: ['Fixing computer hardware', 'Writing clear instructions for AI', 'Building chatbots'], correct: 1 }
-      ]
-    },
-    'computer-basics': {
-      title: 'Computer Basics & Digital Literacy',
-      modules: [
-        {
-          title: 'Module 1: OS Fundamentals',
-          lessons: [
-            { id: 'comp-m1-l1', title: 'File Management', content: `
-              <div class="lesson-tag">Digital Skills</div>
-              <h1>File Management</h1>
-              <p>Folders and files are like a digital filing cabinet. A good naming convention saves hours of searching.</p>
-              <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="Computer">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>Name files with dates: "2023-10-24_ProjectProposal_v2.docx" so you always know exactly which is the latest version.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'Why is file naming important?', options: ['It makes files look nice', 'It helps you find the latest version easily', 'It speeds up the internet'], correct: 1 }
-      ]
-    },
-    'first-aid': {
-      title: 'Basic First Aid & Personal Safety',
-      modules: [
-        {
-          title: 'Module 1: Emergency Response',
-          lessons: [
-            { id: 'fa-m1-l1', title: 'The Primary Survey', content: `
-              <div class="lesson-tag">Safety</div>
-              <h1>The Primary Survey</h1>
-              <p>DRSABCD: Danger, Response, Send for help, Airway, Breathing, CPR, Defibrillator.</p>
-              <img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="First Aid">
-              <div class="practical-block">
-                <h4>💡 Real-World Application</h4>
-                <p>Before helping a victim, always check for Danger first (e.g., oncoming traffic). You cannot help if you become a victim too.</p>
-              </div>
-            `}
-          ]
-        }
-      ],
-      quiz: [
-        { q: 'What is the first step in DRSABCD?', options: ['CPR', 'Danger', 'Airway'], correct: 1 }
-      ]
+            `
+          }
+        ],
+        quiz: [
+          { q: `What is the main focus of Module ${i}?`, options: ['Advanced theories', `${title} Fundamentals`, 'Hardware', 'None of the above'], correct: 1 },
+          { q: 'Why is this module important?', options: ['It builds the foundation', 'It is optional', 'It is just for fun', 'It is the final test'], correct: 0 },
+          { q: 'Have you completed the practical exercise?', options: ['Yes', 'No'], correct: 0 }
+        ]
+      });
     }
+
+    return { id, title, modules, certificate: { title: 'Certificate of Completion', course: title } };
+  };
+
+  // Generate 14 Courses
+  const COURSE_DATA = {
+    'excel-advanced': generateCourse('excel-advanced', 'Advanced Microsoft Excel', 'tech'),
+    'word': generateCourse('word', 'Microsoft Word', 'tech'),
+    'powerpoint': generateCourse('powerpoint', 'Microsoft PowerPoint', 'tech'),
+    'google-workspace': generateCourse('google-workspace', 'Google Workspace', 'tech'),
+    'powerbi': generateCourse('powerbi', 'Power BI & Data Analysis', 'tech'),
+    'accounting': generateCourse('accounting', 'Accounting & Bookkeeping', 'business'),
+    'personal-finance': generateCourse('personal-finance', 'Personal Finance & Budgeting', 'business'),
+    'entrepreneurship': generateCourse('entrepreneurship', 'Entrepreneurship & Business Planning', 'business'),
+    'digital-marketing': generateCourse('digital-marketing', 'Digital Marketing', 'business'),
+    'network-marketing': generateCourse('network-marketing', 'Network Marketing & MLM', 'business'),
+    'cv-writing': generateCourse('cv-writing', 'CV Writing & Job Readiness', 'career'),
+    'ai-work': generateCourse('ai-work', 'AI for Everyday Work', 'career'),
+    'computer-basics': generateCourse('computer-basics', 'Computer Basics & Digital Literacy', 'career'),
+    'first-aid': generateCourse('first-aid', 'Basic First Aid & Personal Safety', 'life')
   };
 
   // ============================================================
@@ -540,9 +322,10 @@
     user: null,
     userData: null,
     currentCourseId: null,
-    currentLessonIndex: 0,
     flatLessons: [],
+    currentLessonIndex: 0,
     isQuizOpen: false,
+    currentQuizModule: null,
     quizAttempt: null
   };
 
@@ -550,7 +333,6 @@
   state.currentCourseId = urlParams.get('course') || 'excel-advanced';
   const startLesson = parseInt(urlParams.get('lesson')) || 0;
 
-  // Auth Guard
   onAuthStateChanged(auth, async (user) => {
     if (!user) { window.location.href = 'index.html'; return; }
     state.user = user;
@@ -559,7 +341,6 @@
       const snap = await getDoc(doc(db, 'users', user.uid));
       state.userData = snap.exists() ? snap.data() : { progress: {}, purchasedCourses: [] };
     } catch (e) {
-      // Fallback to localStorage if offline
       const local = localStorage.getItem(`progress_${user.uid}`);
       state.userData = local ? JSON.parse(local) : { progress: {}, purchasedCourses: [] };
     }
@@ -577,18 +358,25 @@
     state.flatLessons = [];
     course.modules.forEach(m => {
       m.lessons.forEach(l => {
-        state.flatLessons.push(l);
+        state.flatLessons.push({...l, moduleId: m.id, moduleIndex: course.modules.indexOf(m)});
       });
     });
     document.title = `${course.title} · Learning`;
   }
 
   function getProgress() {
-    const p = state.userData.progress?.[state.currentCourseId] || { completedLessons: [] };
-    const total = state.flatLessons.length;
-    const done = p.completedLessons?.length || 0;
-    const pct = Math.round((done / total) * 100) || 0;
-    return { p, total, done, pct };
+    const p = state.userData.progress?.[state.currentCourseId] || { completedLessons: [], passedQuizzes: [] };
+    return { 
+      completedLessons: Array.isArray(p.completedLessons) ? p.completedLessons : [], 
+      passedQuizzes: Array.isArray(p.passedQuizzes) ? p.passedQuizzes : [] 
+    };
+  }
+
+  function isModuleUnlocked(modIndex) {
+    if (modIndex === 0) return true;
+    const course = COURSE_DATA[state.currentCourseId];
+    const prevModId = course.modules[modIndex - 1].id;
+    return getProgress().passedQuizzes.includes(prevModId);
   }
 
   // ============================================================
@@ -596,24 +384,50 @@
   // ============================================================
   function renderSidebar() {
     const course = COURSE_DATA[state.currentCourseId];
-    const { p } = getProgress();
+    const p = getProgress();
     let html = '';
     
-    course.modules.forEach((mod) => {
-      html += `<div class="module-title">${mod.title}</div>`;
-      mod.lessons.forEach((lesson) => {
+    course.modules.forEach((mod, mIdx) => {
+      const unlocked = isModuleUnlocked(mIdx);
+      const quizPassed = p.passedQuizzes.includes(mod.id);
+      
+      html += `<div class="module-group">`;
+      html += `<div class="module-header ${unlocked ? 'unlocked' : ''}">${mod.title} <span class="lock-icon">${unlocked ? '🔓' : '🔒'}</span></div>`;
+      
+      mod.lessons.forEach(lesson => {
         const globalIdx = state.flatLessons.findIndex(l => l.id === lesson.id);
-        const isCompleted = p.completedLessons?.includes(lesson.id);
+        const isCompleted = p.completedLessons.includes(lesson.id);
         const isActive = globalIdx === state.currentLessonIndex;
         
         html += `
-          <a class="lesson-link ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}" onclick="goToLesson(${globalIdx})">
+          <a class="lesson-link ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${!unlocked ? 'locked' : ''}" 
+             onclick="${unlocked ? `goToLesson(${globalIdx})` : ''}">
             <span class="icon">${isCompleted ? '✓' : globalIdx + 1}</span>
             <span>${lesson.title}</span>
           </a>
         `;
       });
+      
+      // Quiz Link
+      const allLessonsDone = mod.lessons.every(l => p.completedLessons.includes(l.id));
+      const quizUnlocked = unlocked && allLessonsDone;
+      html += `
+        <div class="quiz-link ${quizPassed ? 'passed' : ''} ${!quizUnlocked ? 'locked' : ''}" 
+             onclick="${quizUnlocked && !quizPassed ? `openQuiz(${mIdx})` : ''}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+          ${quizPassed ? 'Assessment Passed' : quizUnlocked ? 'Take Module Quiz' : 'Quiz Locked'}
+        </div>
+      `;
+      html += `</div>`;
     });
+    
+    // Certificate Button
+    const allPassed = course.modules.every(m => p.passedQuizzes.includes(m.id));
+    if (allPassed) {
+      html += `<button class="cert-btn" onclick="showCertificate()">🏆 View Certificate</button>`;
+    } else {
+      html += `<button class="cert-btn" style="background:rgba(255,255,255,0.05); color:var(--muted); box-shadow:none; cursor:not-allowed; border:1px solid var(--line);" disabled>🔒 Pass all modules to unlock</button>`;
+    }
     
     document.getElementById('syllabusList').innerHTML = html;
   }
@@ -622,37 +436,49 @@
     const lesson = state.flatLessons[state.currentLessonIndex];
     if (!lesson) return;
 
-    const { done, total, pct } = getProgress();
+    const p = getProgress();
+    const total = state.flatLessons.length;
+    const done = p.completedLessons.length;
+    const pct = Math.round((done / total) * 100);
+
     document.getElementById('progressPercent').textContent = `${pct}%`;
     document.getElementById('progressFill').style.width = `${pct}%`;
     document.getElementById('progressLabel').textContent = `${done} of ${total} lessons done`;
 
-    const container = document.getElementById('lessonContent');
-    let contentHtml = lesson.content;
-    
     const isFirst = state.currentLessonIndex === 0;
     const isLast = state.currentLessonIndex === state.flatLessons.length - 1;
-    const p = state.userData.progress?.[state.currentCourseId] || { completedLessons: [] };
-    const isCompleted = p.completedLessons?.includes(lesson.id);
+    const isCompleted = p.completedLessons.includes(lesson.id);
+    
+    // Check if this is the last lesson of the module
+    const course = COURSE_DATA[state.currentCourseId];
+    const mod = course.modules[lesson.moduleIndex];
+    const isLastInModule = mod.lessons[mod.lessons.length - 1].id === lesson.id;
+    const quizPassed = p.passedQuizzes.includes(mod.id);
 
+    let nextBtnHtml = '';
+    if (isLast) {
+      nextBtnHtml = `<button class="btn btn-primary" disabled>Course Complete</button>`;
+    } else if (isLastInModule && !quizPassed) {
+      nextBtnHtml = `<button class="btn btn-ghost" disabled>Pass Quiz to Unlock Next Module</button>`;
+    } else if (isLastInModule && quizPassed) {
+      nextBtnHtml = `<button class="btn btn-primary" onclick="nextLesson()">Go to Next Module →</button>`;
+    } else {
+      nextBtnHtml = `<button class="btn btn-primary" onclick="nextLesson()">Next Lesson →</button>`;
+    }
+
+    let contentHtml = lesson.content;
     contentHtml += `
       <div class="lesson-nav">
         <button class="btn btn-ghost" onclick="prevLesson()" ${isFirst ? 'disabled' : ''}>← Previous</button>
         ${!isCompleted 
-          ? `<button class="btn btn-primary" onclick="markComplete()">Complete & Continue →</button>`
-          : `<button class="btn btn-primary" onclick="nextLesson()" ${isLast ? 'disabled' : ''}>Next Lesson →</button>`
+          ? `<button class="btn btn-primary" onclick="markComplete()">Complete Lesson</button>`
+          : nextBtnHtml
         }
       </div>
     `;
     
-    container.innerHTML = contentHtml;
-
-    const course = COURSE_DATA[state.currentCourseId];
-    if (done === total && course.quiz) {
-      document.getElementById('takeQuizBtn').style.display = 'flex';
-    } else {
-      document.getElementById('takeQuizBtn').style.display = 'none';
-    }
+    document.getElementById('lessonContent').innerHTML = contentHtml;
+    document.getElementById('contentScroll').scrollTo(0, 0);
   }
 
   // ============================================================
@@ -662,8 +488,7 @@
     state.currentLessonIndex = index;
     renderSidebar();
     renderLesson();
-    document.querySelector('.content-scroll').scrollTo(0, 0);
-    if (window.innerWidth < 800) document.getElementById('sidebar').classList.remove('open');
+    if (window.innerWidth < 850) document.getElementById('sidebar').classList.remove('open');
   };
 
   window.nextLesson = function() {
@@ -678,15 +503,12 @@
     const lesson = state.flatLessons[state.currentLessonIndex];
     if (!lesson) return;
 
-    if (!state.userData.progress) state.userData.progress = {};
-    if (!state.userData.progress[state.currentCourseId]) state.userData.progress[state.currentCourseId] = { completedLessons: [] };
-    
-    const p = state.userData.progress[state.currentCourseId];
+    const p = getProgress();
     if (!p.completedLessons.includes(lesson.id)) p.completedLessons.push(lesson.id);
     p.lastAccessedAt = new Date().toISOString();
     p.lastLessonIndex = state.currentLessonIndex;
 
-    // Save locally instantly (so it doesn't feel slow)
+    state.userData.progress[state.currentCourseId] = p;
     localStorage.setItem(`progress_${state.user.uid}`, JSON.stringify(state.userData));
 
     renderSidebar();
@@ -695,33 +517,24 @@
     try {
       const userRef = doc(db, 'users', state.user.uid);
       await updateDoc(userRef, { [`progress.${state.currentCourseId}`]: p });
-      await addDoc(collection(db, 'activity'), {
-        uid: state.user.uid,
-        type: 'lesson_completed',
-        courseId: state.currentCourseId,
-        courseTitle: COURSE_DATA[state.currentCourseId].title,
-        at: serverTimestamp()
-      });
     } catch(e) {
-      console.warn("Could not sync to Firestore, saved locally.");
-    }
-
-    if (state.currentLessonIndex < state.flatLessons.length - 1) {
-      setTimeout(() => nextLesson(), 300);
+      console.warn("Saved locally.");
     }
   };
 
   // ============================================================
-  // QUIZ SYSTEM (ANTI-CHEAT)
+  // QUIZ SYSTEM (MODULE SPECIFIC)
   // ============================================================
-  window.openQuiz = function() {
+  window.openQuiz = function(moduleIndex) {
     const course = COURSE_DATA[state.currentCourseId];
-    if (!course.quiz) return;
+    const mod = course.modules[moduleIndex];
+    if (!mod.quiz) return;
 
+    state.currentQuizModule = mod;
     state.isQuizOpen = true;
     state.quizAttempt = {
-      answers: new Array(course.quiz.length).fill(null),
-      shuffledQuestions: [...course.quiz].sort(() => Math.random() - 0.5)
+      answers: new Array(mod.quiz.length).fill(null),
+      shuffledQuestions: [...mod.quiz].sort(() => Math.random() - 0.5)
     };
 
     const modal = document.getElementById('quizModal');
@@ -729,8 +542,9 @@
     
     let html = `
       <div class="quiz-header">
-        <h2>Final Assessment</h2>
-        <p>Answer all questions. Do not switch tabs.</p>
+        <h2>Module Assessment</h2>
+        <p>${mod.title}</p>
+        <p style="font-size:12px; color:var(--gold); margin-top:10px;">⚠️ Do not switch tabs or the quiz will lock.</p>
       </div>
     `;
 
@@ -750,23 +564,20 @@
 
     html += `
       <div class="quiz-footer">
-        <button class="btn btn-primary" onclick="submitQuiz()">Submit Quiz</button>
+        <button class="btn btn-primary" onclick="submitQuiz()">Submit Assessment</button>
       </div>
     `;
 
     card.innerHTML = html;
     modal.classList.add('active');
 
-    // ANTI-CHEAT
     document.addEventListener('visibilitychange', checkVisibility);
-    window.addEventListener('blur', antiCheatTrigger); // Fallback for desktop
+    window.addEventListener('blur', antiCheatTrigger);
   };
 
   window.recordAnswer = function(qIdx, oIdx) {
     if (!state.quizAttempt) return;
     state.quizAttempt.answers[qIdx] = oIdx;
-    
-    // Highlight selected
     const container = document.getElementById(`q-block-${qIdx}`);
     container.querySelectorAll('.option').forEach(el => el.classList.remove('selected'));
     document.getElementById(`opt-${qIdx}-${oIdx}`).classList.add('selected');
@@ -778,6 +589,7 @@
     state.isQuizOpen = false; 
     document.getElementById('quizModal').classList.remove('active');
     document.removeEventListener('visibilitychange', checkVisibility);
+    window.removeEventListener('blur', antiCheatTrigger);
   }
 
   function checkVisibility() {
@@ -786,7 +598,7 @@
 
   window.resetQuizState = function() {
     document.getElementById('cheatWarning').style.display = 'none';
-    alert("Attempt forfeited. Please review the lessons and try again later.");
+    alert("Attempt forfeited. Please review the lessons and try again.");
     window.location.reload();
   };
 
@@ -807,28 +619,98 @@
     const score = Math.round((correct / state.quizAttempt.shuffledQuestions.length) * 100);
     
     const card = document.getElementById('quizCard');
-    card.innerHTML = `
-      <div style="text-align:center; padding: 40px 0;">
-        <h1 style="font-size:64px; color:${score >= 70 ? 'var(--green)' : '#ff8888'}; margin-bottom:10px;">${score}%</h1>
-        <h2>${score >= 70 ? 'Congratulations!' : 'Keep practicing!'}</h2>
-        <p style="color:var(--muted); margin-bottom:30px;">You got ${correct} out of ${state.quizAttempt.shuffledQuestions.length} questions correct.</p>
-        <button class="btn btn-primary" onclick="window.location.href='dashboard.html'">Return to Dashboard</button>
-      </div>
-    `;
-
     if (score >= 70) {
-      // Update quiz pass in Firestore
-      const userRef = doc(db, 'users', state.user.uid);
-      const p = state.userData.progress[state.currentCourseId];
-      p.quizzesPassed = (p.quizzesPassed || 0) + 1;
-      updateDoc(userRef, { [`progress.${state.currentCourseId}`]: p });
+      card.innerHTML = `
+        <div style="text-align:center; padding: 40px 0;">
+          <h1 style="font-size:64px; color:var(--green); margin-bottom:10px;">${score}%</h1>
+          <h2>Assessment Passed!</h2>
+          <p style="color:var(--muted); margin-bottom:30px;">You answered ${correct} out of ${state.quizAttempt.shuffledQuestions.length} correctly.</p>
+          <button class="btn btn-primary" onclick="closeQuizAndSave()">Continue Course</button>
+        </div>
+      `;
+    } else {
+      card.innerHTML = `
+        <div style="text-align:center; padding: 40px 0;">
+          <h1 style="font-size:64px; color:var(--pink); margin-bottom:10px;">${score}%</h1>
+          <h2>Keep Practicing</h2>
+          <p style="color:var(--muted); margin-bottom:30px;">You need 70% to pass. Review the module and try again.</p>
+          <button class="btn btn-ghost" onclick="closeQuizAndSave()">Review Lessons</button>
+        </div>
+      `;
+    }
+
+    state.lastQuizScore = score;
+  };
+
+  window.closeQuizAndSave = async function() {
+    document.getElementById('quizModal').classList.remove('active');
+    state.isQuizOpen = false;
+
+    if (state.lastQuizScore >= 70) {
+      const p = getProgress();
+      if (!p.passedQuizzes.includes(state.currentQuizModule.id)) {
+        p.passedQuizzes.push(state.currentQuizModule.id);
+      }
+      state.userData.progress[state.currentCourseId] = p;
+      localStorage.setItem(`progress_${state.user.uid}`, JSON.stringify(state.userData));
+      
+      try {
+        const userRef = doc(db, 'users', state.user.uid);
+        await updateDoc(userRef, { [`progress.${state.currentCourseId}`]: p });
+        await addDoc(collection(db, 'activity'), {
+          uid: state.user.uid, type: 'quiz_passed', courseId: state.currentCourseId, courseTitle: COURSE_DATA[state.currentCourseId].title, at: serverTimestamp()
+        });
+      } catch(e) {}
+
+      renderSidebar();
+      renderLesson();
+      
+      // Auto advance to next module's first lesson
+      const currentModIdx = state.currentQuizModule ? COURSE_DATA[state.currentCourseId].modules.indexOf(state.currentQuizModule) : -1;
+      if (currentModIdx >= 0 && currentModIdx < COURSE_DATA[state.currentCourseId].modules.length - 1) {
+        const nextMod = COURSE_DATA[state.currentCourseId].modules[currentModIdx + 1];
+        const nextGlobalIdx = state.flatLessons.findIndex(l => l.id === nextMod.lessons[0].id);
+        goToLesson(nextGlobalIdx);
+      }
+    } else {
+      // Failed - just reload the lesson view
+      renderLesson();
     }
   };
 
-  // Mobile sidebar toggles
-  if (window.innerWidth <= 800) {
-    document.querySelectorAll('.mobile-menu-btn').forEach(btn => btn.style.display = 'block');
-  }
+  // ============================================================
+  // CERTIFICATE LOGIC
+  // ============================================================
+  window.showCertificate = function() {
+    const course = COURSE_DATA[state.currentCourseId];
+    const date = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date());
+    
+    document.getElementById('certificateContent').innerHTML = `
+      <img src="https://i.postimg.cc/tT3Myvhj/ISHURI-Online-Learning-Logo.png" class="cert-logo" alt="Logo">
+      <div class="cert-title">Certificate of Completion</div>
+      <div class="cert-course">${course.title}</div>
+      <div class="cert-text">This is to certify that</div>
+      <div class="cert-name">${state.user.displayName || 'Student'}</div>
+      <div class="cert-text">has successfully completed all required modules, lessons, and assessments for this course.</div>
+      
+      <div class="cert-footer">
+        <div class="cert-sign">
+          <div class="cert-sign-line"></div>
+          <p>Date: ${date}</p>
+        </div>
+        <div class="cert-sign">
+          <div class="cert-sign-line"></div>
+          <p>ISHURI ONLINE</p>
+        </div>
+      </div>
+      
+      <div class="cert-actions">
+        <button class="btn-cert btn-print" onclick="window.print()">Download / Print</button>
+        <button class="btn-cert btn-close" onclick="document.getElementById('certModal').classList.remove('active')">Close</button>
+      </div>
+    `;
+    document.getElementById('certModal').classList.add('active');
+  };
 </script>
 </body>
 </html>
